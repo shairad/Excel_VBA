@@ -429,7 +429,7 @@ Sub BORIS_PCST()
 		Set Rng = Range("Unmapped_Code_Short")
 
 
-    ''''''''''Checks if code id is a cerner nomenclature code id and shorten name appropriately''''''''''
+    ''''''''''Checks if CodeID is a cerner nomenclature code id and shorten name appropriately''''''''''
 
 		For Each Cell In Rng
 			If InStr(Cell, "urn:cerner:coding:codingsystem:nomenclature.source_vocab:") > 0 Then  'If cell contains "x"
@@ -489,7 +489,6 @@ Sub BORIS_PCST()
 				End With
 			End If
 	  Next Cell
-
 
     'Names the code short name range.
 		Sheets("Unmapped Codes").Select
@@ -668,8 +667,8 @@ Sub BORIS_PCST()
 		xlYes
 
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    ' Checks to determine how many codes there are for this source.
-    ' If there is only 1 source then set range to one cell, otherwise select all cells and set the range.
+    ' Checks to determine how many unique code ID's there are for this source.
+    ' If there is only 1 source "72" then set range to one cell, otherwise select all cells and set the range.
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     'If there are no unmapped codes for this source, then set code source to 72 only.
@@ -694,6 +693,7 @@ Sub BORIS_PCST()
     '             Creates a new sheet and names the sheet with the current source
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+		'Loops through each unique Code ID for this source and creates a sheet with the relavant data.
     For Each code In Range("Code_ID_List")
 
 			With ActiveWorkbook
@@ -756,7 +756,6 @@ Sub BORIS_PCST()
 				ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
 				Criteria1:=Source_Name, Operator:=xlAnd
 
-
 				Set Table_Obj = ActiveSheet.ListObjects(1)
 
         'Checks filtered table for visible data
@@ -801,6 +800,7 @@ Sub BORIS_PCST()
 
 				Sheets("Unmapped Codes").Select
 
+				'Applies filters for only this source and code being currently reviewed.
 				ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
 				Criteria1:=Source_Name, Operator:=xlAnd
 				ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=12, _
@@ -936,6 +936,7 @@ Sub BORIS_PCST()
 
 
       '''''''''Populates headers for all other sheets''''''''''
+
 			Else
 				Sheets(Code_Sheet).Select
 
@@ -979,7 +980,6 @@ Sub BORIS_PCST()
 				ActiveCell.FormulaR1C1 = "Standard Coding System"
 				Range("Q2").Select
 
-
         'Filters unmapped codes table for current source and code within loop.
 				Sheets("Unmapped Codes").Select
 				ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
@@ -1007,8 +1007,10 @@ Sub BORIS_PCST()
 
 					Sheets(Code_Sheet).Select
 
+					'Finds next blank row
 					Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
+					'Pastes data on next blank row
 					Range("A" & Next_Blank_Row).Select
 					Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
 					:=False, Transpose:=False
@@ -1034,7 +1036,7 @@ Sub BORIS_PCST()
 
     '''''''POPULATES NOMENCLATURE - PATIENT CARE SHEET IF NEEDED''''''''
 
-    'switches to clin doc Sheet
+
 		Sheets("Clinical Documentation").Select
 
     'Filters table for current source.
@@ -1180,10 +1182,11 @@ Sub BORIS_PCST()
 			End If
 		Next Sheet
 
-    'Loops through sheets and formats as table
-		For Each Sheet In Worksheets 'Loop for each sheet in the workbook
+    ''''''''Loops through sheets and formats as table'''''''
 
-			Sheet.Activate 'Activates current sheet
+		For Each Sheet In Worksheets
+			'Activates current sheet
+			Sheet.Activate
 
 			Set sht = Sheet 'Sets value
 			Set StartCell = Range("A1") 'Start cell used to determine where to begin creating the table range
@@ -1205,6 +1208,7 @@ Sub BORIS_PCST()
 		Next Sheet
 
     ''''''''Aligns index sheet'''''''''
+
 		Sheets("INDEX SHEET").Select
 		Range("A2").Select
 		Range(Selection, Selection.End(xlDown)).Select
@@ -1222,16 +1226,18 @@ Sub BORIS_PCST()
 
 
     '''''''Saves the new workbook'''''''''
+
 		Workbooks(Source_Name & ".xlsm").Close SaveChanges:=True
 		Windows(Validation_File_Name).Activate 'Switches back to old workbook to begin next loop
 
 	Next Source_Name 'Start over with a new source
 
-  'Re-enables performance things
+  'Re-enables previously disabled settings after all code has run.
 	Application.ScreenUpdating = True
 	Application.Calculation = xlCalculationAutomatic
 	Application.EnableEvents = True
 
+	'Notifies user that the program has completed.
 	MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")
 
 End Sub
