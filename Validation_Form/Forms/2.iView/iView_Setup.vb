@@ -7,6 +7,7 @@ Sub iView_Setup()
 	Dim StartCell As Range
 	Dim Rng As Range
 
+	MsgBox("Program is about to run. Your screen will look frozen. It isn't I promise. Please leave computer alone until completed popup.")
 	Application.ScreenUpdating = False
 
 
