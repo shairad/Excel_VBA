@@ -8,9 +8,12 @@ Sub Validation_Format()
 	Dim Rng As Range
 	Dim rList As Range
 
+	'Disables settings to improve performance
 	Application.ScreenUpdating = False
+	Application.Calculation = xlCalculationManual
+	Application.EnableEvents = False
 
-'Converts numbers stored as text to number format
+	MsgBox("Program is about to run. Please leave computer alone until completed")
 
 	Sheets("Validated Codes").Select 'Selects Sheet
 	ActiveSheet.AutoFilterMode = False
@@ -36,17 +39,12 @@ Sub Validation_Format()
 
 	Set Rng = Range("Validated_Code_ID") 'Assigns range to variable
 
-	For Each cell In Rng 'Loops through cells in range
-
-		If IsNumeric(cell) Then 'If cell contains numbers then X
-			cell.Select 'Select the cell
-			With Selection 'With the selected cell convert cell format to number without any decimal places
-				Selection.NumberFormat = "0"
-				.Value = .Value
-			End With
-
+	For Each cell In Rng
+		If IsNumeric(cell) Then
+						cell.Value = Val(cell.Value)
+			cell.NumberFormat = "0"
 		End If
-		Next cell
+	Next cell
 
 
 'Removes extra formatting of cells and standardizes all cells in the same format then formats 'range as table.
@@ -95,6 +93,9 @@ Sub Validation_Format()
 			"=IFERROR(INDEX('Validated Codes'!I:I,MATCH(E2,'Validated Codes'!D:D,0)),0)"
 			Selection.AutoFill Destination:=Range("Forms_Val[Mapped?]")
 
+			'Re-enables calculations
+			Application.Calculation = xlCalculationAutomatic
+
 			Columns("A:A").Select
 			With Selection
 				.HorizontalAlignment = xlCenter
@@ -110,5 +111,8 @@ Sub Validation_Format()
 			Range("A2").Select
 
 			Application.ScreenUpdating = True
+			Application.EnableEvents = True
+
+			MsgBox("Conpleted")
 
 		End Sub

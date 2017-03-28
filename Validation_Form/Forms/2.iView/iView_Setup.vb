@@ -98,6 +98,7 @@ Sub iView_Setup()
 
 		'Re-enables Auto-calculate for forumlas
 		Application.Calculation = xlCalculationAutomatic
+		
 		Range("A2").Select
 
 		'Copies results to the "To_Review" Sheet

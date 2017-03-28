@@ -6,10 +6,14 @@ Sub Query1_Range_Helper()
 	Dim cell As Range
 	Dim tbl As ListObject
 
+	'Disables settings to improve performance
 	Application.ScreenUpdating = False
+	Application.Calculation = xlCalculationManual
+	Application.EnableEvents = False
+
+MsgBox("Program is about to run. Please leave computer alone until completed")
 
 'Formats range as table
-
 
 	Sheets("Query1").Select
 	Worksheets("Query1").AutoFilterMode = False
@@ -88,5 +92,9 @@ Sub Query1_Range_Helper()
 	(144, 238, 144), Operator:=xlFilterCellColor
 
 	Application.ScreenUpdating = True
+	Application.EnableEvents = True
+	Application.Calculation = xlCalculationAutomatic
+
+	MsgBox("Program Completed")
 
 End Sub
