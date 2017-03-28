@@ -14,7 +14,7 @@ Sub SHX_Setup()
 	Application.Calculation = xlCalculationManual
 	Application.EnableEvents = False
 
-Msgbox("Program is about to run. This will take about a minute to complete. Please leave computer alone until completed")
+Msgbox("Program is about to run. Please leave computer alone until completed")
 
 	Sheets("Social History Results").Select
 
