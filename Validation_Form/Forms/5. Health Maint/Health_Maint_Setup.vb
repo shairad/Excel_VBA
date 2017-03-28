@@ -63,6 +63,13 @@ For Each cell In Rng 'Loops through cells in range
   End If
 Next cell
 
+Rows("1:1").Select
+With Selection.Font
+    .ThemeColor = xlThemeColorDark1
+    .TintAndShade = 0
+End With
+
+
 Sheets("Health Maint Clinical Events").Select
 
 ActiveSheet.AutoFilterMode = False 'Disables autoFilter
@@ -128,6 +135,12 @@ With Selection
   .ShrinkToFit = False
   .ReadingOrder = xlContext
   .MergeCells = False
+End With
+
+Rows("1:1").Select
+With Selection.Font
+    .ThemeColor = xlThemeColorDark1
+    .TintAndShade = 0
 End With
 
 Range("A2").Select
