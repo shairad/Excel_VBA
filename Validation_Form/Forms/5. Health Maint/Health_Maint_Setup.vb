@@ -143,6 +143,14 @@ With Selection.Font
     .TintAndShade = 0
 End With
 
+'Filters to remove Validated
+ActiveSheet.ListObjects("Health_Maint_Tbl").Range.AutoFilter Field:=1, _
+    Criteria1:="0"
+
+'Filters to remove lines which do not have an event code
+ActiveSheet.ListObjects("Health_Maint_Tbl").Range.AutoFilter Field:=61, _
+        Criteria1:="<>0", Operator:=xlAnd
+
 Range("A2").Select
 
 Application.ScreenUpdating = True
