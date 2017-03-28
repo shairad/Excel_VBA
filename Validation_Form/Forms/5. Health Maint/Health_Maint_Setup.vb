@@ -8,7 +8,7 @@ Dim LastColumn As Long
 Dim StartCell As Range
 Dim rList As Range
 
-MsgBox ("Program is about to run. This will take about a minute to complete. Please leave computer alone until completed")
+MsgBox ("Program is about to run. This will take about a minute or more to complete. Please leave computer alone until completed")
 
 'Disables settings to improve performance
 Application.ScreenUpdating = False
