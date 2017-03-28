@@ -9,8 +9,12 @@ Sub SHX_Setup()
 	Dim StartCell As Range
 	Dim rList As Range
 
+	'Disables settings to improve performance
 	Application.ScreenUpdating = False
+	Application.Calculation = xlCalculationManual
+	Application.EnableEvents = False
 
+Msgbox("Program is about to run. Please leave computer alone until completed")
 
 	Sheets("Social History Results").Select
 
@@ -58,37 +62,42 @@ Sub SHX_Setup()
 	Set Rng = Range("Nomen_Code_ID") 'Assigns range to variable
 
 	For Each cell In Rng 'Loops through cells in range
-
-		If IsNumeric(cell) Then 'If cell contains numbers then X
-			cell.Select 'Select the cell
-			With Selection 'With the selected cell convert cell format to number without any decimal places
-				Selection.NumberFormat = "0"
-				.Value = .Value
-			End With
-
+		If IsNumeric(cell) Then
+						cell.Value = Val(cell.Value)
+			cell.NumberFormat = "0"
 		End If
-		Next cell
+	Next cell
 
 		Range("A2").Select
 		ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(I2,'Validated Mappings'!D:D,0)),0)"
 		Selection.AutoFill Destination:=Range("SHX_Results[Nomenclature Mapped?]")
-		Range("SHX_Results[Nomenclature Mapped?]").Select
 
 		Range("B2").Select
 		ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(F2,'Validated Mappings'!D:D,0)),0)"
 		Selection.AutoFill Destination:=Range("SHX_Results[CS 72 Mapped?]")
-		Range("SHX_Results[CS 72 Mapped?]").Select
 
 		Range("C2").Select
 		ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(K2,'Validated Mappings'!D:D,0)),0)"
 		Selection.AutoFill Destination:=Range("SHX_Results[CS 14003 Mapped?]")
-		Range("SHX_Results[CS 14003 Mapped?]").Select
 
 		Range("D2").Select
 		ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(M2,'Validated Mappings'!D:D,0)),0)"
 		Selection.AutoFill Destination:=Range("SHX_Results[CS 4002165 Mapped?]")
-		Range("SHX_Results[CS 4002165 Mapped?]").Select
 
+		'Centers cell values
+		Columns("A:D").Select
+		With Selection
+				.HorizontalAlignment = xlCenter
+				.Orientation = 0
+				.AddIndent = False
+				.IndentLevel = 0
+				.ShrinkToFit = False
+				.ReadingOrder = xlContext
+				.MergeCells = False
+		End With
+
+		'Re-enables Auto-calculate for forumlas
+		Application.Calculation = xlCalculationAutomatic
 
 		Sheets("Social History Results").Select
 		Cells.Select
@@ -153,6 +162,9 @@ Sub SHX_Setup()
 
 		Range("A1").Select
 
-		Application.ScreenUpdating = True 'Enables screen updating
+		Application.ScreenUpdating = True
+		Application.EnableEvents = True
+
+		Msgbox("Program Completed")
 
 	End Sub
