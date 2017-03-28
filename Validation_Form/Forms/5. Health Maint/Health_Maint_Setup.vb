@@ -8,6 +8,7 @@ Dim LastColumn As Long
 Dim StartCell As Range
 Dim rList As Range
 
+MsgBox ("Program is about to run. This will take about a minute to complete. Please leave computer alone until completed")
 
 'Disables settings to improve performance
 Application.ScreenUpdating = False
@@ -15,8 +16,6 @@ Application.Calculation = xlCalculationManual
 Application.EnableEvents = False
 
 Sheets("Validated Mappings").Select
-
-MsgBox ("Program is about to run. This will take about a minute to complete. Please leave computer alone until completed")
 
 ActiveSheet.AutoFilterMode = False 'Disables autoFilter
 
