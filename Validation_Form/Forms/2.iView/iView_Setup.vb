@@ -7,8 +7,14 @@ Sub iView_Setup()
 	Dim StartCell As Range
 	Dim Rng As Range
 
-	MsgBox("Program is about to run. Your screen will look frozen. It isn't I promise. Please leave computer alone until completed popup.")
+	'Disables settings to improve performance
 	Application.ScreenUpdating = False
+	Application.Calculation = xlCalculationManual
+	Application.EnableEvents = False
+
+	'Tells user program is about to run
+	MsgBox("Program is about to run. Your screen will look frozen. It isn't I promise. Please leave computer alone until completed popup.")
+
 
 
 	Sheets("Validated Mappings").Select 'Selects Sheet
@@ -37,15 +43,11 @@ Sub iView_Setup()
 
 	For Each cell In Rng 'Loops through cells in range
 
-		If IsNumeric(cell) Then 'If cell contains numbers then X
-			cell.Select 'Select the cell
-			With Selection 'With the selected cell convert cell format to number without any decimal places
-				Selection.NumberFormat = "0"
-				.Value = .Value
-			End With
-
+		If IsNumeric(cell) Then
+						cell.Value = Val(cell.Value)
+			cell.NumberFormat = "0"
 		End If
-		Next cell
+	Next cell
 
 
 'Begins processing IView Results sheet
@@ -72,30 +74,33 @@ Sub iView_Setup()
 		Set sht = Worksheets("IView Results")
 		Set StartCell = Range("A1")
 
-'Refresh UsedRange
+		'Refresh UsedRange
 		Worksheets("IView Results").UsedRange
 
-'Find Last Row and Column
+		'Find Last Row and Column
 		LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
 		LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-'Select Range
+		'Select Range
 		sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
-'Turn selected Range Into Table
+		'Turn selected Range Into Table
 		Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
 		tbl.Name = "IView Results"
 		tbl.TableStyle = "TableStyleLight12"
 		Range("A2").Select
 
-'Populates the Validated formula column
+		'Populates the Validated formula column
 		Sheets("IView Results").Select
 		Range("A2").Select
 		ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(E2,'Validated Mappings'!D:D,0)),0)"
 		Selection.AutoFill Destination:=Range("iView_Results[Mapped?]")
+
+		'Re-enables Auto-calculate for forumlas
+		Application.Calculation = xlCalculationAutomatic
 		Range("A2").Select
 
-'Copies results to the "To_Review" Sheet
+		'Copies results to the "To_Review" Sheet
 		Sheets("IView Results").Select
 		Cells.Select
 		Selection.Copy
@@ -144,5 +149,7 @@ Sub iView_Setup()
 		Range("A1").Select
 
 		Application.ScreenUpdating = True
+		Application.EnableEvents = True
+
 
 	End Sub
