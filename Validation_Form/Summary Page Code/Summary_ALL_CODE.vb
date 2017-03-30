@@ -395,14 +395,9 @@ End Sub
 
 Private Sub Summary_Sheet_Initial_Setup()
 '
-' Summary_Setup_1 Macro
+'
 '
 
-	answer = MsgBox("This is the summary sheet initial setup. Only run this after all analysis has been completed. Leave computer alone until completed." & vbNextLine & "Are you ready?", vbYesNo + vbQuestion, "Empty Sheet")
-
-	If answer = vbYes Then
-
-		Application.ScreenUpdating = False
 
 		Dim tbl As ListObject
 
@@ -446,8 +441,6 @@ Private Sub Summary_Sheet_Initial_Setup()
 'Do Nothing
 
 	End If
-
-	Application.ScreenUpdating = True
 
 End Sub
 
