@@ -202,6 +202,45 @@ Sub Nomenclature_Auto()
     :=False, Transpose:=False
 
 
+    '''''''Copies the Event Code Mapped? Column to the New Lines Sheet'''''''
+
+    'Switches back to Results Sheet to Copy next column
+    Sheets("Results").Select
+    'Confirms active cell is within the table
+    range("A2").Select
+    'Selects the first visible cell in column '1'
+    ActiveSheet.AutoFilter.range.Offset(1).SpecialCells(xlCellTypeVisible).Cells(1, 1).Select
+
+    range(Selection, Selection.End(xlDown)).Select
+    Selection.copy
+
+    Sheets("New Lines").Select
+
+    range("S" & Code_Blank_Line).Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+    :=False, Transpose:=False
+
+
+
+    '''''''Copies the Nomenclature Mapped? Column to the New Lines Sheet'''''''
+
+    'Switches back to Results Sheet to Copy next column
+    Sheets("Results").Select
+    'Confirms active cell is within the table
+    range("A2").Select
+    'Selects the first visible cell in column '2'
+    ActiveSheet.AutoFilter.range.Offset(1).SpecialCells(xlCellTypeVisible).Cells(1, 2).Select
+
+    range(Selection, Selection.End(xlDown)).Select
+    Selection.copy
+
+    Sheets("New Lines").Select
+
+    range("T" & Code_Blank_Line).Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+    :=False, Transpose:=False
+
+
     'Error handling. No codes found, so skipping
     NoBlanks:
     'MsgBox("No Code for " & EventCode)
@@ -212,7 +251,6 @@ Sub Nomenclature_Auto()
     Visible_Rows_Count = 0
 
   Next EventCode
-
 
 
   'Re-enables previously disabled settings after all code has run.
