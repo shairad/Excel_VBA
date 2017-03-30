@@ -1,26 +1,42 @@
-Sub Check_Number()
+Sub ArrayTest()
 
-Dim Temp_Cell As Variant
-Dim Rng As Range
+  Dim sht As Worksheet
+  Dim LastRow As Long
+  Dim LastColumn As Long
+  Dim StartCell As range
+  Dim Sheet As Worksheet
+  Dim Sheet_Name As String
+  Dim WkNames As Variant
+  Dim TblNames As Variant
 
+  Application.Calculation = xlCalculationManual
+  Application.EnableEvents = False
 
+  WkNames = Array("Results", "Validation Sheet", "Validated Mappings")
+  TblNames = Array("Results_Tbl", "Val_Tbl", "Mappings_Tbl")
 
-Sheets("Validated Codes").Select
+  For i = 0 To UBound(WkNames)
 
-Range("D1:D" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-Selection.Name = "Validated_Code_ID"
+    Sheets(WkNames(i)).Select
 
-Set Rng = Range("Validated_Code_ID")
+    Set sht = Worksheets(WkNames(i)) 'Sets value
+    Set StartCell = range("A1") 'Start cell used to determine where to begin creating the table range
 
-For Each cell In Rng
+    'Find Last Row and Column
 
-      If IsNumeric(cell) Then
-          Temp_Cell = cell.Value
-          cell.ClearContents
-          cell.Value = Temp_Cell.value
+    LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+    LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+    Sheet_Name = WkNames(i) 'Assigns sheet name to a variable as a string
 
-      End If
-Next cell
+    'Select Range
+    sht.range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
+    'Creates the table
+    Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+    tbl.Name = TblNames(i) 'Names the table
+    tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
+    Columns.AutoFit 'Autofits columns on sheet
+
+  Next
 
 End Sub
