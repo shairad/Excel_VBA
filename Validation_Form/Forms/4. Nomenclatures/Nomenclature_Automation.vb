@@ -4,11 +4,13 @@ Sub Nomenclature_Auto()
   Dim Table_Obj As ListObject
   Dim Table_ObjIsVisible As Boolean
   Dim Visible_Rows_Count As Integer
+  Dim Confirm_Run As Integer
   Dim Results_Range As range
   Dim Val_Vis_Row As range
   Dim StartCell As range
   Dim WkNames As Variant
   Dim TblNames As Variant
+
 
   'DEBUG
 
@@ -16,6 +18,14 @@ Sub Nomenclature_Auto()
   Application.ScreenUpdating = False
   Application.Calculation = xlCalculationManual
   Application.EnableEvents = False
+
+  Confirm_Run = MsgBox("The program is about to run. This will take roughly 2 minutes. Please verify before running that you have entered all the needed data per the automation Instructions. If you have not please click cancel. Else click OK to run. ", vbOkCancel + vbQuestion, "Empty Sheet")
+
+  'If user hits cancel then close program.
+	If Confirm_Run = vbCancel Then
+		MsgBox ("Program is canceling per user action.")
+		Exit Sub
+	End If
 
   WkNames = Array("Validated Mappings", "Results", "Validation Sheet")
   TblNames = Array("Mappings_Tbl", "Results_Tbl", "Val_Tbl")
@@ -134,14 +144,14 @@ Sub Nomenclature_Auto()
     Sheets("New Lines").Select
 
     'Used to determine sheet location when replacing nomenclature values after new lines have been created.
-    Code_Blank_Line = range("N" & Rows.Count).End(xlUp).Row + 1
+    Code_Blank_Line = range("A" & Rows.Count).End(xlUp).Row + 1
 
 
     '''''''''''Creates a new line for each "hit" for a specific code.'''''''''''
 
     For i = 1 To Visible_Rows_Count
       'Used to determine next blank line for copying the new validation line.
-      Next_Blank_Row = range("N" & Rows.Count).End(xlUp).Row + 1
+      Next_Blank_Row = range("A" & Rows.Count).End(xlUp).Row + 1
 
       range("A" & Next_Blank_Row).Select
       Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
@@ -191,24 +201,6 @@ Sub Nomenclature_Auto()
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
     :=False, Transpose:=False
 
-
-    ''''''Copies the Notes Column to the New Lines Sheet'''''''
-
-    'Switches back to Results Sheet to Copy next column
-    Sheets("Results").Select
-    'Confirms active cell is within the table
-    range("A2").Select
-    'Selects the first visible cell in column '13'
-    ActiveSheet.AutoFilter.range.Offset(1).SpecialCells(xlCellTypeVisible).Cells(1, 13).Select
-
-    range(Selection, Selection.End(xlDown)).Select
-    Selection.copy
-
-    Sheets("New Lines").Select
-
-    range("Q" & Code_Blank_Line).Select
-    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-    :=False, Transpose:=False
 
     'Error handling. No codes found, so skipping
     NoBlanks:
