@@ -81,9 +81,6 @@ Sub Nomenclature_Auto()
       Range("C2").Select
       Selection.Formula = "=IF(AND(A2 =""Validated"", B2 = ""Validated""),""Both Validated"", 0)"
 
-    ''  Range("M2").Select
-    ''  Selection.Formula = "=IF(A2=""Validated"",""This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."", IF(B2=""Validated"",""This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."",""This nomenclature and event code are not mapped and should be if this will be used to complete the measure.""))"
-
       'Hides rows which are validated in both columns
       ActiveSheet.ListObjects("Results_Tbl").range.AutoFilter Field:=3, Criteria1:= _
         "0"
@@ -224,31 +221,6 @@ Sub Nomenclature_Auto()
 
   Next EventCode
 
-  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-  ''''''Populates the Team Column Based on Value''''''''''
-  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-  'Sheets("New Lines").Select
-
-''  Range("Q2:Q" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-''  Selection.Name = "Notes_Rng"
-
-  'For Each Cell in Range("Notes_Rng")
-
-  ''  If Cell = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure." Then
-  ''    Cell.Offset(0, 1).Value = "PCST"
-
-  ''  Elseif Cell = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure." Then
-  ''    Cell.Offset(0, 1).Value = "PCST"
-
-  ''  Elseif Cell = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure." Then
-  ''    Cell.Offset(0, 1).Value = "PCST"
-
-  ''  Elseif Cell = "Unmapped code value that seems to be relevant to what we would want to measure in Registries" Then
-  ''    Cell.Offset(0, 1).Value = "Consulting"
-
-  ''  End If
-  Next Cell
 
 
   'Re-enables previously disabled settings after all code has run.
