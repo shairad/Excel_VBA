@@ -437,10 +437,6 @@ Private Sub Summary_Sheet_Initial_Setup()
 		Selection.AutoFill Destination:=Range("Summary_Table[Concat]")
 		Range("Summary_Table[Concat]").Select
 
-	Else
-'Do Nothing
-
-	End If
 
 End Sub
 
