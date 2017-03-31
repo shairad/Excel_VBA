@@ -27,6 +27,8 @@ Private Sub Nomenclature_Notes()
 	Application.Calculation = xlCalculationManual
 	Application.EnableEvents = False
 
+	Sheets("New Lines").Select
+
 	ActiveSheet.AutoFilterMode = False 'Removes filters from sheet
 
 	If ActiveSheet.ListObjects.Count > 0 Then
@@ -75,6 +77,7 @@ Private Sub Nomenclature_Notes()
 
 'Array to check DocumentType
 	ControlArray = Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi")
+	UnmappedArray = Array("New Numeric", "Numeric", "Calculation", "Date Time")
 
 'Saves range to array
 	DataRange = range("Data_Range").Value 'writes the named data range to the array variable
@@ -86,9 +89,10 @@ Private Sub Nomenclature_Notes()
 		EventCode_Val_Check = DataRange(Irow, 17)
 
 'Checks if control type is within the array.
-		IsInArray = Not IsError(Application.Match(ControlTypeCheck, ControlArray, 0))
+		IsInControlArray = Not IsError(Application.Match(ControlTypeCheck, ControlArray, 0))
+		IsInUnmappedArray = Not IsError(Application.Match(ControlTypeCheck, UnmappedArray, 0))
 
-		If IsInArray = TRUE _
+		If IsInControlArray = TRUE _
 			And Nomenclature_Val_Check = "0" _
 			And EventCode_Val_Check = "0" _
 			Then
@@ -97,7 +101,7 @@ Private Sub Nomenclature_Notes()
 		DataRange(IRow, 16) = "PCST"
 
 
-		ElseIf IsInArray = TRUE _
+		ElseIf IsInControlArray = TRUE _
 			And Nomenclature_Val_Check = "Validated" _
 			And EventCode_Val_Check = "0" _
 			Then
@@ -105,7 +109,7 @@ Private Sub Nomenclature_Notes()
 			DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
 			DataRange(IRow, 16) = "PCST"
 
-		ElseIf IsInArray = TRUE _
+		ElseIf IsInControlArray = TRUE _
 			And Nomenclature_Val_Check = "0" _
 			And EventCode_Val_Check = "Validated" _
 			Then
@@ -142,6 +146,15 @@ Private Sub Nomenclature_Notes()
 			DataRange(IRow, 16) = "PCST"
 
 		End If
+
+		'Unmapped Code comment
+		If IsInUnmappedArray = True Then
+
+			DataRange(Irow, 12) = "Unmapped code value that seems to be relevant to what we would want to measure in Registries."
+			DataRange(Irow, 16) = "Consulting"
+
+		End if
+
 	Next Irow
 
 

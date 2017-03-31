@@ -256,5 +256,7 @@ Private Sub Nomenclature_Row_Finder()
 				Application.Calculation = xlCalculationAutomatic
 				Application.EnableEvents = True
 
+				Sheets("New Lines").Select
+
 
 End Sub
