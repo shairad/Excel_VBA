@@ -11,22 +11,16 @@ Sub SpecialLoop()
 
     If ActiveSheet.ListObjects.Count > 0 Then
 
-    With ActiveSheet.ListObjects(1)
-        Set rList = .Range
-        .Unlist                           ' convert the table back to a range
-    End With
+      With ActiveSheet.ListObjects(1)
+          Set rList = .Range
+          .Unlist                           ' convert the table back to a range
+      End With
 
-    With rList
-        .Interior.ColorIndex = xlColorIndexNone
-        .Font.ColorIndex = xlColorIndexAutomatic
-        .Borders.LineStyle = xlLineStyleNone
-    End With
-
-    Rows("1:1").Select
-    With Selection.Font
-      .ThemeColor = xlThemeColorDark1
-      .TintAndShade = 0
-    End With
+      With rList
+          .Interior.ColorIndex = xlColorIndexNone
+          .Font.ColorIndex = xlColorIndexAutomatic
+          .Borders.LineStyle = xlLineStyleNone
+      End With
 
     End If
 
@@ -45,6 +39,12 @@ Sub SpecialLoop()
       Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
       tbl.Name = "New_Lines" 'Names the table
       tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
+
+      Rows("1:1").Select
+      With Selection.Font
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = 0
+      End With
 
 
       ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
