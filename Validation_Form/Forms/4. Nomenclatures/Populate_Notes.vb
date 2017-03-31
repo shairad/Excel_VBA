@@ -68,7 +68,7 @@
         End With
 
         'Creates named Range starting at column E
-        Range("E2:T2").Select
+        Range("E2:V2").Select
         Range(Selection, Selection.End(xlDown)).Select
 
         Selection.Name = "Data_Range"
@@ -82,9 +82,9 @@
 
         For Irow = 1 To UBound(DataRange) 'Loops through all rows within the range.
           DocType = DataRange(Irow, 1)
-          ControlTypeCheck = DataRange(Irow, 9)
-          Nomenclature_Val_Check = DataRange(Irow, 16)
-          EventCode_Val_Check = DataRange(Irow, 15)
+          ControlTypeCheck = DataRange(Irow, 8)
+          Nomenclature_Val_Check = DataRange(Irow, 18)
+          EventCode_Val_Check = DataRange(Irow, 17)
 
           'Checks if control type is within the array.
           IsInArray = Not IsError(Application.Match(ControlTypeCheck, ControlArray, 0))
@@ -94,8 +94,8 @@
             And EventCode_Val_Check = "0" _
             Then
 
-            DataRange(Irow, 13) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
-            DataRange(IRow, 14) = "PCST"
+            DataRange(Irow, 12) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
+            DataRange(IRow, 16) = "PCST"
 
 
           ElseIf IsInArray = TRUE _
@@ -103,16 +103,16 @@
             And EventCode_Val_Check = "0" _
             Then
 
-            DataRange(Irow, 13) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-            DataRange(IRow, 14) = "PCST"
+            DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+            DataRange(IRow, 16) = "PCST"
 
           ElseIf IsInArray = TRUE _
             And Nomenclature_Val_Check = "0" _
             And EventCode_Val_Check = "Validated" _
             Then
 
-            DataRange(Irow, 13) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
-            DataRange(IRow, 14) = "Consulting"
+            DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
+            DataRange(IRow, 16) = "Consulting"
 
           End If
 

@@ -170,7 +170,7 @@ Private Sub Nomenclature_Row_Finder()
 
     Sheets("New Lines").Select
 
-    range("N" & Code_Blank_Line).Select
+    range("M" & Code_Blank_Line).Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
     :=False, Transpose:=False
 
@@ -189,7 +189,7 @@ Private Sub Nomenclature_Row_Finder()
 
     Sheets("New Lines").Select
 
-    range("O" & Code_Blank_Line).Select
+    range("N" & Code_Blank_Line).Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
     :=False, Transpose:=False
 
@@ -208,7 +208,7 @@ Private Sub Nomenclature_Row_Finder()
 
     Sheets("New Lines").Select
 
-    range("S" & Code_Blank_Line).Select
+    range("U" & Code_Blank_Line).Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
     :=False, Transpose:=False
 
@@ -228,7 +228,7 @@ Private Sub Nomenclature_Row_Finder()
 
     Sheets("New Lines").Select
 
-    range("T" & Code_Blank_Line).Select
+    range("V" & Code_Blank_Line).Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
     :=False, Transpose:=False
 
