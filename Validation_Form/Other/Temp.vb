@@ -1,22 +1,26 @@
 Sub Testing()
-Dim DataRange As Variant
-Dim Irow As Long
-Dim Icol As Integer
-Dim MyType As Variant
-Dim MyNote As Variant
 
+Dim Lookup As Variant
+Dim cell_Lookup As Long
+Dim sResult_Value As String
 
-DataRange = Range("Data_Range").Value
+  For Each cell In range("Event_Range")
 
-For Irow = 1 To UBound(DataRange)
-  For Icol = 1
-    MyType = DataRange(Irow, Icol)
+    cell_Lookup = cell.Offset(0, 5).Value
 
-    If MyType =  "PowerForm" Then
-      DataRange(Irow, 13) = "Yes"
+    On Error GoTo NoMatch
+    sResult = Application.VLookup(cell_Lookup, range("Validated_Range"), 6, False)
+
+    If sResult = "Validated" Then
+        sResult_Value = sResult
+        cell.Value = sResult_Value
+
+    Else
+      NoMatch:
+      cell.Value = "0"
+      Resume ClearError
+      ClearError:
     End If
-  Next Icol
-Next Irow
-Range("Data_Range").Value = DataRange
 
+  Next cell
 End Sub
