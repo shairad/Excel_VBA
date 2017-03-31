@@ -61,6 +61,12 @@ Private Sub Nomenclature_Row_Finder()
 		tbl.Name = TblNames(i) 'Names the table
 		tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
 
+		Rows("1:1").Select
+		With Selection.Font
+			.ThemeColor = xlThemeColorDark1
+			.TintAndShade = 0
+		End With
+
 
 '''''Handles additional tasks for the Results Sheet'''''''
 

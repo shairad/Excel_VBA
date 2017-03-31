@@ -1,16 +1,50 @@
-'The below example searches for the header based on the name. In the example, it colors the entire 'column Red based on match, but you can change that. The variables should be easy to follow, but 'please let me know of questions.
 
 Sub Color_Range_Based_On_Header()
 
   Dim Sheet_Headers As Variant
-  Dim rngDateHeader As range
-  Dim rngHeaders As range
+  Dim Find_Header As Range
+  Dim rngHeaders As Range
+  Dim ColHeaders As Variant
+  Dim EV_Code_Map_Col As Variant
+  Dim Nom_Map_Col As Variant
+  Dim Both_Map_Col As Variant
+  Dim DTA_Col As Variant
+  Dim Nom_Source_Col As Variant
+  Dim Alpha_Nom_Col As Variant
 
 
-  Set rngHeaders = range("1:1")
-  Set rngDateHeader = rngHeaders.Find("Event Code Mapped?")
 
-  Columnlocation = Mid(rngDateHeader.Address, 2, 1)
+  Range("A1").Select
+  Range(Selection, Selection.End(xlToRight)).Select
+
+  Selection.Name = "Header_Row"
+
+  Header_Names = Array("Event Code Mapped?", "Nomenclature Mapped?", "Both Validated?", "DTA_EC")
+
+
+  For each cell in Range("Header_Row")
+
+    If cell = "Event Code Mapped?" Then
+      EV_Code_Map_Col = Mid(cell.Address, 2, 1)
+
+    Elseif cell = "Nomenclature Mapped?" Then
+      Nom_Map_Col = Mid(cell.Address, 2, 1)
+
+    Elseif cell = "Both Validated?" Then
+      Both_Map_Col = Mid(cell.Address, 2, 1)
+
+    Elseif cell = "DTA_EC" Then
+      DTA_Col = Mid(cell.Address, 2, 1)
+
+    Elseif cell = "NOMEN_SOURCESRG" Then
+      Nom_Source_Col = Mid(cell.Address, 2, 1)
+
+    Elseif cell = "ALPHA_NOMEN_ID" Then
+      Alpha_Nom_Col = Mid(cell.Address, 2, 1)
+
+    End if
+
+  Next cell
 
 
 End Sub
