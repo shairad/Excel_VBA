@@ -1,3 +1,62 @@
+Private Sub Delete_Extra_Sheets()
+'Deletes sheets needed for this program. This is important if this needs to be run again.
+
+Dim sheet As Worksheet
+
+Application.DisplayAlerts = False
+
+  For Each sheet In Worksheets
+
+    If sheet.name = "Unmapped_Summary_Pivot" _
+     Or sheet.name = "Validated_Summary_Pivot" _
+     Or sheet.name = "Clinical_Summary_Pivot" _
+     Or sheet.name = "Combined Registry Measures" _
+     Then
+     sheet.Delete
+    End If
+  Next sheet
+
+Application.DisplayAlerts = True
+
+End Sub
+
+
+Private Sub Summary_Cleanup()
+
+Dim sheet As Worksheet
+Dim Col_Header_Rng As Variant
+Dim HeaderRange As Variant 'Declare array variable
+Dim HeaderArray As Variant
+Dim i As Long 'The row variable
+Dim Icol As Integer 'The column variable if you need to loop through multiple columns
+Dim CurrentHeader As Variant 'Variable used to store column value
+
+	'Clears values already in the table incase this needs to be rerun.
+	Sheets("Summary View").Select
+	Range("B1:L1").Select
+	Selection.Name = "Summary_Headers"
+
+
+	HeaderArray = Array("Registry", "Measure","Validated Mappings", "Unmapped Codes", "Clinical Documentation", "Health Maintenance")
+
+  'HeaderRange = range("Summary_Headers").Value 'writes the named data range to the array variable
+
+  For each cell in Range("Summary_Headers")'Loops through all rows within the range.
+
+			CurrentHeader = cell 'Assigns current value to a variable
+			IsInHeaderNameArray = Not IsError(Application.Match(CurrentHeader, HeaderArray, 0))
+
+			'If Column is within the HeaderArray, Then clear the values in that column.
+      If IsInHeaderNameArray = True Then
+         cell.Offset(1,0).Select
+				 Range(Selection, Selection.End(xlDown)).Select
+				 Selection.Clear
+      End If
+  Next Cell
+
+End Sub
+
+
 Private Sub Unmapped_Summary_Pivot()
 '
 ' Creates unmapped pivot table which is used for our summary color sheet
@@ -661,12 +720,15 @@ Sub Summary_Sheet_Setup()
 
 		Application.ScreenUpdating = False
 
+		Call Delete_Extra_Sheets
+		Call Summary_Cleanup
 		Call Unmapped_Summary_Pivot
 		Call Validated_Summary_Pivot
 		Call Clinical_Summary_Sheet_Pivot
 		Call Summary_Combined_Lookup_Sheet
 		Call Summary_Sheet_Initial_Setup
 		Call Remove_Table_Format
+
 
 	Else
 'do nothing
