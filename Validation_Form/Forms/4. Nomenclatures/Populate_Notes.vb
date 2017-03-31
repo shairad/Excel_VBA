@@ -14,7 +14,7 @@ Sub Nomenclature_Notes()
     Application.EnableEvents = False
 
     'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
-    Confirm_Run = MsgBox("This program will populate the notes and team fields for the nomenclature data. Click "Ok" to run or "Cancel" to cancel the program.", vbOkCancel + vbQuestion, "Empty Sheet")
+    Confirm_Run = MsgBox("This program will populate the notes and team fields for the nomenclature data. Click ""Ok"" to run or ""Cancel"" to cancel the program.", vbOkCancel + vbQuestion, "Empty Sheet")
 
     'If user hits cancel then close program.
     If Confirm_Run = vbCancel Then
