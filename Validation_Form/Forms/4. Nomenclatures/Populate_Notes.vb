@@ -1,4 +1,4 @@
-Sub SpecialLoop()
+Sub Nomenclature_Notes()
 
     Dim sht As Worksheet
     Dim LastRow As Long
