@@ -1,10 +1,9 @@
-Sub Nomenclature_Auto()
+Private Sub Nomenclature_Row_Finder()
 
   Dim wb As Workbook
   Dim Table_Obj As ListObject
   Dim Table_ObjIsVisible As Boolean
   Dim Visible_Rows_Count As Integer
-  Dim Confirm_Run As Integer
   Dim Results_Range As range
   Dim Val_Vis_Row As range
   Dim StartCell As range
@@ -19,13 +18,6 @@ Sub Nomenclature_Auto()
   Application.Calculation = xlCalculationManual
   Application.EnableEvents = False
 
-  Confirm_Run = MsgBox("The program is about to run. This will take roughly 2 minutes. Please verify before running that you have entered all the needed data per the automation Instructions. If you have not please click cancel. Else click OK to run. ", vbOkCancel + vbQuestion, "Empty Sheet")
-
-  'If user hits cancel then close program.
-	If Confirm_Run = vbCancel Then
-		MsgBox ("Program is canceling per user action.")
-		Exit Sub
-	End If
 
   WkNames = Array("Validated Mappings", "Results", "Validation Sheet")
   TblNames = Array("Mappings_Tbl", "Results_Tbl", "Val_Tbl")
