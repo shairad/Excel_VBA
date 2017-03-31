@@ -32,7 +32,15 @@ Sub Summary_Pop_Dots()
 		ActiveSheet.PivotTables("Unmapped_Pivot").PivotCache.Refresh
 
 
+		''Selects the Validated Lookup Values
+		Sheets("Combined Registry Measures").Select
+		Range("E2").Select
+		Range(Selection, Selection.End(xlDown)).Select
+		Selection.Copy
 
+
+
+		''''''OLD''''''
 		Sheets("Combined Registry Measures").Select
 		Range("E2:G2").Select
 		Range(Selection, Selection.End(xlDown)).Select
