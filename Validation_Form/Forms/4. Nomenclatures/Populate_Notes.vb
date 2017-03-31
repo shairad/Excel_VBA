@@ -6,6 +6,21 @@ Sub SpecialLoop()
     Dim StartCell As Range
     Dim Sheet As Worksheet
     Dim rList As Range
+    Dim Confirm_Run As Integer
+
+    'Disables settings to improve performance
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    Application.EnableEvents = False
+
+    'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
+    Confirm_Run = MsgBox("This program will populate the notes and team fields for the nomenclature data. Click "Ok" to run or "Cancel" to cancel the program.", vbOkCancel + vbQuestion, "Empty Sheet")
+
+    'If user hits cancel then close program.
+    If Confirm_Run = vbCancel Then
+      MsgBox ("Program is canceling per user action.")
+      Exit Sub
+    End If
 
     ActiveSheet.AutoFilterMode = False 'Removes filters from sheet
 
@@ -121,5 +136,7 @@ Sub SpecialLoop()
           cell.Value = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
           cell.Offset(0,1).value = "Consulting"
       Next
+
+      MsgBox("Program Completed")
 
 End Sub
