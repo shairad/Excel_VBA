@@ -250,6 +250,5 @@ Private Sub Nomenclature_Row_Finder()
   Application.Calculation = xlCalculationAutomatic
   Application.EnableEvents = True
 
-  MsgBox("Program Completed")
 
 End Sub
