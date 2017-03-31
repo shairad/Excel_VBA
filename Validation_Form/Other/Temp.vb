@@ -8,7 +8,7 @@ Sub SpecialLoop()
     Dim rList As Range
 
     ActiveSheet.AutoFilterMode = False 'Removes filters from sheet
-    
+
     If ActiveSheet.ListObjects.Count > 0 Then
 
     With ActiveSheet.ListObjects(1)
@@ -68,6 +68,7 @@ Sub SpecialLoop()
       'For each visible cell within Range'
       For Each cell In Range("Visible_Range").SpecialCells(xlCellTypeVisible)
           cell.Value = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+          cell.Offset(0,1).value = "PCST"
       Next
 
 End Sub
