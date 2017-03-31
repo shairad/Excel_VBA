@@ -137,6 +137,11 @@ Sub SpecialLoop()
           cell.Offset(0,1).value = "Consulting"
       Next
 
+      'Re-enables previously disabled settings after all code has run.
+      Application.ScreenUpdating = True
+      Application.Calculation = xlCalculationAutomatic
+      Application.EnableEvents = True
+
       MsgBox("Program Completed")
 
 End Sub
