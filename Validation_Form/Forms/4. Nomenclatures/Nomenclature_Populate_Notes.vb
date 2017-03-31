@@ -93,77 +93,77 @@ Private Sub Nomenclature_Notes()
 		IsInUnmappedArray = Not IsError(Application.Match(ControlTypeCheck, UnmappedArray, 0))
 
 		If IsInControlArray = TRUE _
-			And Nomenclature_Val_Check = "0" _
-			And EventCode_Val_Check = "0" _
-			Then
+		And Nomenclature_Val_Check = "0" _
+		And EventCode_Val_Check = "0" _
+		Then
 
 		DataRange(Irow, 12) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
 		DataRange(IRow, 16) = "PCST"
 
 
-		ElseIf IsInControlArray = TRUE _
-			And Nomenclature_Val_Check = "Validated" _
-			And EventCode_Val_Check = "0" _
-			Then
+	ElseIf IsInControlArray = TRUE _
+		And Nomenclature_Val_Check = "Validated" _
+		And EventCode_Val_Check = "0" _
+		Then
 
-			DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-			DataRange(IRow, 16) = "PCST"
+		DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+		DataRange(IRow, 16) = "PCST"
 
-		ElseIf IsInControlArray = TRUE _
-			And Nomenclature_Val_Check = "0" _
-			And EventCode_Val_Check = "Validated" _
-			Then
+	ElseIf IsInControlArray = TRUE _
+		And Nomenclature_Val_Check = "0" _
+		And EventCode_Val_Check = "Validated" _
+		Then
 
-			DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
-			DataRange(IRow, 16) = "Consulting"
+		DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
+		DataRange(IRow, 16) = "Consulting"
 
-		End If
+	End If
 
-		'If DocumentType is IView, then ignore the control type
+'If DocumentType is IView, then ignore the control type
 
-		If DocType = "IView" _
-			And Nomenclature_Val_Check = "Validated" _
-			And EventCode_Val_Check = "0" _
-			Then
+	If DocType = "IView" _
+	And Nomenclature_Val_Check = "Validated" _
+	And EventCode_Val_Check = "0" _
+	Then
 
-			DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-			DataRange(IRow, 16) = "PCST"
+	DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+	DataRange(IRow, 16) = "PCST"
 
-		elseIf DocType = "IView" _
-			And Nomenclature_Val_Check = "0" _
-			And EventCode_Val_Check = "Validated" _
-			Then
+	elseIf DocType = "IView" _
+		And Nomenclature_Val_Check = "0" _
+		And EventCode_Val_Check = "Validated" _
+		Then
 
-			DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
-			DataRange(IRow, 16) = "Consulting"
+		DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
+		DataRange(IRow, 16) = "Consulting"
 
-		elseIf DocType = "IView" _
-			And Nomenclature_Val_Check = "0" _
-			And EventCode_Val_Check = "0" _
-			Then
+	elseIf DocType = "IView" _
+		And Nomenclature_Val_Check = "0" _
+		And EventCode_Val_Check = "0" _
+		Then
 
-			DataRange(Irow, 12) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
-			DataRange(IRow, 16) = "PCST"
+		DataRange(Irow, 12) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
+		DataRange(IRow, 16) = "PCST"
 
-		End If
+	End If
 
-		'Unmapped Code comment
-		If IsInUnmappedArray = True Then
+	'Unmapped Code comment
+	If IsInUnmappedArray = True Then
 
-			DataRange(Irow, 12) = "Unmapped code value that seems to be relevant to what we would want to measure in Registries."
-			DataRange(Irow, 16) = "Consulting"
+		DataRange(Irow, 12) = "Unmapped code value that seems to be relevant to what we would want to measure in Registries."
+		DataRange(Irow, 16) = "Consulting"
 
-		End if
+	End if
 
-	Next Irow
+Next Irow
 
 
 'Write the updated DataRange Array to the excel file
-	range("Data_Range").Value = DataRange
+range("Data_Range").Value = DataRange
 
 're-enables settings previously disabled
-	Application.ScreenUpdating = True
-	Application.Calculation = xlCalculationAutomatic
-	Application.EnableEvents = True
+Application.ScreenUpdating = True
+Application.Calculation = xlCalculationAutomatic
+Application.EnableEvents = True
 
 End Sub
