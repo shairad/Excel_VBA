@@ -48,7 +48,7 @@ Sub SpecialLoop()
 
 
       ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-      ' Populates "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+      '           Populates - Event Code and Nomenclature are not mapped
       ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
       'Applies correct filter for this note value
@@ -62,21 +62,21 @@ Sub SpecialLoop()
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=20, Criteria1:= _
           "0"
 
-
-      '''Loops Through filtered rows'''''
+      '''Loops Through filtered rows''''
       Range("R3:R" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
       Selection.Name = "Visible_Range"
 
       'For each visible cell within Range'
       For Each cell In Range("Visible_Range").SpecialCells(xlCellTypeVisible)
-          cell.Value = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+          cell.Value = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
+          cell.Offset(0,1).value = "PCST"
       Next
 
 
 
-      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-      ' Populates "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      '         Populates - nomenclature is mapped, but the Event Code is Not
+      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
       'Applies correct filter for this note value
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=5, Criteria1:= _
@@ -87,16 +87,42 @@ Sub SpecialLoop()
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=19, Criteria1:= _
           "0"
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=20, Criteria1:= _
-          "0"
+          "Validated"
 
-
-      '''Loops Through filtered rows'''''
+      '''Loops Through filtered rows'''
       Range("R3:R" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
       Selection.Name = "Visible_Range"
 
       'For each visible cell within Range'
       For Each cell In Range("Visible_Range").SpecialCells(xlCellTypeVisible)
           cell.Value = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
+          cell.Offset(0,1).value = "PCST"
+      Next
+
+
+      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      '   Populates - Event Code is mapped, but the nomenclature is not
+      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+      'Applies correct filter for this note value
+      ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=5, Criteria1:= _
+          "=PowerForm", Operator:=xlOr, Criteria2:="=IView"
+      ActiveWindow.SmallScroll Down:=-6
+      ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=13, Criteria1:= _
+          Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi"), Operator:=xlFilterValues
+      ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=19, Criteria1:= _
+          "Validated"
+      ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=20, Criteria1:= _
+          "0"
+
+      '''Loops Through filtered rows'''
+      Range("R3:R" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+      Selection.Name = "Visible_Range"
+
+      'For each visible cell within Range'
+      For Each cell In Range("Visible_Range").SpecialCells(xlCellTypeVisible)
+          cell.Value = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
+          cell.Offset(0,1).value = "Consulting"
       Next
 
 End Sub
