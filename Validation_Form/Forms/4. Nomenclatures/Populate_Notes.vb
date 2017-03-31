@@ -54,7 +54,6 @@ Sub SpecialLoop()
       'Applies correct filter for this note value
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=5, Criteria1:= _
           "=PowerForm", Operator:=xlOr, Criteria2:="=IView"
-      ActiveWindow.SmallScroll Down:=-6
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=13, Criteria1:= _
           Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi"), Operator:=xlFilterValues
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=19, Criteria1:= _
@@ -63,7 +62,7 @@ Sub SpecialLoop()
           "0"
 
       '''Loops Through filtered rows''''
-      Range("R3:R" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+      Range("Q3:Q" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
       Selection.Name = "Visible_Range"
 
       'For each visible cell within Range'
@@ -81,7 +80,6 @@ Sub SpecialLoop()
       'Applies correct filter for this note value
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=5, Criteria1:= _
           "=PowerForm", Operator:=xlOr, Criteria2:="=IView"
-      ActiveWindow.SmallScroll Down:=-6
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=13, Criteria1:= _
           Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi"), Operator:=xlFilterValues
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=19, Criteria1:= _
@@ -90,7 +88,7 @@ Sub SpecialLoop()
           "Validated"
 
       '''Loops Through filtered rows'''
-      Range("R3:R" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+      Range("Q3:Q" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
       Selection.Name = "Visible_Range"
 
       'For each visible cell within Range'
@@ -107,7 +105,6 @@ Sub SpecialLoop()
       'Applies correct filter for this note value
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=5, Criteria1:= _
           "=PowerForm", Operator:=xlOr, Criteria2:="=IView"
-      ActiveWindow.SmallScroll Down:=-6
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=13, Criteria1:= _
           Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi"), Operator:=xlFilterValues
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=19, Criteria1:= _
@@ -116,7 +113,7 @@ Sub SpecialLoop()
           "0"
 
       '''Loops Through filtered rows'''
-      Range("R3:R" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+      Range("Q3:Q" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
       Selection.Name = "Visible_Range"
 
       'For each visible cell within Range'
