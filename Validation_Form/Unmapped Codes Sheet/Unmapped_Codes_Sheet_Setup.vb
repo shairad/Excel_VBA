@@ -28,6 +28,13 @@ Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
   tbl.Name = "Unmapped_Table"
   tbl.TableStyle = "TableStyleLight9"
 
+  'changes font color of header row to white
+  Rows("1:1").Select
+  With Selection.Font
+    .ThemeColor = xlThemeColorDark1
+    .TintAndShade = 0
+  End With
+
 Range("A2").Select
 
 End Sub

@@ -43,6 +43,13 @@ If ActiveSheet.ListObjects.Count > 0 Then
 	tbl.Name = "Unmapped_Table"
 	tbl.TableStyle = "TableStyleLight12"
 
+	'changes font color of header row to white
+	Rows("1:1").Select
+	With Selection.Font
+		.ThemeColor = xlThemeColorDark1
+		.TintAndShade = 0
+	End With
+
 'Creates a new sheet which will house the unmapped codes pivot table
 	With ThisWorkbook
 		.Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Unmapped_Summary_Pivot"

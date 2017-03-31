@@ -76,6 +76,12 @@ Sub Validation_Format()
 		tbl.Name = "Forms_Val"
 		tbl.TableStyle = "TableStyleLight12"
 
+		'changes font color of header row to white
+		Rows("1:1").Select
+		With Selection.Font
+			.ThemeColor = xlThemeColorDark1
+			.TintAndShade = 0
+		End With
 
 
 		For RowToTest = Cells(Rows.Count, 2).End(xlUp).Row To 2 Step -1

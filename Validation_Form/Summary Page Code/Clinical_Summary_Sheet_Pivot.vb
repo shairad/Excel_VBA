@@ -49,6 +49,13 @@ Sub Pivots_Clinical_Doc()
     tbl.Name = "Clinical_Table"
     tbl.TableStyle = "TableStyleLight12"
 
+    'changes font color of header row to white
+    Rows("1:1").Select
+    With Selection.Font
+      .ThemeColor = xlThemeColorDark1
+      .TintAndShade = 0
+    End With
+
     Sheets("Clinical Documentation").Select
 
     ActiveWorkbook.PivotCaches.Create(SourceType:=xlDatabase, SourceData:= _

@@ -53,6 +53,13 @@ sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
   tbl.Name = "Validated_tbl"
   tbl.TableStyle = "TableStyleLight12"
 
+  'changes font color of header row to white
+  Rows("1:1").Select
+  With Selection.Font
+    .ThemeColor = xlThemeColorDark1
+    .TintAndShade = 0
+  End With
+
 Application.Goto Reference:="Validated_tbl"
   Set Rng = Selection
 

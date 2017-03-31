@@ -88,6 +88,14 @@ Sub iView_Setup()
 		Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
 		tbl.Name = "IView Results"
 		tbl.TableStyle = "TableStyleLight12"
+
+		'changes font color of header row to white
+		Rows("1:1").Select
+		With Selection.Font
+			.ThemeColor = xlThemeColorDark1
+			.TintAndShade = 0
+		End With
+		
 		Range("A2").Select
 
 		'Populates the Validated formula column
@@ -98,7 +106,7 @@ Sub iView_Setup()
 
 		'Re-enables Auto-calculate for forumlas
 		Application.Calculation = xlCalculationAutomatic
-		
+
 		Range("A2").Select
 
 		'Copies results to the "To_Review" Sheet

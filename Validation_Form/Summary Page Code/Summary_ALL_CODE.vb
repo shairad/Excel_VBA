@@ -43,6 +43,14 @@ Private Sub Unmapped_Summary_Pivot()
 	tbl.Name = "Unmapped_Table"
 	tbl.TableStyle = "TableStyleLight12"
 
+	'changes font color of header row to white
+	Rows("1:1").Select
+	With Selection.Font
+		.ThemeColor = xlThemeColorDark1
+		.TintAndShade = 0
+	End With
+
+
 'Creates a new sheet which will house the unmapped codes pivot table
 	With ThisWorkbook
 		.Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Unmapped_Summary_Pivot"
@@ -151,6 +159,13 @@ Private Sub Validated_Summary_Pivot()
 	tbl.Name = "Validated_Mappings_Table"
 	tbl.TableStyle = "TableStyleLight12"
 
+	'changes font color of header row to white
+	Rows("1:1").Select
+	With Selection.Font
+		.ThemeColor = xlThemeColorDark1
+		.TintAndShade = 0
+	End With
+
 'Creates a new sheet which will house the validated codes pivot table
 	With ThisWorkbook
 		.Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Validated_Summary_Pivot"
@@ -252,6 +267,13 @@ Private Sub Clinical_Summary_Sheet_Pivot()
 	Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
 	tbl.Name = "Clinical_Table"
 	tbl.TableStyle = "TableStyleLight12"
+
+	'changes font color of header row to white
+	Rows("1:1").Select
+	With Selection.Font
+		.ThemeColor = xlThemeColorDark1
+		.TintAndShade = 0
+	End With
 
 
 'Creates a new sheet which will house the Clinical Documentation pivot table

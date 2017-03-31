@@ -54,6 +54,13 @@ Msgbox("Program is about to run. Please leave computer alone until completed")
 	tbl.Name = "SHX_Results"
 	tbl.TableStyle = "TableStyleLight12"
 
+	'changes font color of header row to white
+	Rows("1:1").Select
+	With Selection.Font
+		.ThemeColor = xlThemeColorDark1
+		.TintAndShade = 0
+	End With
+
 	Sheets("Social History Results").Select
 
 	Range("I1:I" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select 'Selects all cells not empty in column
