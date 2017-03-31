@@ -47,9 +47,9 @@ Sub SpecialLoop()
       tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
 
 
-      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
       ' Populates "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-      '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+      ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
       'Applies correct filter for this note value
       ActiveSheet.ListObjects("New_Lines").Range.AutoFilter Field:=5, Criteria1:= _
