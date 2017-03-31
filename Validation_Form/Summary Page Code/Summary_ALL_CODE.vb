@@ -653,10 +653,6 @@ End Sub
 
 
 
-
-
-
-
 Sub Summary_Sheet_Setup()
 
 	answer = MsgBox("This will launch the summary sheet scripts. Leave computer alone until completed. Are you ready?", vbYesNo + vbQuestion, "Empty Sheet")
