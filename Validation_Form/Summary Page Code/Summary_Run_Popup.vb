@@ -1,23 +1,20 @@
 Sub Summary_Sheet_Setup()
 
-	answer = MsgBox("This will launch the Summary sheet scripts. Leave computer alone until completed." & vbNextLine & "Are you ready?", vbYesNo + vbQuestion, "Empty Sheet")
+'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
+Confirm_Scrubbed = MsgBox("You have initiated the program to initalize the Summary Sheet. Please click ""ok"" to run or ""cancel"" to close the program", vbOkCancel + vbQuestion, "Empty Sheet")
 
-	If answer = vbYes Then
+'If user hits cancel then close program.
+If Confirm_Scrubbed = vbCancel Then
+	MsgBox ("Program is canceling per user action.")
+	Exit Sub
+End If
 
-	Application.ScreenUpdating = False
 
-		Call Unmapped_Summary_Pivot
-		Call Validated_Summary_Pivot
-		Call Clinical_Summary_Sheet_Pivot
+		Call Summary_Create_Lookup_Sheets
 		Call Summary_Combined_Lookup_Sheet
 		Call Summary_Sheet_Initial_Setup
-		Call Summary_Add_HyperLinks
+		Call Summary_Pop_Dots
 
-
-	Else
-'do nothing
-	End If
-
-	Application.ScreenUpdating = True
+MsgBox("Program Completed")
 
 End Sub

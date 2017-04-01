@@ -17,6 +17,10 @@ Sub Summary_Pop_Dots()
 	Dim HyperLinkSheets As Variant
 
 
+	'This disables settings to improve macro performance.
+		Application.ScreenUpdating = False
+		Application.Calculation = xlCalculationManual
+		Application.EnableEvents = False
 
 		Sheets("Summary View").Select
 		Columns("E:H").Select
@@ -171,6 +175,9 @@ Sub Summary_Pop_Dots()
 		Cells.Select
 		Cells.EntireColumn.AutoFit
 
+'Re-enables previously disabled settings after all code has run.
 		Application.ScreenUpdating = True
+		Application.Calculation = xlCalculationAutomatic
+		Application.EnableEvents = True
 
 End Sub

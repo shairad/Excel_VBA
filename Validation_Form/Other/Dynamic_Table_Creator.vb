@@ -23,4 +23,11 @@ Set StartCell = Range("D9")
   tbl.Name = "Clinical_Table"
   tbl.TableStyle = "TableStyleLight12"
 
+  'Changes header font back to white
+  Rows("2:2").Select
+  With Selection.Font
+    .ThemeColor = xlThemeColorDark1
+    .TintAndShade = 0
+  End With
+
 End Sub
