@@ -7,10 +7,10 @@ Private Sub Nomenclature_Notes()
 '
 '
 
-	Dim DataRange As Variant 'Declare array variable
-	Dim Irow As Long 'The row variable
-	Dim Icol As Integer 'The column variable if you need to loop through multiple columns
-	Dim DocType As Variant 'Variable used to store column value
+	Dim DataRange As Variant
+	Dim Irow As Long
+	Dim Icol As Integer
+	Dim DocType As Variant
 	Dim ControlArray As Variant
 	Dim ControlTypeCheck As Variant
 	Dim Nomenclature_Val_Check As Variant
@@ -22,20 +22,22 @@ Private Sub Nomenclature_Notes()
 	Dim Sheet As Worksheet
 	Dim rList As Range
 
-'Disables settings to improve performance
+	'Disables settings to improve performance
 	Application.ScreenUpdating = False
 	Application.Calculation = xlCalculationManual
 	Application.EnableEvents = False
 
 	Sheets("New Lines").Select
 
-	ActiveSheet.AutoFilterMode = False 'Removes filters from sheet
+	'Removes filters from sheet
+	ActiveSheet.AutoFilterMode = False
 
+	'convert the table back to a range
 	If ActiveSheet.ListObjects.Count > 0 Then
 
 		With ActiveSheet.ListObjects(1)
 			Set rList = .Range
-			.Unlist                           ' convert the table back to a range
+			.Unlist
 		End With
 
 		With rList
@@ -47,17 +49,17 @@ Private Sub Nomenclature_Notes()
 	End If
 
 
-	Set sht = ActiveSheet 'Sets value
-	Set StartCell = Range("A1") 'Start cell used to determine where to begin creating the table range
+	Set sht = ActiveSheet
+	Set StartCell = Range("A1")
 
-'Find Last Row and Column
+	'Find Last Row and Column
 	LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
 	LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-'Select Range
+	'Select Range
 	sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
-'Creates the table
+	'Creates the table
 	Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
 	tbl.Name = "New_Lines" 'Names the table
 	tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
@@ -68,33 +70,33 @@ Private Sub Nomenclature_Notes()
 		.TintAndShade = 0
 	End With
 
-'Creates named Range starting at column E
+	'Creates named Range starting at column E
 	Range("E2:V2").Select
 	Range(Selection, Selection.End(xlDown)).Select
 
 	Selection.Name = "Data_Range"
 
-
-'Array to check DocumentType
+	'Array to check DocumentType
 	ControlArray = Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi")
 	UnmappedArray = Array("New Numeric", "Numeric", "Calculation", "Date Time")
 
-'Saves range to array
+	'Saves range to array
 	DataRange = range("Data_Range").Value 'writes the named data range to the array variable
 
-	For Irow = 1 To UBound(DataRange) 'Loops through all rows within the range.
+	'Loops through all rows within the range.
+	For Irow = 1 To UBound(DataRange)
 		DocType = DataRange(Irow, 1)
 		ControlTypeCheck = DataRange(Irow, 8)
 		Nomenclature_Val_Check = DataRange(Irow, 18)
 		EventCode_Val_Check = DataRange(Irow, 17)
 
-'Checks if control type is within the array.
+		'Checks if control type is within the array.
 		IsInControlArray = Not IsError(Application.Match(ControlTypeCheck, ControlArray, 0))
 		IsInUnmappedArray = Not IsError(Application.Match(ControlTypeCheck, UnmappedArray, 0))
 
 		If IsInControlArray = TRUE _
-		And Nomenclature_Val_Check = "0" _
-		And EventCode_Val_Check = "0" _
+			And Nomenclature_Val_Check = "0" _
+			And EventCode_Val_Check = "0" _
 		Then
 
 		DataRange(Irow, 12) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
@@ -104,7 +106,7 @@ Private Sub Nomenclature_Notes()
 	ElseIf IsInControlArray = TRUE _
 		And Nomenclature_Val_Check = "Validated" _
 		And EventCode_Val_Check = "0" _
-		Then
+	Then
 
 		DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
 		DataRange(IRow, 16) = "PCST"
@@ -112,18 +114,17 @@ Private Sub Nomenclature_Notes()
 	ElseIf IsInControlArray = TRUE _
 		And Nomenclature_Val_Check = "0" _
 		And EventCode_Val_Check = "Validated" _
-		Then
+	Then
 
 		DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
 		DataRange(IRow, 16) = "Consulting"
 
 	End If
 
-'If DocumentType is IView, then ignore the control type
-
+	'If DocumentType is IView, then ignore the control type
 	If DocType = "IView" _
-	And Nomenclature_Val_Check = "Validated" _
-	And EventCode_Val_Check = "0" _
+		And Nomenclature_Val_Check = "Validated" _
+		And EventCode_Val_Check = "0" _
 	Then
 
 	DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
@@ -132,7 +133,7 @@ Private Sub Nomenclature_Notes()
 	elseIf DocType = "IView" _
 		And Nomenclature_Val_Check = "0" _
 		And EventCode_Val_Check = "Validated" _
-		Then
+	Then
 
 		DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
 		DataRange(IRow, 16) = "Consulting"
@@ -140,7 +141,7 @@ Private Sub Nomenclature_Notes()
 	elseIf DocType = "IView" _
 		And Nomenclature_Val_Check = "0" _
 		And EventCode_Val_Check = "0" _
-		Then
+	Then
 
 		DataRange(Irow, 12) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
 		DataRange(IRow, 16) = "PCST"
