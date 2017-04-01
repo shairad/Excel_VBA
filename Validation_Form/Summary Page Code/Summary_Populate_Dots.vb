@@ -2,11 +2,21 @@ Sub Summary_Pop_Dots()
 '
 ' Copies the temporary values from the lookup columns and pastes the VALUES into the appropriate columns.
 
-	answer = MsgBox("This will populate the street lights on the Summary sheet. Leave computer alone until completed." & vbNextLine & "Are you ready?", vbYesNo + vbQuestion, "Empty Sheet")
+	Dim Sheet_Headers As Variant
+	Dim Find_Header As Range
+	Dim rngHeaders As Range
+	Dim ColHeaders As Variant
+	Dim Validated_Col As Variant
+	Dim Unmapped_Col As Variant
+	Dim Clinical_Col As Variant
+	Dim Health_Col As Variant
+	Dim WkNames As Variant
+	Dim PivotNames As Variant
+	Dim CopyColumns As Variant
+	Dim SummaryColumns As Variant
+	Dim HyperLinkSheets As Variant
 
-	If answer = vbYes Then
 
-		Application.ScreenUpdating = False
 
 		Sheets("Summary View").Select
 		Columns("E:H").Select
@@ -22,39 +32,76 @@ Sub Summary_Pop_Dots()
 			.MergeCells = False
 		End With
 
-		Sheets("Clinical_Summary_Pivot").Select 'Confirms Clinical Summary Pivot is up to date
-		ActiveSheet.PivotTables("Clinical_Summary_Pivot").PivotCache.Refresh
+		'Refreshes pivot table data
 
-		Sheets("Validated_Summary_Pivot").Select 'Confirms Validation Summary Pivot is up to date
-		ActiveSheet.PivotTables("Validated_Pivot").PivotCache.Refresh
+		WkNames = Array("Potential_Summary_Pivot", "Clinical_Summary_Pivot", "Unmapped_Summary_Pivot")
+		PivotNames = Array("Potential_Pivot", "Clinical_Pivot", "Unmapped_Pivot")
+		CopyColumns = Array("E2", "F2", "G2")
+		SummaryColumns = Array("Potential_Col", "Clinical_Col", "Unmapped_Col")
+		HyperLinkSheets = Array("'Potential Mapping Issues'", "'Clinical Documentation'" , "'Unmapped Codes'")
 
-		Sheets("Unmapped_Summary_Pivot").Select 'Confirms Unmapped Summary Pivot is up to date
-		ActiveSheet.PivotTables("Unmapped_Pivot").PivotCache.Refresh
+		For i = 0 To UBound(WkNames)
+
+			CurrentWk =WkNames(i)
+			Sheets(CurrentWk).Select
+			ActiveSheet.PivotTables(PivotNames(i)).PivotCache.Refresh
+
+		Next i
 
 
-		''Selects the Validated Lookup Values
-		Sheets("Combined Registry Measures").Select
-		Range("E2").Select
-		Range(Selection, Selection.End(xlDown)).Select
-		Selection.Copy
-
-
-
-		''''''OLD''''''
-		Sheets("Combined Registry Measures").Select
-		Range("E2:G2").Select
-		Range(Selection, Selection.End(xlDown)).Select
-		Selection.Copy
+		''''''finds and stores summary header columns''''''''
 		Sheets("Summary View").Select
-		Range("E2").Select
-		Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-		:=False, Transpose:=False
+	  Range("B1:J1").Select
+	  Selection.Name = "Header_Row"
 
-		Range("B2").Select
+
+		'finds column letter for each of the colums we care about
+	  For each cell in Range("Header_Row")
+
+	    If cell = "Potential Mapping Issues" Then
+	      SummaryColumns(0) = Mid(cell.Address, 2, 1)
+
+	    Elseif cell = "Unmapped Codes" Then
+	      SummaryColumns(1) = Mid(cell.Address, 2, 1)
+
+	    Elseif cell = "Clinical Documentation" Then
+	      SummaryColumns(2) = Mid(cell.Address, 2, 1)
+
+	    'Elseif cell = "Health Maintenance" Then
+	    '  SummaryColumns(3) = Mid(cell.Address, 2, 1)
+	    End if
+
+	  Next cell
+
+
+
+		For i = 0 to UBound(CopyColumns)
+			CurrentWk = WkNames(i)
+			CurrentCopyCol = CopyColumns(i)
+			CurrentSumCol = SummaryColumns(i)
+
+			Sheets("Combined Registry Measures").Select
+			Range(CurrentCopyCol).Select
+			Range(Selection, Selection.End(xlDown)).Select
+			Selection.Copy
+
+			Sheets("Summary View").Select
+			Range(CurrentSumCol & "2").Select
+			Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+			:=False, Transpose:=False
+
+		Next i
+
+
 		Range("B2:K2").Select
 		Range(Selection, Selection.End(xlDown)).Select
 		Selection.ClearFormats
 
+	'Autofit for all cells on screen.
+		Cells.Select
+		Cells.EntireColumn.AutoFit
+
+		'Applies the street light rules to the range
 		Range("E2:H2").Select
 		Range(Selection, Selection.End(xlDown)).Select
 		Application.CutCopyMode = False
@@ -90,46 +137,40 @@ Sub Summary_Pop_Dots()
 			.MergeCells = False
 		End With
 
-	Else
 
-'Do Nothing
-
-	End If
-
-	Sheets("Summary View").Select
-	Range("E2").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:="", SubAddress:= _
-	"'Potential Mapping Issues'!A1"
-
-	Range("F2").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:="", SubAddress:= _
-	"'Unmapped Codes'!A1"
-
-	Range("G2").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:="", SubAddress:= _
-	"'Clinical Documentation'!A1"
+		'Adds the hyperlink address to the street lights
+		For i = 0 To UBound(SummaryColumns)
+			CurrentWk = WkNames(i)
+			CurrentCopyCol = CopyColumns(i)
+			CurrentSumCol = SummaryColumns(i)
+			CurrentHyperSht = HyperLinkSheets(i)
 
 
-'Formats the angle for the header row of Summary Sheet
-	Rows("1:1").Select
+			Range(CurrentSumCol & "2").Select
+			Range(Selection, Selection.End(xlDown)).Select
+			ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:="", SubAddress:= _
+			CurrentHyperSht & "!A1"
 
-	With Selection
-		.VerticalAlignment = xlBottom
-		.WrapText = False
-		.Orientation = 45
-		.AddIndent = False
-		.ShrinkToFit = False
-		.ReadingOrder = xlContext
-		.MergeCells = False
-	End With
+		Next i
 
-'Autofit for all cells on screen.
-	Cells.Select
-	Cells.EntireColumn.AutoFit
 
-	Application.ScreenUpdating = True
+	'Formats the angle for the header row of Summary Sheet
+		Rows("1:1").Select
+
+		With Selection
+			.VerticalAlignment = xlBottom
+			.WrapText = False
+			.Orientation = 45
+			.AddIndent = False
+			.ShrinkToFit = False
+			.ReadingOrder = xlContext
+			.MergeCells = False
+		End With
+
+	'Autofit for all cells on screen.
+		Cells.Select
+		Cells.EntireColumn.AutoFit
+
+		Application.ScreenUpdating = True
 
 End Sub

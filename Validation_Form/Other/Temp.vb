@@ -1,169 +1,138 @@
-Private Sub Nomenclature_Notes()
-
-'
-'This code will take values from a table and put them in an arrao.
-'Then it Will perform changes to the data within the array and then write the array back to the sheet.
-'This changes the values all at once instead of one at a time.
-'
-'
-
-    Dim DataRange As Variant 'Declare array variable
-    Dim Irow As Long 'The row variable
-    Dim Icol As Integer 'The column variable if you need to loop through multiple columns
-    Dim DocType As Variant 'Variable used to store column value
-    Dim ControlArray As Variant
-    Dim UnmappedArray As Variant
-    Dim ControlTypeCheck As Variant
-    Dim Nomenclature_Val_Check As Variant
-    Dim EventCode_Val_Check As Variant
-    Dim sht As Worksheet
-    Dim LastRow As Long
-    Dim LastColumn As Long
-    Dim StartCell As Range
-    Dim Sheet As Worksheet
-    Dim rList As Range
-
-'Disables settings to improve performance
-    Application.ScreenUpdating = False
-    Application.Calculation = xlCalculationManual
-    Application.EnableEvents = False
-
-    Sheets("New Lines").Select
-
-    ActiveSheet.AutoFilterMode = False 'Removes filters from sheet
-
-    If ActiveSheet.ListObjects.Count > 0 Then
-
-        With ActiveSheet.ListObjects(1)
-            Set rList = .Range
-            .Unlist                           ' convert the table back to a range
-        End With
-
-        With rList
-            .Interior.ColorIndex = xlColorIndexNone
-            .Font.ColorIndex = xlColorIndexAutomatic
-            .Borders.LineStyle = xlLineStyleNone
-        End With
-
-    End If
+Sub Summary_Create_Lookup_Tables()
 
 
-    Set sht = ActiveSheet 'Sets value
-    Set StartCell = Range("A1") 'Start cell used to determine where to begin creating the table range
+Dim wb As Workbook
+Dim Table_Obj As ListObject
+Dim StartCell As Range
+Dim WkNames As Variant
+Dim TblNames As Variant
+Dim PivotNames As Variant
+Dim PivotSheetNames As Variant
+Dim lastrow As Long
+Dim LastColumn As Long
+Dim rList As Range
+
+
+'DEBUG
+
+'This disables settings to improve macro performance.
+'Application.ScreenUpdating = False
+'Application.Calculation = xlCalculationManual
+'Application.EnableEvents = False
+
+
+WkNames = Array("Potential Mapping Issues", "Unmapped Codes", "Clinical Documentation")
+TblNames = Array("Potential_Table", "Unmapped_Table", "Clinical_Table")
+PivotNames = Array("Potential_Pivot", "Unmapped_Pivot", "Clinical_Pivot")
+PivotSheetNames = Array("Potential_Summary_Pivot", "Unmapped_Summary_Pivot", "Clinical_Summary_Pivot")
+
+
+For i = 0 To UBound(WkNames)
+
+  CurrentWkName = WkNames(i)
+  CurrentTblName = TblNames(i)
+  CurrentPivotName = PivotNames(i)
+  CurrentPivotSheetName = PivotSheetNames(i)
+
+  Sheets(WkNames(i)).Select
+
+  If ActiveSheet.AutoFilterMode = True Then
+    ActiveSheet.AutoFilterMode = False
+  End If
+
+'Checks the current sheet. If it is in table format, convert it to range.
+  If ActiveSheet.ListObjects.Count > 0 Then
+    With ActiveSheet.ListObjects(1)
+      Set rList = .Range
+      .Unlist
+    End With
+'Reverts the color of the range back to standard.
+    With rList
+      .Interior.ColorIndex = xlColorIndexNone
+      .Font.ColorIndex = xlColorIndexAutomatic
+      .Borders.LineStyle = xlLineStyleNone
+    End With
+  End If
+
+  Set sht = Worksheets(WkNames(i)) 'Sets value
+  Set StartCell = Range("A2") 'Start cell used to determine where to begin creating the table range
 
 'Find Last Row and Column
-    LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
-    LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+  lastrow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+  LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+  Sheet_Name = WkNames(i) 'Assigns sheet name to a variable as a string
 
 'Select Range
-    sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+  sht.Range(StartCell, sht.Cells(lastrow, LastColumn)).Select
 
 'Creates the table
-    Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-    tbl.Name = "New_Lines" 'Names the table
-    tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
+  Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+  tbl.Name = TblNames(i) 'Names the table
+  tbl.TableStyle = "TableStyleLight12" 'Sets table color theme
 
-    Rows("1:1").Select
-    With Selection.Font
-        .ThemeColor = xlThemeColorDark1
-        .TintAndShade = 0
+  Rows("2:2").Select
+  With Selection.Font
+    .ThemeColor = xlThemeColorDark1
+    .TintAndShade = 0
+  End With
+
+
+  'Creates a new sheet which will house the validated codes pivot table
+    With ThisWorkbook
+        .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = CurrentPivotSheetName
     End With
 
-'Creates named Range starting at column E
-    Range("E2:T2").Select
+    Sheets(CurrentWkName).Select
+    Range("B2").Select
+    Range(Selection, Selection.End(xlToRight)).Select
     Range(Selection, Selection.End(xlDown)).Select
+    ActiveWorkbook.PivotCaches.Create(SourceType:=xlDatabase, SourceData:= _
+      CurrentTblName, Version:=6).CreatePivotTable TableDestination:= _
+    CurrentPivotSheetName & "!R1C1", TableName:=CurrentPivotName, DefaultVersion:=6
 
-    Selection.Name = "Data_Range"
-
-
-'Arrays to check DocumentType
-    ControlArray = Array("Alpha List", "Alpha Combo", "Discrete Grid", "UltraGrid", "PowerGrid", "Multi")
-    UnmappedArray = Array("New Numeric", "Numeric", "Calculation", "Date Time")
-
-'Saves range to array
-    DataRange = Range("Data_Range").Value 'writes the named data range to the array variable
-
-    For Irow = 1 To UBound(DataRange) 'Loops through all rows within the range.
-        DocType = DataRange(Irow, 1)
-        ControlTypeCheck = DataRange(Irow, 9)
-        Nomenclature_Val_Check = DataRange(Irow, 16)
-        EventCode_Val_Check = DataRange(Irow, 15)
-
-'Checks if control type is within the array.
-        IsInControlArray = Not IsError(Application.Match(ControlTypeCheck, ControlArray, 0))
-        IsInUnmappedArray = Not IsError(Application.Match(ControlTypeCheck, UnmappedArray, 0))
-
-        If IsInControlArray = True _
-            And Nomenclature_Val_Check = "0" _
-            And EventCode_Val_Check = "0" _
-            Then
-
-        DataRange(Irow, 13) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
-        DataRange(Irow, 14) = "PCST"
+    Sheets(CurrentPivotSheetName).Select
+    Cells(1, 1).Select
 
 
-        ElseIf IsInControlArray = True _
-          And Nomenclature_Val_Check = "Validated" _
-          And EventCode_Val_Check = "0" _
-          Then
+    ActiveSheet.PivotTables(CurrentPivotName).AddDataField ActiveSheet.PivotTables( _
+    CurrentPivotName).PivotFields("Source"), "Count of Source", xlCount
 
-          DataRange(Irow, 13) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-          DataRange(Irow, 14) = "PCST"
-
-        ElseIf IsInControlArray = True _
-          And Nomenclature_Val_Check = "0" _
-          And EventCode_Val_Check = "Validated" _
-          Then
-
-          DataRange(Irow, 13) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
-          DataRange(Irow, 14) = "Consulting"
-
-        End If
-
-        'If DocumentType is IView, then ignore the control type
-
-        If DocType = "IView" Or DocType = "iView" _
-          And Nomenclature_Val_Check = "Validated" _
-          And EventCode_Val_Check = "0" _
-          Then
-
-          DataRange(Irow, 13) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
-          DataRange(Irow, 14) = "PCST"
-
-        ElseIf DocType = "IView" Or DocType = "iView" _
-          And Nomenclature_Val_Check = "0" _
-          And EventCode_Val_Check = "Validated" _
-          Then
-
-          DataRange(Irow, 13) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
-          DataRange(Irow, 14) = "Consulting"
-
-        ElseIf DocType = "IView" Or DocType = "iView" _
-          And Nomenclature_Val_Check = "0" _
-          And EventCode_Val_Check = "0" _
-          Then
-
-          DataRange(Irow, 13) = "This nomenclature and event code are not mapped and should be if this will be used to complete the measure."
-          DataRange(Irow, 14) = "PCST"
-        End If
-
-        'Unmapped Code comment
-        If IsInUnmappedArray = True Then
-
-          DataRange(Irow, 13) = "Unmapped code value that seems to be relevant to what we would want to measure in Registries."
-          DataRange(Irow, 14) = "Consulting"
-
-        End if
-
-    Next Irow
+    With ActiveSheet.PivotTables(CurrentPivotName).PivotFields("Registry")
+        .Orientation = xlRowField
+        .Position = 1
+    End With
 
 
-'Write the updated DataRange Array to the excel file
-    Range("Data_Range").Value = DataRange
+    With ActiveSheet.PivotTables(CurrentPivotName).PivotFields("Measure")
+        .Orientation = xlRowField
+        .Position = 2
+    End With
 
-'re-enables settings previously disabled
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
-    Application.EnableEvents = True
+  'Sets pivot table layout to OUTLINE
+    ActiveSheet.PivotTables(CurrentPivotName).RowAxisLayout xlOutlineRow
+
+
+  'Turns on repeat blank lines
+    ActiveSheet.PivotTables(CurrentPivotName).RepeatAllLabels xlRepeatLabels
+
+  'Sets empty values to 0 which helps in a couple places! but also allows the below autofill to have a range reference'
+    ActiveSheet.PivotTables(CurrentPivotName).NullString = "0"
+
+
+    Range("D1").Select
+
+    lastrow = ActiveSheet.Range("C2").End(xlDown).Row
+
+    Sheets(CurrentPivotSheetName).Select
+    Range("D2").Select
+    ActiveCell.Formula = "=IF(B2 <>"""",CONCATENATE(A2,""|"",B2),"""")"
+
+
+    With ActiveSheet.Range("D2")
+        .AutoFill Destination:=Range("D2:D" & lastrow&)
+    End With
+
+Next i
+
 
 End Sub

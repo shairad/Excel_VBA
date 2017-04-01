@@ -2,68 +2,75 @@ Private Sub Summary_Combined_Lookup_Sheet()
 '
 ' Takes the Registries, Measures and Concepts from the Unmapped and Validated Sheets and combinds them into one sheet.Then creates a CONCATENATE column for lookup.
 '
+Dim WkNames As Variant
+Dim HeaderNames As Variant
+Dim DataRange As Variant
+Dim Next_Blank_Row  As Long
+Dim counter As Long
+Dim tbl As ListObject
+
+
+'This disables settings to improve macro performance.
+Application.ScreenUpdating = False
+Application.Calculation = xlCalculationManual
+Application.EnableEvents = False
+
+	WkNames = Array("Potential Mapping Issues", "Unmapped Codes")
+	HeaderNames = Array("Registry", "Measure", "Concept", "Concat", "Validated_Lookup", "Unmapped_Lookup", "Clinical_Lookup")
 
 	With ThisWorkbook
 		.Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Combined Registry Measures"
 	End With
 
-'Takes all the concept measures and puts them on one sheet
-	Sheets("Potential Mapping Issues").Select
-	Range("Validated_Mappings_Table[[#Headers],[Registry]:[Concept]]").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	Selection.Copy
+	'Populates headers on the new Worksheet
 	Sheets("Combined Registry Measures").Select
-	Range("A1").Select
-	Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-	:=False, Transpose:=False
+	Range("A1:G1").Select
+	Selection.Name = "Header_Range"
 
-	Sheets("Unmapped Codes").Select
-	Range("B3:D3").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	Application.CutCopyMode = False
-	Selection.Copy
-	Sheets("Combined Registry Measures").Select
-	Selection.End(xlDown).Select
-	ActiveCell.Offset(1, 0).Range("A1").Select
-	ActiveSheet.Paste
 
-	Range("D1").Select
-	ActiveCell.Formula = "Concat"
+	counter = 0
+	'Populates the header row
+	For Each cell In Range("Header_Range")
+		cell.Value = HeaderNames(Counter)
+	  counter = counter + 1
 
-	Range("E1").Select
-	ActiveCell.Formula = "Validated_lookup"
+	Next cell
 
-	Range("F1").Select
-	ActiveCell.Formula = "Unmapped_lookup"
 
-	Range("G1").Select
-	ActiveCell.Formula = "Clinical_lookup"
 
-	Range("A1").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	Range(Selection, Selection.End(xlToRight)).Select
-	Application.CutCopyMode = False
+	For i = 0 To UBound(WkNames)
 
-	Dim Ws As Worksheet
-	Set Ws = ThisWorkbook.Sheets("Combined Registry Measures")
+		CurrentWk =WkNames(i)
 
-	Sheets("Combined Registry Measures").Select
-	Range("A1:G" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+		Sheets(CurrentWk).Select
+		Range("B3:C3").Select
+		Range(Selection, Selection.End(xlDown)).Select
+		Selection.Copy
 
-	Ws.ListObjects.Add(xlSrcRange, Selection, , xlYes).Name = "combined_lookup_range"
-	Ws.ListObjects("combined_lookup_range").TableStyle = "TableStyleLight12"
+		Sheets("Combined Registry Measures").Select
+		Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
+		Range("A" & Next_Blank_Row).Select
+		Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+		:=False, Transpose:=False
 
-	Sheets("Combined Registry Measures").Select
+	Next i
+
+		'Creates a named table from selected range
+		Range("A1:G" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+
+		Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+		tbl.Name = "combined_lookup_range"
+		tbl.TableStyle = "TableStyleLight12"
+
+
 	ActiveSheet.Range("combined_lookup_range[#All]").RemoveDuplicates Columns:=Array(1, 2), Header:=xlYes
 
 	Range("D2").Select
 	ActiveCell.Formula = "=CONCATENATE(A2,""|"",B2)"
-	Range("D3").Select
-	Columns("D:D").EntireColumn.AutoFit
 
 	Range("E2").Select
 	ActiveCell.Formula = _
-	"=IFERROR(INDEX(Validated_Summary_Pivot!C:C,MATCH(D2,Validated_Summary_Pivot!D:D,0)),0)"
+	"=IFERROR(INDEX(Potential_Summary_Pivot!C:C,MATCH(D2,Potential_Summary_Pivot!D:D,0)),0)"
 
 	Range("F2").Select
 	ActiveCell.Formula = _
@@ -72,5 +79,12 @@ Private Sub Summary_Combined_Lookup_Sheet()
 	Range("G2").Select
 	ActiveCell.Formula = _
 	"=IFERROR(INDEX(Clinical_Summary_Pivot!C:C,MATCH(D2,Clinical_Summary_Pivot!D:D,0)),0)"
+
+
+	'Re-enables previously disabled settings after all code has run.
+	Application.ScreenUpdating = True
+	Application.Calculation = xlCalculationAutomatic
+	Application.EnableEvents = True
+
 
 End Sub
