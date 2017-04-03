@@ -47,7 +47,7 @@ Sub BORIS_PCST()
 	End If
 
   'Tells user the program is about to to and to leave their machine alone until the program is completed.
-	MsgBox ("Program is about to run. You will be asked for a couple inputs needed for building the files. Fill in the fields as requested. Otherwise please leave computer alone until completed popup appears." & vbNewLine & vbNewLine & "In addition you may receive popups asking you to confirm you wish to overwrite files if you are creating files again. Click 'Yes' to overwrite and continue or click 'No' to cancel the program.")
+	MsgBox ("Program is about to run. This will take a minute or two to complete. During the process you will be asked for a couple inputs at the beginning and you may receive popups asking for permission to overwrite files if you have already ran this program once before. Otherwise please leave computer alone until completed popup appears.")
 
   'Names variable current file name
 	Validation_File_Name = ActiveWorkbook.Name
@@ -114,7 +114,7 @@ Sub BORIS_PCST()
 
   'Checks to see if sources list sheet already exists and if so deletes the worksheet so a new one can be created.
   For Each Sheet In Worksheets
-		If Worksheets(i).Name = "Sources List" Then
+		If Sheet.Name = "Sources List" Then
 			exists = True
 			Worksheets(i).Delete
 		End If
