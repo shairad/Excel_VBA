@@ -9,7 +9,7 @@ Private Sub Summary_Combined_Lookup_Sheet()
 	Dim counter As Long
 	Dim tbl As ListObject
 	Dim Sheet As Worksheet
-	
+
 
 'This disables settings to improve macro performance.
 	Application.ScreenUpdating = False
@@ -17,7 +17,7 @@ Private Sub Summary_Combined_Lookup_Sheet()
 	Application.EnableEvents = False
 
 	WkNames = Array("Potential Mapping Issues", "Unmapped Codes")
-	HeaderNames = Array("Registry", "Measure", "Concept", "Concat", "Validated_Lookup", "Unmapped_Lookup", "Clinical_Lookup")
+	HeaderNames = Array("Registry", "Measure", "Concept", "Concat", "Potential_Lookup", "Unmapped_Lookup", "Clinical_Lookup")
 
 'Deletes the Sheets if they already exist to allow user to re-run program
 	Application.DisplayAlerts = False
@@ -26,77 +26,77 @@ Private Sub Summary_Combined_Lookup_Sheet()
 		If Sheet.Name = "Combined Registry Measures" Then
 			Sheet.Delete
 		End If
-		Next Sheet
+	Next Sheet
 
-		Application.DisplayAlerts = True
+	Application.DisplayAlerts = True
 
-		With ThisWorkbook
-			.Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Combined Registry Measures"
-		End With
+	With ThisWorkbook
+		.Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Combined Registry Measures"
+	End With
 
 'Populates headers on the new Worksheet
-		Sheets("Combined Registry Measures").Select
-		Range("A1:G1").Select
-		Selection.Name = "Header_Range"
+	Sheets("Combined Registry Measures").Select
+	Range("A1:G1").Select
+	Selection.Name = "Header_Range"
 
 
-		counter = 0
+	counter = 0
 'Populates the header row
-		For Each cell In Range("Header_Range")
-			cell.Value = HeaderNames(Counter)
-			counter = counter + 1
+	For Each cell In Range("Header_Range")
+		cell.Value = HeaderNames(Counter)
+		counter = counter + 1
 
-			Next cell
+	Next cell
 
 
 
-			For i = 0 To UBound(WkNames)
+	For i = 0 To UBound(WkNames)
 
-				CurrentWk =WkNames(i)
+		CurrentWk =WkNames(i)
 
-				Sheets(CurrentWk).Select
-				Range("B3:C3").Select
-				Range(Selection, Selection.End(xlDown)).Select
-				Selection.Copy
+		Sheets(CurrentWk).Select
+		Range("B3:C3").Select
+		Range(Selection, Selection.End(xlDown)).Select
+		Selection.Copy
 
-				Sheets("Combined Registry Measures").Select
-				Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
-				Range("A" & Next_Blank_Row).Select
-				Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-				:=False, Transpose:=False
+		Sheets("Combined Registry Measures").Select
+		Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
+		Range("A" & Next_Blank_Row).Select
+		Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+		:=False, Transpose:=False
 
-				Next i
+	Next i
 
 'Creates a named table from selected range
-				Range("A1:G" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select
+	Range("A1:G" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select
 
-				Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-				tbl.Name = "combined_lookup_range"
-				tbl.TableStyle = "TableStyleLight12"
+	Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+	tbl.Name = "combined_lookup_range"
+	tbl.TableStyle = "TableStyleLight12"
 
 
-				ActiveSheet.Range("combined_lookup_range[#All]").RemoveDuplicates Columns:=Array(1, 2), Header:=xlYes
+	ActiveSheet.Range("combined_lookup_range[#All]").RemoveDuplicates Columns:=Array(1, 2), Header:=xlYes
 
-				Range("D2").Select
-				ActiveCell.Formula = "=CONCATENATE(A2,""|"",B2)"
+	Range("D2").Select
+	ActiveCell.Formula = "=CONCATENATE(A2,""|"",B2)"
 
-				Range("E2").Select
-				ActiveCell.Formula = _
-				"=IFERROR(INDEX(Potential_Summary_Pivot!C:C,MATCH(D2,Potential_Summary_Pivot!D:D,0)),0)"
+	Range("E2").Select
+	ActiveCell.Formula = _
+	"=IFERROR(INDEX(Potential_Summary_Pivot!C:C,MATCH(D2,Potential_Summary_Pivot!D:D,0)),0)"
 
-				Range("F2").Select
-				ActiveCell.Formula = _
-				"=IFERROR(INDEX(Unmapped_Summary_Pivot!C:C,MATCH(D2,Unmapped_Summary_Pivot!D:D,0)),0)"
+	Range("F2").Select
+	ActiveCell.Formula = _
+	"=IFERROR(INDEX(Unmapped_Summary_Pivot!C:C,MATCH(D2,Unmapped_Summary_Pivot!D:D,0)),0)"
 
-				Range("G2").Select
-				ActiveCell.Formula = _
-				"=IFERROR(INDEX(Clinical_Summary_Pivot!C:C,MATCH(D2,Clinical_Summary_Pivot!D:D,0)),0)"
+	Range("G2").Select
+	ActiveCell.Formula = _
+	"=IFERROR(INDEX(Clinical_Summary_Pivot!C:C,MATCH(D2,Clinical_Summary_Pivot!D:D,0)),0)"
 
 
 'Re-enables previously disabled settings after all code has run.
-				Application.ScreenUpdating = True
-				Application.Calculation = xlCalculationAutomatic
-				Application.EnableEvents = True
+	Application.ScreenUpdating = True
+	Application.Calculation = xlCalculationAutomatic
+	Application.EnableEvents = True
 
 
-			End Sub
+End Sub

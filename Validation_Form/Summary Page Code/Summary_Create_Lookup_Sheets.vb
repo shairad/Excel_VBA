@@ -1,4 +1,4 @@
-Sub Summary_Create_Lookup_Sheets()
+Private Sub Summary_Create_Lookup_Sheets()
 
 
 	Dim wb As Workbook
@@ -33,12 +33,13 @@ Sub Summary_Create_Lookup_Sheets()
 
 	For Each Sheet In Worksheets
 		If Sheet.Name = "Clinical_Summary_Pivot" _
-		Or Sheet.Name = "Potential_Summary_Pivot" _
-		Or Sheet.Name = "Unmapped_Summary_Pivot" _
-		Or Sheet.Name = "Combined Registry Measures" _
+			Or Sheet.Name = "Potential_Summary_Pivot" _
+			Or Sheet.Name = "Unmapped_Summary_Pivot" _
+			Or Sheet.Name = "Combined Registry Measures" _
 		Then
-		Sheet.Delete
-	End If
+			Sheet.Delete
+		End If
+
 	Next Sheet
 
 	Application.DisplayAlerts = True
@@ -143,7 +144,7 @@ Sub Summary_Create_Lookup_Sheets()
 			.AutoFill Destination:=Range("D2:D" & lastrow&)
 		End With
 
-		Next i
+	Next i
 
 'Re-enables previously disabled settings after all code has run.
 		Application.ScreenUpdating = True
