@@ -1,53 +1,39 @@
 Private Sub Remove_Table_Format()
 
 	Dim rList As Range
+	Dim WkNames As Variant
 
-	Sheets("Potential Mapping Issues").Select
 
-	If ActiveSheet.ListObjects.Count > 0 Then
+	WkNames = Array("Potential Mapping Issues", "Unmapped Codes", "Clinidal Documentation")
 
-		With ActiveSheet.ListObjects(1)
-			Set rList = .Range
-			.Unlist                           ' convert the table back to a range
-		End With
+	For i = 0 to UBound(WkNames)
 
-	End If
+		On Error GoTo NoSheet
+		Sheets(WkNames(i)).Select
 
-	If Not ActiveSheet.AutoFilterMode Then  'Adds the filter buttons to the sheet
-		ActiveSheet.Range("2:2").AutoFilter
-	End If
+		If ActiveSheet.ListObjects.Count > 0 Then
 
-	Sheets("Unmapped Codes").Select
+			With ActiveSheet.ListObjects(1)
+				Set rList = .Range
+				.Unlist                           ' convert the table back to a range
+			End With
 
-	If ActiveSheet.ListObjects.Count > 0 Then
+		End If
 
-		With ActiveSheet.ListObjects(1)
-			Set rList = .Range
-			.Unlist                           ' convert the table back to a range
-		End With
+		If Not ActiveSheet.AutoFilterMode Then  'Adds the filter buttons to the sheet
+			ActiveSheet.Range("2:2").AutoFilter
+		End If
 
-	End If
+		Range("A2").Select
 
-	If Not ActiveSheet.AutoFilterMode Then  'Adds the filter buttons to the sheet
-		ActiveSheet.Range("2:2").AutoFilter
-	End If
+		'Error handling incase sheet does not exist
+		NoSheet:
+			'MsgBox("No Code for " & EventCode)
+			Resume ClearError
 
-	Sheets("Clinical Documentation").Select
+		ClearError:
+		'Clears variables for next loop
 
-	If ActiveSheet.ListObjects.Count > 0 Then
-
-		With ActiveSheet.ListObjects(1)
-			Set rList = .Range
-			.Unlist                           ' convert the table back to a range
-		End With
-
-	End If
-
-	If Not ActiveSheet.AutoFilterMode Then  'Adds the filter buttons to the sheet
-		ActiveSheet.Range("2:2").AutoFilter
-	End If
-
-	Range("A2").Select
-
+	Next i
 
 End Sub
