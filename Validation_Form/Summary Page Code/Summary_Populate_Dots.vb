@@ -12,9 +12,14 @@ Private Sub Summary_Pop_Dots()
 	Dim Health_Col As Variant
 	Dim WkNames As Variant
 	Dim PivotNames As Variant
-	Dim CopyColumns As Variant
+	Dim CombinedCopyColumns As Variant
 	Dim SummaryColumns As Variant
 	Dim HyperLinkSheets As Variant
+	Dim HeaderNames As Variant
+	Dim SummaryHeaderChecker As Variant
+	Dim Header_Missing As Integer
+	Dim FirstSum As Variant
+	Dim EndSum As Variant
 
 
 	'This disables settings to improve macro performance.
@@ -39,9 +44,11 @@ Private Sub Summary_Pop_Dots()
 	'Refreshes pivot table data
 	WkNames = Array("Potential_Summary_Pivot", "Clinical_Summary_Pivot", "Unmapped_Summary_Pivot")
 	PivotNames = Array("Potential_Pivot", "Clinical_Pivot", "Unmapped_Pivot")
-	CopyColumns = Array("E2", "F2", "G2")
-	SummaryColumns = Array("False", "False", "False")
+	CombinedCopyColumns = Array("E2", "F2", "G2")
+	SummaryColumns = Array(False, False, False)
 	HyperLinkSheets = Array("'Potential Mapping Issues'", "'Clinical Documentation'" , "'Unmapped Codes'")
+	HeaderNames = Array("Potential Mapping Issues", "Unmapped Codes", "Clinical Documentation")
+	SummaryHeaderChecker = Array(False, False, False)
 
 	For i = 0 To UBound(WkNames)
 
@@ -63,28 +70,50 @@ Private Sub Summary_Pop_Dots()
 
     If cell = "Potential Mapping Issues" Then
       SummaryColumns(0) = Mid(cell.Address, 2, 1)
+			SummaryHeaderChecker(0) = True
 
     Elseif cell = "Unmapped Codes" Then
       SummaryColumns(1) = Mid(cell.Address, 2, 1)
+			SummaryHeaderChecker(1) = True
 
     Elseif cell = "Clinical Documentation" Then
       SummaryColumns(2) = Mid(cell.Address, 2, 1)
+			SummaryHeaderChecker(2) = True
 
     'Elseif cell = "Health Maintenance" Then
-    '  SummaryColumns(3) = Mid(cell.Address, 2, 1)
-    End if
+      'SummaryColumns(3) = Mid(cell.Address, 2, 1)
+			'SummaryHeaderChecker(3) = True
+    End If
 
   Next cell
 
+	For i = 0 to UBound(SummaryHeaderChecker)
+
+		If SummaryHeaderChecker(i) = False Then
+		'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
+			Header_Missing = MsgBox("It looks like a column is missing or has a different header name." & vbNewLine & vbNewLine & "Unable to find header " & HeaderNames(i) & vbNewLine & vbNewLine & "If the header column exists or should exist please click Cancel and update the column header accordingly then rerun. If the column is not needed and thus was deleted or hidden on purpose please click Ok to continue running the program", vbOkCancel + vbQuestion, "Empty Sheet")
+	  End If
+
+		'If user hits cancel then close program.
+		If Header_Missing = vbCancel Then
+
+			Application.ScreenUpdating = True
+			Application.Calculation = xlCalculationAutomatic
+			Application.EnableEvents = True
+			MsgBox ("Program is canceling per user action.")
+			Exit Sub
+		End if
+	Next i
 
 
-	For i = 0 to UBound(CopyColumns)
+
+	For i = 0 to UBound(CombinedCopyColumns)
 		CurrentWk = WkNames(i)
-		CurrentCopyCol = CopyColumns(i)
+		CurrentCopyCol = CombinedCopyColumns(i)
 		CurrentSumCol = SummaryColumns(i)
 
 		'Confirms the column exists. If the column does not exist then skip it.
-		If CurrentSumCol <> "False" Then
+		If CurrentSumCol <> False Then
 
 			Sheets("Combined Registry Measures").Select
 			Range(CurrentCopyCol).Select
@@ -109,52 +138,58 @@ Private Sub Summary_Pop_Dots()
 	Cells.Select
 	Cells.EntireColumn.AutoFit
 
-	'Applies the street light rules to the range
-	Range("E2:H2").Select
-	Range(Selection, Selection.End(xlDown)).Select
-	Application.CutCopyMode = False
-	Selection.FormatConditions.AddIconSetCondition
-	Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
-	With Selection.FormatConditions(1)
-		.ReverseOrder = True
-		.ShowIconOnly = True
-		.IconSet = ActiveWorkbook.IconSets(xl3TrafficLights1)
-	End With
+	For i = 0 To UBound(SummaryColumns)
 
-	With Selection.FormatConditions(1).IconCriteria(2)
-		.Type = xlConditionValueNumber
-		.Value = 1
-		.Operator = 7
-	End With
+		If SummaryColumns(i) <> False Then
 
-	With Selection.FormatConditions(1).IconCriteria(3)
-		.Type = xlConditionValueNumber
-		.Value = 4
-		.Operator = 7
-	End With
+			Range(SummaryColumns(i)&"2").Select
+			Range(Selection, Selection.End(xlDown)).Select
+			Application.CutCopyMode = False
+			Selection.FormatConditions.AddIconSetCondition
+			Selection.FormatConditions(Selection.FormatConditions.Count).SetFirstPriority
+			With Selection.FormatConditions(1)
+				.ReverseOrder = True
+				.ShowIconOnly = True
+				.IconSet = ActiveWorkbook.IconSets(xl3TrafficLights1)
+			End With
 
-	With Selection
-		.HorizontalAlignment = xlCenter
-		.VerticalAlignment = xlBottom
-		.WrapText = False
-		.Orientation = 0
-		.AddIndent = False
-		.IndentLevel = 0
-		.ShrinkToFit = False
-		.ReadingOrder = xlContext
-		.MergeCells = False
-	End With
+			With Selection.FormatConditions(1).IconCriteria(2)
+				.Type = xlConditionValueNumber
+				.Value = 1
+				.Operator = 7
+			End With
+
+			With Selection.FormatConditions(1).IconCriteria(3)
+				.Type = xlConditionValueNumber
+				.Value = 4
+				.Operator = 7
+			End With
+
+			With Selection
+				.HorizontalAlignment = xlCenter
+				.VerticalAlignment = xlBottom
+				.WrapText = False
+				.Orientation = 0
+				.AddIndent = False
+				.IndentLevel = 0
+				.ShrinkToFit = False
+				.ReadingOrder = xlContext
+				.MergeCells = False
+			End With
+
+		End if
+	Next i
 
 
 	'Adds the hyperlink address to the street lights
 	For i = 0 To UBound(SummaryColumns)
 		CurrentWk = WkNames(i)
-		CurrentCopyCol = CopyColumns(i)
+		CurrentCopyCol = CombinedCopyColumns(i)
 		CurrentSumCol = SummaryColumns(i)
 		CurrentHyperSht = HyperLinkSheets(i)
 
 		'Confirms the column exists. If the column does not exist then skip it.
-		If CurrentSumCol <> "False" Then
+		If CurrentSumCol <> False Then
 
 		Range(CurrentSumCol & "2").Select
 		Range(Selection, Selection.End(xlDown)).Select
