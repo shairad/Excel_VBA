@@ -17,6 +17,7 @@ End If
 		Call Summary_Pop_Dots
 		Call Remove_Table_Format
 
+Sheets("Summary View").Select
 
 MsgBox("Program Completed")
 
