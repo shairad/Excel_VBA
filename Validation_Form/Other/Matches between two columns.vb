@@ -14,7 +14,7 @@ Function WORDSAME(rngA As Range, rngB As Range) As String
     For nextB = LBound(WordsB) To UBound(WordsB)
         For nextA = LBound(WordsA) To UBound(WordsA)
             If StrComp(WordsA(LCase(nextA)), WordsB(LCase(nextB)), vbTextCompare) = 0 Then
-              strTemp = strTemp & WordsA(nextA) & " "
+                strTemp = strTemp & WordsA(nextA) & " "
                 Exit For
             End If
         Next nextA

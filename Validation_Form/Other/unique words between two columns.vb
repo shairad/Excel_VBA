@@ -13,8 +13,8 @@ Function WORDDIF(rngA As Range, rngB As Range) As String
     For nextB = LBound(WordsB) To UBound(WordsB)
         For nextA = LBound(WordsA) To UBound(WordsA)
             If StrComp(WordsA(LCase(nextA)), WordsB(LCase(nextB)), vbTextCompare) = 0 Then
-              WordsA(nextA) = vbStringA
-              WordsB(nextB) = vbStringB
+                WordsA(nextA) = vbStringA
+                WordsB(nextB) = vbStringB
                 Exit For
             End If
         Next nextA

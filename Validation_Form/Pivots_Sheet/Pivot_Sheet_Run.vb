@@ -1,21 +1,21 @@
 Sub Pivot_Sheet_Setup()
 
-answer = MsgBox("This will run the Pivot Table Sheet Setup. Are you ready?", vbYesNo + vbQuestion, "Empty Sheet")
+    answer = MsgBox("This will run the Pivot Table Sheet Setup. Are you ready?", vbYesNo + vbQuestion, "Empty Sheet")
 
-If answer = vbYes Then
+    If answer = vbYes Then
 
-	Application.ScreenUpdating = False
+        Application.ScreenUpdating = False
 
-	Call Pivots_Unmapped
-	Call Pivots_Clin_Doc_EV_Code
-	Call Pivots_Clin_Doc_NOMID_Code
-	Call Remove_Table_Format
+        Call Pivots_Unmapped
+        Call Pivots_Clin_Doc_EV_Code
+        Call Pivots_Clin_Doc_NOMID_Code
+        Call Remove_Table_Format
 
- 	Application.ScreenUpdating = True
+        Application.ScreenUpdating = True
 
-Else
-'Do Nothing
+    Else
+        'Do Nothing
 
-End If
+    End If
 
 End Sub

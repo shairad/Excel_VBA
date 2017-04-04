@@ -1,21 +1,21 @@
 Sub Delete_Extra_Sheets()
 
-Dim sheet As Worksheet
+    Dim sheet As Worksheet
 
-Application.DisplayAlerts = False
+    Application.DisplayAlerts = False
 
-  For Each sheet In Worksheets
+    For Each sheet In Worksheets
 
-    If sheet.name = "Unmapped Codes" _
-     Or sheet.name = "Health Maintenance Summary" _
-     Or sheet.name = "Clinical Documentation" _
-     Or sheet.name = "Source_Code_Systems" _
-     Or sheet.name = "Sheet1" _
-     Then
-     sheet.Delete
-    End If
-  Next sheet
+        If sheet.Name = "Unmapped Codes" _
+           Or sheet.Name = "Health Maintenance Summary" _
+           Or sheet.Name = "Clinical Documentation" _
+           Or sheet.Name = "Source_Code_Systems" _
+           Or sheet.Name = "Sheet1" _
+           Then
+            sheet.Delete
+        End If
+    Next sheet
 
-Application.DisplayAlerts = True
+    Application.DisplayAlerts = True
 
 End Sub

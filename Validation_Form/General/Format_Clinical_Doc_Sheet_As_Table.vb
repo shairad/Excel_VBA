@@ -9,12 +9,12 @@ Sub Format_Clin_Doc_Sht_As_Tbl()
     Dim StartCell As Range
     Dim rList As Range
 
-    Sheets("Clinical Documentation").Select 'Selects the clinical doc sheet
+    Sheets("Clinical Documentation").Select    'Selects the clinical doc sheet
 
-  'If AutoFilters are on turn them off
-  If ActiveSheet.AutoFilterMode = True Then
-      ActiveSheet.AutoFilterMode = False
-  End If
+    'If AutoFilters are on turn them off
+    If ActiveSheet.AutoFilterMode = True Then
+        ActiveSheet.AutoFilterMode = False
+    End If
 
     'Checks the current sheet. If it is in table format, convert it to standard format.
     If ActiveSheet.ListObjects.Count > 0 Then
@@ -35,14 +35,14 @@ Sub Format_Clin_Doc_Sht_As_Tbl()
     Set sht = Worksheets("Clinical Documentation")
     Set StartCell = Range("A2")
 
-'Refresh UsedRange
+    'Refresh UsedRange
     Worksheets("Clinical Documentation").UsedRange
 
-'Find Last Row and Column
+    'Find Last Row and Column
     lastrow = StartCell.SpecialCells(xlCellTypeLastCell).Row
     LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-'Select Range
+    'Select Range
     sht.Range(StartCell, sht.Cells(lastrow, LastColumn)).Select
 
     Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)

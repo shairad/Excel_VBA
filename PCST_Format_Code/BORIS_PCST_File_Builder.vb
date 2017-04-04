@@ -431,64 +431,64 @@ Sub BORIS_PCST()
 
         ''''''''''Checks if CodeID is a cerner nomenclature code id and shorten name appropriately''''''''''
 
-        For Each Cell In Rng
-            If InStr(Cell, "urn:cerner:coding:codingsystem:nomenclature.source_vocab:") > 0 Then  'If cell contains "x"
-                Cell.Select
-                cValue = Cell.Value
+        For Each cell In Rng
+            If InStr(cell, "urn:cerner:coding:codingsystem:nomenclature.source_vocab:") > 0 Then  'If cell contains "x"
+                cell.Select
+                cValue = cell.Value
                 With Selection
-                    cPlace = InStr(Cell, "vocab")
+                    cPlace = InStr(cell, "vocab")
                     Selection.Value = "nomenclature - " & Right(cValue, Len(cValue) - (cPlace + 5))    'Replace cell with nomenclature and all text after vocab
                 End With
 
                 'Checks if code id contains PTCARE and shortens appropriately
-            ElseIf InStr(Cell, "PTCARE") > 0 Then
-                Cell.Select
-                cValue = Cell.Value
+            ElseIf InStr(cell, "PTCARE") > 0 Then
+                cell.Select
+                cValue = cell.Value
                 With Selection
                     cPlace = InStr(cValue, "vocab")
                     Selection.Value = Right(cValue, Len(cValue) - (cPlace + 5))
                 End With
 
                 'Checks if code id contains healthmaintenance and then shortens appropriately
-            ElseIf InStr(Cell, "healthmaintenance") > 0 Then
-                Cell.Select
-                cValue = Cell.Value
+            ElseIf InStr(cell, "healthmaintenance") > 0 Then
+                cell.Select
+                cValue = cell.Value
                 With Selection
                     cPlace = InStr(cValue, "healthmaintenance")
                     Selection.Value = Right(cValue, Len(cValue) - (cPlace + 16))
                 End With
 
                 'Checks if code id is normal cerner code set and then shortens appropriately
-            ElseIf InStr(Cell, "urn:cerner:coding:codingsystem:codeset:") > 0 Then
-                Cell.Select
-                cValue = Cell.Value
+            ElseIf InStr(cell, "urn:cerner:coding:codingsystem:codeset:") > 0 Then
+                cell.Select
+                cValue = cell.Value
                 With Selection
                     cPlace = InStr(cValue, "codeset:")
                     Selection.Value = Right(cValue, Len(cValue) - (cPlace + 7))
                 End With
 
                 'Checks Catches alternate nomenclature code. This catches the general nomenclature code id's which do not contain the tail descriptor
-            ElseIf InStr(Cell, "urn:cerner:coding:codingsystem:nomenclature") > 0 Then
-                Cell.Select
-                cValue = Cell.Value
+            ElseIf InStr(cell, "urn:cerner:coding:codingsystem:nomenclature") > 0 Then
+                cell.Select
+                cValue = cell.Value
                 With Selection
                     cPlace = InStr(cValue, "system:")
                     Selection.Value = Right(cValue, Len(cValue) - (cPlace + 6))
                 End With
             End If
-        Next Cell
+        Next cell
 
 
         ''''''''''''''Converts Nomenclature - PTCARE to Nomenclature - Patient Care to standardize naming convention.''''''''''''''
 
-        For Each Cell In Rng
-            If Cell = "nomenclature - PTCARE" Then
-                Cell.Select
+        For Each cell In Rng
+            If cell = "nomenclature - PTCARE" Then
+                cell.Select
                 With Selection
                     Selection.Value = "Nomenclature - Patient Care"
                 End With
             End If
-        Next Cell
+        Next cell
 
         'Names the code short name range.
         Sheets("Unmapped Codes").Select
