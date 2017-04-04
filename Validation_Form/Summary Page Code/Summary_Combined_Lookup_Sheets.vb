@@ -19,6 +19,34 @@ Private Sub Summary_Combined_Lookup_Sheet()
 	WkNames = Array("Potential Mapping Issues", "Unmapped Codes")
 	HeaderNames = Array("Registry", "Measure", "Concept", "Concat", "Potential_Lookup", "Unmapped_Lookup", "Clinical_Lookup")
 
+'Checks to make sure all needed worksheets exist
+	For i = 0 to UBound(WkNames)
+
+		WkNamesCheck = False
+
+		For Each Sheet in worksheets
+
+			If Sheet = WkNames(i) Then
+
+				WkNamesCheck = True
+				Exit For
+			End If
+		Next Sheet
+
+		'If the worksheet does not exist tell the user to fix the issue then end the program
+		If WkNamesCheck = False Then
+			Msgbox("Program can not find sheet." & vbNewLine & vbNewLine & "Sheet: " & WkNames(1) & " Is Missing. Please re-name sheets accordingly then re-run the program.")
+			Exit Sub
+		End If
+
+	Next i
+
+
+
+
+
+
+
 'Deletes the Sheets if they already exist to allow user to re-run program
 	Application.DisplayAlerts = False
 
