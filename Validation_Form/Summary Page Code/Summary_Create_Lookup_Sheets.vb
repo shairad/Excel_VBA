@@ -1,4 +1,4 @@
-Private Sub Summary_Create_Lookup_Sheets()
+Private Sub Summary_Combined_Lookup_Sheet()
 
 
 	Dim wb As Workbook
@@ -12,6 +12,7 @@ Private Sub Summary_Create_Lookup_Sheets()
 	Dim lastrow As Long
 	Dim LastColumn As Long
 	Dim rList As Range
+	Dim WkExistCheck As Variant
 
 
 'DEBUG
@@ -23,6 +24,7 @@ Private Sub Summary_Create_Lookup_Sheets()
 
 
 	WkNames = Array("Potential Mapping Issues", "Unmapped Codes", "Clinical Documentation")
+	WkExistCheck = Array(False, False, False)
 	TblNames = Array("Potential_Table", "Unmapped_Table", "Clinical_Table")
 	PivotNames = Array("Potential_Pivot", "Unmapped_Pivot", "Clinical_Pivot")
 	PivotSheetNames = Array("Potential_Summary_Pivot", "Unmapped_Summary_Pivot", "Clinical_Summary_Pivot")
@@ -44,8 +46,26 @@ Private Sub Summary_Create_Lookup_Sheets()
 
 	Application.DisplayAlerts = True
 
+	'Checks if Wk Exists
+
+	For i = 0 to UBound(WkNames)
+		On Error GoTo NoSheet
+
+		Sheets(WkNames(i)).Select
+		WkExistCheck(i) = True
+
+		NoSheet:
+			Resume ClearError
+
+			ClearError:
+
+	Next i
+
+
+
 	For i = 0 To UBound(WkNames)
 
+		WkExistCheck = WkExistCheck(i)
 		CurrentWkName = WkNames(i)
 		CurrentTblName = TblNames(i)
 		CurrentPivotName = PivotNames(i)
