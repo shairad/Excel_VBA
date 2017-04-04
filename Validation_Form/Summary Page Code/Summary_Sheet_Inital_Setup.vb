@@ -60,7 +60,7 @@ Private Sub Summary_Sheet_Initial_Setup()
   Next cell
 
   Sheets("Summary View").Select
-  Range("B1:M1").Select
+  Range("A1:M1").Select
   Selection.Name = "Header_Row"
 
 'finds column letter for each of the colums we care about
@@ -96,7 +96,7 @@ Private Sub Summary_Sheet_Initial_Setup()
   End If
 
 
-'Copies the Registry and measure columns to the summary view sheet
+  'Copies the Registry and measure columns to the summary view sheet
   Sheets("Combined Registry Measures").Select
   Range("A2:B2").Select
   Range(Selection, Selection.End(xlDown)).Select
