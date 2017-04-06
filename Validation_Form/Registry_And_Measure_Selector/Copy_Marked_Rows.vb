@@ -14,7 +14,7 @@ Sub Copy_Marked_Rows()
 
         'Selects the Registry, Measure, and Concept columns with "Yes" filtered
         ActiveSheet.ListObjects("Raw_Table_Main").Range.AutoFilter Field:=4, _
-                                                                   Criteria1:="Yes"
+                Criteria1:="Yes"
         Range("Raw_Table_Main[[#Headers],[Registry Friendly Name]:[Concept Alias]]"). _
                 Select
 

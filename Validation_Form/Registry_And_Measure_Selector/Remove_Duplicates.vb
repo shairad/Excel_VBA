@@ -5,5 +5,5 @@ Private Sub Remove_Duplicates()
     Sheets("Raw_Concept_To_Measure").Select
     Application.Goto Reference:="Raw_Table_Range"
     Selection.RemoveDuplicates Columns:=Array(1, 2, 3), _
-                               Header:=xlYes
+            Header:=xlYes
 End Sub

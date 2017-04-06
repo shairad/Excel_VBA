@@ -6,21 +6,21 @@ Private Sub Insert_Pivot_1()
 
     Columns("A:C").Select
     ActiveWorkbook.PivotCaches.Create(SourceType:=xlDatabase, SourceData:= _
-                                      "Raw_Concept_To_Measure!R1C1:R1048576C3", Version:=6).CreatePivotTable _
-                                      TableDestination:="Raw_Pivot!R1C1", TableName:="Concept_Pivot_Table", _
-                                      DefaultVersion:=6
+            "Raw_Concept_To_Measure!R1C1:R1048576C3", Version:=6).CreatePivotTable _
+            TableDestination:="Raw_Pivot!R1C1", TableName:="Concept_Pivot_Table", _
+            DefaultVersion:=6
     Sheets("Raw_Pivot").Select
     Cells(1, 1).Select
     ActiveWorkbook.ShowPivotTableFieldList = True
 
     With ActiveSheet.PivotTables("Concept_Pivot_Table").PivotFields( _
-         "Registry Friendly Name")
+            "Registry Friendly Name")
         .Orientation = xlRowField
         .Position = 1
     End With
 
     With ActiveSheet.PivotTables("Concept_Pivot_Table").PivotFields( _
-         "Measure Friendly Name")
+            "Measure Friendly Name")
         .Orientation = xlRowField
         .Position = 2
     End With
@@ -34,13 +34,13 @@ Private Sub Insert_Pivot_1()
     ActiveSheet.PivotTables("Concept_Pivot_Table").RowAxisLayout xlOutlineRow
     ActiveSheet.PivotTables("Concept_Pivot_Table").PivotFields("Registry Friendly Name"). _
             Subtotals = Array(False, False, False, False, False, False, False, False, False, False, _
-                              False, False)
+            False, False)
     ActiveSheet.PivotTables("Concept_Pivot_Table").PivotFields("Measure Friendly Name"). _
             Subtotals = Array(False, False, False, False, False, False, False, False, False, False, _
-                              False, False)
+            False, False)
     ActiveSheet.PivotTables("Concept_Pivot_Table").PivotFields("Concept Alias").Subtotals _
             = Array(False, False, False, False, False, False, False, False, False, False, False, False _
-                                                                                                 )
+            )
 
     With ActiveSheet.PivotTables("Concept_Pivot_Table")
         .ColumnGrand = False
@@ -55,7 +55,7 @@ Private Sub Insert_Pivot_1()
     Sheets("Pivot").Select
     Range("A1").Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                    :=False, Transpose:=False
+            :=False, Transpose:=False
     Range("A1").Select
 End Sub
 
@@ -79,7 +79,7 @@ Private Sub Insert_Pivot_2()
     Application.Goto Reference:="R1C27"
     Range("AA1").Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                    :=False, Transpose:=False
+            :=False, Transpose:=False
     Range("A1").Select
 End Sub
 
@@ -129,7 +129,7 @@ Private Sub Remove_Duplicates()
     Sheets("Raw_Concept_To_Measure").Select
     Application.Goto Reference:="Raw_Table_Range"
     Selection.RemoveDuplicates Columns:=Array(1, 2, 3), _
-                               Header:=xlYes
+            Header:=xlYes
 End Sub
 
 Private Sub Apply_Format_Hidden_Table()
@@ -209,15 +209,15 @@ Private Sub Apply_Additional_Columns_And_Formulas()
 
     Range("E2").Select
     ActiveCell.Formula = _
-    "=INDEX(Pivot!AF:AF,MATCH(Raw_Concept_To_Measure!A2,Pivot!$AA:$AA,0))"
+            "=INDEX(Pivot!AF:AF,MATCH(Raw_Concept_To_Measure!A2,Pivot!$AA:$AA,0))"
 
     Range("F2").Select
     ActiveCell.Formula = _
-    "=INDEX(Pivot!AF:AF,MATCH(Raw_Concept_To_Measure!H2,Pivot!AD:AD,0))"
+            "=INDEX(Pivot!AF:AF,MATCH(Raw_Concept_To_Measure!H2,Pivot!AD:AD,0))"
 
     Range("G2").Select
     ActiveCell.Formula = _
-    "=INDEX(Pivot!AF:AF,MATCH(Raw_Concept_To_Measure!J2,Pivot!AE:AE,0))"
+            "=INDEX(Pivot!AF:AF,MATCH(Raw_Concept_To_Measure!J2,Pivot!AE:AE,0))"
 
     Range("H2").Select
     ActiveCell.Formula = "=CONCATENATE(A2,""|"",B2)"
@@ -230,7 +230,7 @@ Private Sub Apply_Additional_Columns_And_Formulas()
 
     Range("D2").Select
     ActiveCell.Formula = _
-    "=IF(G2=""Yes"", ""Yes"",IF(AND(E2=""Yes"",F2<>""No"",G2<>""No""),""Yes"",IF(AND(F2=""Yes"",G2<>""No""),""Yes"",""No"")))"
+            "=IF(G2=""Yes"", ""Yes"",IF(AND(E2=""Yes"",F2<>""No"",G2<>""No""),""Yes"",IF(AND(F2=""Yes"",G2<>""No""),""Yes"",""No"")))"
 
     ' Creates the column headers for the pivot table
 
@@ -256,7 +256,7 @@ Private Sub Apply_Additional_Columns_And_Formulas()
     ActiveCell.Formula = "=E2"
     Range("D2").Select
     ActiveCell.Formula = _
-    "=IFERROR(VLOOKUP(AE2,Raw_Concept_To_Measure!J:K,2,""FALSE""),"""")"
+            "=IFERROR(VLOOKUP(AE2,Raw_Concept_To_Measure!J:K,2,""FALSE""),"""")"
 
     Range("A1").Select
 
@@ -334,7 +334,7 @@ Private Sub Apply_Dropdown()
     With Selection.Validation
         .Delete
         .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
-             xlBetween, Formula1:="=Yes_No!$A$3:$A$5"
+                xlBetween, Formula1:="=Yes_No!$A$3:$A$5"
         .IgnoreBlank = True
         .InCellDropdown = True
         .InputTitle = ""

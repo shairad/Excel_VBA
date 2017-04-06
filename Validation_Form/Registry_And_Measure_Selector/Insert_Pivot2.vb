@@ -17,6 +17,6 @@ Private Sub Insert_Pivot_2()
     Application.Goto Reference:="R1C27"
     Range("AA1").Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                    :=False, Transpose:=False
+            :=False, Transpose:=False
     Range("A1").Select
 End Sub
