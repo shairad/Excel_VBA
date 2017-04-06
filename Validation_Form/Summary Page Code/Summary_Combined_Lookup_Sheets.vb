@@ -86,7 +86,7 @@ Private Sub Summary_Combined_Lookup_Sheet()
         Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
         Range("A" & Next_Blank_Row).Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
     Next i
 
@@ -105,15 +105,15 @@ Private Sub Summary_Combined_Lookup_Sheet()
 
     Range("E2").Select
     ActiveCell.Formula = _
-    "=IFERROR(INDEX(Potential_Summary_Pivot!C:C,MATCH(D2,Potential_Summary_Pivot!D:D,0)),0)"
+            "=IFERROR(INDEX(Potential_Summary_Pivot!C:C,MATCH(D2,Potential_Summary_Pivot!D:D,0)),0)"
 
     Range("F2").Select
     ActiveCell.Formula = _
-    "=IFERROR(INDEX(Unmapped_Summary_Pivot!C:C,MATCH(D2,Unmapped_Summary_Pivot!D:D,0)),0)"
+            "=IFERROR(INDEX(Unmapped_Summary_Pivot!C:C,MATCH(D2,Unmapped_Summary_Pivot!D:D,0)),0)"
 
     Range("G2").Select
     ActiveCell.Formula = _
-    "=IFERROR(INDEX(Clinical_Summary_Pivot!C:C,MATCH(D2,Clinical_Summary_Pivot!D:D,0)),0)"
+            "=IFERROR(INDEX(Clinical_Summary_Pivot!C:C,MATCH(D2,Clinical_Summary_Pivot!D:D,0)),0)"
 
 
     'Re-enables previously disabled settings after all code has run.

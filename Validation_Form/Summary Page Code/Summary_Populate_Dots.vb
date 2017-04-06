@@ -123,7 +123,7 @@ Private Sub Summary_Pop_Dots()
             Sheets("Summary View").Select
             Range(CurrentSumCol & "2").Select
             Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                            :=False, Transpose:=False
+                    :=False, Transpose:=False
 
         End If
 
@@ -194,7 +194,7 @@ Private Sub Summary_Pop_Dots()
             Range(CurrentSumCol & "2").Select
             Range(Selection, Selection.End(xlDown)).Select
             ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:="", SubAddress:= _
-                                       CurrentHyperSht & "!A1"
+                    CurrentHyperSht & "!A1"
 
         End If
 

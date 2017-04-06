@@ -106,7 +106,7 @@ Private Sub Summary_Sheet_Initial_Setup()
     'Uses the location of the Registry column to paste the data
     Range(SummaryColumns(0) & "2").Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                    :=False, Transpose:=False
+            :=False, Transpose:=False
 
 
     Range("B1").Select

@@ -35,10 +35,10 @@ Private Sub Summary_Combined_Lookup_Sheet()
 
     For Each Sheet In Worksheets
         If Sheet.Name = "Clinical_Summary_Pivot" _
-           Or Sheet.Name = "Potential_Summary_Pivot" _
-           Or Sheet.Name = "Unmapped_Summary_Pivot" _
-           Or Sheet.Name = "Combined Registry Measures" _
-           Then
+                Or Sheet.Name = "Potential_Summary_Pivot" _
+                Or Sheet.Name = "Unmapped_Summary_Pivot" _
+                Or Sheet.Name = "Combined Registry Measures" _
+                Then
             Sheet.Delete
         End If
 
@@ -124,15 +124,15 @@ ClearError:
             Sheets(CurrentWkName).Select
             Range(CurrentTblName).Select
             ActiveWorkbook.PivotCaches.Create(SourceType:=xlDatabase, SourceData:= _
-                                              CurrentTblName, Version:=6).CreatePivotTable TableDestination:= _
-                                              CurrentPivotSheetName & "!R1C1", TableName:=CurrentPivotName, DefaultVersion:=6
+                    CurrentTblName, Version:=6).CreatePivotTable TableDestination:= _
+                    CurrentPivotSheetName & "!R1C1", TableName:=CurrentPivotName, DefaultVersion:=6
 
             Sheets(CurrentPivotSheetName).Select
             Cells(1, 1).Select
 
 
             ActiveSheet.PivotTables(CurrentPivotName).AddDataField ActiveSheet.PivotTables( _
-                                                                   CurrentPivotName).PivotFields("Source"), "Count of Source", xlCount
+                    CurrentPivotName).PivotFields("Source"), "Count of Source", xlCount
 
             With ActiveSheet.PivotTables(CurrentPivotName).PivotFields("Registry")
                 .Orientation = xlRowField
