@@ -175,7 +175,7 @@ Sub BORIS_PCST()
 
     'Filters to remove blank lines
     ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
-                                                               Criteria1:="<>"
+            Criteria1:="<>"
 
     'Selects and copies range
     Range("E2").Select
@@ -186,7 +186,7 @@ Sub BORIS_PCST()
 
     'Pastes copied values without formatting
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                    :=False, Transpose:=False
+            :=False, Transpose:=False
 
 
     'Finds next blank row to add additional sources.
@@ -236,7 +236,7 @@ Sub BORIS_PCST()
 
     'Filters to remove blank lines.
     ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
-                                                               Criteria1:="<>"
+            Criteria1:="<>"
 
     Range("E2").Select
     Range(Selection, Selection.End(xlDown)).Select
@@ -244,7 +244,7 @@ Sub BORIS_PCST()
     Sheets("Sources List").Select
     Range("A" & Next_Blank_Row).Select
     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                    :=False, Transpose:=False
+            :=False, Transpose:=False
 
     'Selects the next blank row
     Rows(Next_Blank_Row & ":" & Next_Blank_Row).Select
@@ -270,7 +270,7 @@ Sub BORIS_PCST()
     tbl.TableStyle = "TableStyleLight12"
 
     ActiveSheet.Range("Sources_Table[#All]").RemoveDuplicates Columns:=1, Header _
-                                                                          :=xlYes
+            :=xlYes
 
     'Create named range of the sources
     Range("A2").Select
@@ -322,8 +322,8 @@ Sub BORIS_PCST()
         With NewBook
             ChDir "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files"
             ActiveWorkbook.SaveAs Filename:= _
-                                  "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files\" & Source_Name, FileFormat:= _
-                                  xlOpenXMLWorkbookMacroEnabled, CreateBackup:=False
+                    "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files\" & Source_Name, FileFormat:= _
+                    xlOpenXMLWorkbookMacroEnabled, CreateBackup:=False
         End With
 
         'Selects new workbook
@@ -349,7 +349,7 @@ Sub BORIS_PCST()
         Windows(Validation_File_Name).Activate
         Sheets("Unmapped Codes").Select
         ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
-                                                                   Criteria1:="<>"
+                Criteria1:="<>"
         Range("Unmapped_Table[[#Headers],[Status]]").Select
         Range(Selection, Selection.End(xlDown)).Select
         Range(Selection, Selection.End(xlToRight)).Select
@@ -361,7 +361,7 @@ Sub BORIS_PCST()
         Sheets("Unmapped Codes").Select
         Range("A1").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False    'Pastes values to prevent formatting errors
+                :=False, Transpose:=False    'Pastes values to prevent formatting errors
 
         Range("L1").Select
         Selection = "Code Short Name"
@@ -386,7 +386,7 @@ Sub BORIS_PCST()
 
         'Removes duplicates if any exist by Raw Code and Raw Display
         ActiveSheet.Range("Unmapped_Table[#All]").RemoveDuplicates Columns:=Array(7, 8 _
-                                                                                     ), Header:=xlYes
+                ), Header:=xlYes
 
         'Copies code id to short code id column
         Range("F2").Select
@@ -394,23 +394,23 @@ Sub BORIS_PCST()
         Selection.Copy
         Range("L2").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
         'Applies sorting by Concept -> Measure -> Registry column
         ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
                 SortFields.Clear
         ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
                 SortFields.Add Key:=Range("Unmapped_Table[Concept]"), SortOn:= _
-                               xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
         ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
                 SortFields.Add Key:=Range("Unmapped_Table[Measure]"), SortOn:= _
-                               xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
         ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
                 SortFields.Add Key:=Range("Unmapped_Table[Registry]"), SortOn:= _
-                               xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
 
         With ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table"). _
-             Sort
+                Sort
             .Header = xlYes
             .MatchCase = False
             .Orientation = xlTopToBottom
@@ -520,7 +520,7 @@ Sub BORIS_PCST()
         Windows(Validation_File_Name).Activate
         Sheets("Clinical Documentation").Select
         ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
-                                                                   Criteria1:="<>"
+                Criteria1:="<>"
         Range("Clinical_Table[[#Headers],[Status]]").Select
         Range(Selection, Selection.End(xlDown)).Select
         Range(Selection, Selection.End(xlToRight)).Select
@@ -532,7 +532,7 @@ Sub BORIS_PCST()
         Sheets("Clinical Documentation").Select
         Range("A1").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
         Set sht = Worksheets("Clinical Documentation")
         Set StartCell = Range("A1")
@@ -553,11 +553,11 @@ Sub BORIS_PCST()
 
         'Removes dups by source,
         ActiveSheet.Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(5, _
-                                                                                  10, 11), Header:=xlYes
+                10, 11), Header:=xlYes
 
         'Removes duplicates by source, nomenclature, and nomenclature ID
         ActiveSheet.Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(5, _
-                                                                                  15, 16), Header:=xlYes
+                15, 16), Header:=xlYes
 
         Range("E2").Select
 
@@ -573,15 +573,15 @@ Sub BORIS_PCST()
                 "Clinical_Table").Sort.SortFields.Clear
         ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
                 "Clinical_Table").Sort.SortFields.Add Key:=Range("Clinical_Table[Concept]"), _
-                                                      SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+                SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
         ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
                 "Clinical_Table").Sort.SortFields.Add Key:=Range("Clinical_Table[Measure]"), _
-                                                      SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+                SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
         ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
                 "Clinical_Table").Sort.SortFields.Add Key:=Range("Clinical_Table[Registry]") _
-                                                           , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+                , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
         With ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
-             "Clinical_Table").Sort
+                "Clinical_Table").Sort
             .Header = xlYes
             .MatchCase = False
             .Orientation = xlTopToBottom
@@ -603,7 +603,7 @@ Sub BORIS_PCST()
         Sheets("Health Maintenance Summary").Select
         Range("A1").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
         Set sht = Worksheets("Health Maintenance Summary")
         Set StartCell = Range("A1")
@@ -624,14 +624,14 @@ Sub BORIS_PCST()
 
         'Removes duplicates by source, code and code display
         ActiveSheet.Range("Health_Maint_Table[#All]").RemoveDuplicates Columns:=Array _
-                                                                                (9, 10, 11), Header:=xlYes
+                (9, 10, 11), Header:=xlYes
 
 
         '''''''''''''CREATES THE SOURCE CODE SHEET'''''''''''''
 
         Sheets("Unmapped Codes").Select
         ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
-                                                                   Criteria1:=Source_Name, Operator:=xlAnd
+                Criteria1:=Source_Name, Operator:=xlAnd
 
         Range("L1").Select
         Range(Selection, Selection.End(xlDown)).Select
@@ -641,7 +641,7 @@ Sub BORIS_PCST()
         Sheets("Source_Code_Systems").Select
         Range("A1").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
         'Formats Source_Code_Systems Sheet
         Set sht = Worksheets("Source_Code_Systems")
@@ -664,7 +664,7 @@ Sub BORIS_PCST()
         Range("Code_ID_Table[[#Headers],[Code Short Name]]").Select
         Application.CutCopyMode = False
         ActiveSheet.Range("Code_ID_Table[#All]").RemoveDuplicates Columns:=1, Header:= _
-                                                                  xlYes
+                xlYes
 
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         ' Checks to determine how many unique code ID's there are for this source.
@@ -754,7 +754,7 @@ Sub BORIS_PCST()
 
                 'Filters for only the current source
                 ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
-                                                                           Criteria1:=Source_Name, Operator:=xlAnd
+                        Criteria1:=Source_Name, Operator:=xlAnd
 
                 Set Table_Obj = ActiveSheet.ListObjects(1)
 
@@ -774,7 +774,7 @@ Sub BORIS_PCST()
                     Sheets(Code_Sheet).Select
                     Range("A1").Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     Sheets("Clinical Documentation").Select
                     Columns("Q:Q").Select
@@ -783,7 +783,7 @@ Sub BORIS_PCST()
                     Sheets(Code_Sheet).Select
                     Columns("O:O").Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     Sheets("Clinical Documentation").Select
                     Columns("R:R").Select
@@ -792,7 +792,7 @@ Sub BORIS_PCST()
                     Sheets(Code_Sheet).Select
                     Range("P1").Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
                 End If
 
 
@@ -802,9 +802,9 @@ Sub BORIS_PCST()
 
                 'Applies filters for only this source and code being currently reviewed.
                 ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
-                                                                           Criteria1:=Source_Name, Operator:=xlAnd
+                        Criteria1:=Source_Name, Operator:=xlAnd
                 ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=12, _
-                                                                           Criteria1:=code, Operator:=xlAnd
+                        Criteria1:=code, Operator:=xlAnd
 
                 Set Table_Obj = ActiveSheet.ListObjects(1)
 
@@ -830,7 +830,7 @@ Sub BORIS_PCST()
                     'Selects next blank row
                     Range("A" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     Sheets("Unmapped Codes").Select
 
@@ -842,7 +842,7 @@ Sub BORIS_PCST()
                     Sheets(Code_Sheet).Select
                     Range("I" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
                 End If
 
 
@@ -851,7 +851,7 @@ Sub BORIS_PCST()
                 Sheets("Health Maintenance Summary").Select
 
                 ActiveSheet.ListObjects("Health_Maint_Table").Range.AutoFilter Field:=11, _
-                                                                               Criteria1:=Source_Name, Operator:=xlAnd
+                        Criteria1:=Source_Name, Operator:=xlAnd
 
                 Set tbl = ActiveSheet.ListObjects(1)
 
@@ -876,7 +876,7 @@ Sub BORIS_PCST()
                     'Pastes Sources on new sheet
                     Range("D" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     'Copies Expect_Meaning Column
                     Sheets("Health Maintenance Summary").Select
@@ -887,7 +887,7 @@ Sub BORIS_PCST()
                     'Pastes Expect_Meaning on new sheet
                     Range("F" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     'Copies Satisfier_Meaning Column
                     Sheets("Health Maintenance Summary").Select
@@ -898,7 +898,7 @@ Sub BORIS_PCST()
                     'Pastes Satisfier_Meaning on new sheet
                     Range("G" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     'Copies Entry_Type Column
                     Sheets("Health Maintenance Summary").Select
@@ -909,7 +909,7 @@ Sub BORIS_PCST()
                     'Pastes Entry_Type on new sheet
                     Range("L" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     'Copies Event_CD Column
                     Sheets("Health Maintenance Summary").Select
@@ -920,7 +920,7 @@ Sub BORIS_PCST()
                     'Pastes Event_CD on new sheet
                     Range("I" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     'Copies Event_CD_DISP Column
                     Sheets("Health Maintenance Summary").Select
@@ -931,7 +931,7 @@ Sub BORIS_PCST()
                     'Pastes Event_CD_DISP on new sheet
                     Range("J" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
                 End If
 
 
@@ -983,9 +983,9 @@ Sub BORIS_PCST()
                 'Filters unmapped codes table for current source and code within loop.
                 Sheets("Unmapped Codes").Select
                 ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
-                                                                           Criteria1:=Source_Name, Operator:=xlAnd
+                        Criteria1:=Source_Name, Operator:=xlAnd
                 ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=12, _
-                                                                           Criteria1:=code, Operator:=xlAnd
+                        Criteria1:=code, Operator:=xlAnd
 
                 'Sets variable to the table on the active sheet.
                 Set Table_Obj = ActiveSheet.ListObjects(1)
@@ -1013,7 +1013,7 @@ Sub BORIS_PCST()
                     'Pastes data on next blank row
                     Range("A" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                     Sheets("Unmapped Codes").Select
 
@@ -1025,7 +1025,7 @@ Sub BORIS_PCST()
                     Sheets(Code_Sheet).Select
                     Range("I" & Next_Blank_Row).Select
                     Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                                    :=False, Transpose:=False
+                            :=False, Transpose:=False
 
                 End If
 
@@ -1041,9 +1041,9 @@ Sub BORIS_PCST()
 
         'Filters table for current source.
         ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
-                                                                   Criteria1:=Source_Name, Operator:=xlAnd
+                Criteria1:=Source_Name, Operator:=xlAnd
         ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=15, _
-                                                                   Criteria1:="<>"
+                Criteria1:="<>"
 
         'Eventually update this to filter out all rows which ARE MAPPED CORRECTLY. To only leave
         'incorrect rows.
@@ -1130,7 +1130,7 @@ Sub BORIS_PCST()
             Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
             Range("A" & Next_Blank_Row).Select
             Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                            :=False, Transpose:=False
+                    :=False, Transpose:=False
 
             Set StartCell = Range("A1")
             Set sht = Worksheets("Nomenclature - Patient Care")
@@ -1140,7 +1140,7 @@ Sub BORIS_PCST()
 
             'Removes duplicates from sheet by source, nom ID and Nom description
             ActiveSheet.Range("$A$1:$O$" & LastRow).RemoveDuplicates Columns:=Array(4, 14, 15), _
-                                                                     Header:=xlYes
+                    Header:=xlYes
 
         Else
             'Do Nothing
@@ -1154,11 +1154,11 @@ Sub BORIS_PCST()
 
         For Each Sheet In Worksheets
             If Sheet.Name = "Unmapped Codes" _
-               Or Sheet.Name = "Health Maintenance Summary" _
-               Or Sheet.Name = "Clinical Documentation" _
-               Or Sheet.Name = "Source_Code_Systems" _
-               Or Sheet.Name = "Sheet1" _
-               Then
+                    Or Sheet.Name = "Health Maintenance Summary" _
+                    Or Sheet.Name = "Clinical Documentation" _
+                    Or Sheet.Name = "Source_Code_Systems" _
+                    Or Sheet.Name = "Sheet1" _
+                    Then
                 Sheet.Delete
             End If
         Next Sheet
