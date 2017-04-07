@@ -124,7 +124,7 @@ Private Sub Nomenclature_Row_Finder()
 
             'Remove Duplicates from the Results Sheet
             ActiveSheet.Range("Results_Tbl[#All]").RemoveDuplicates Columns:=Array(6, 11, 12), _
-                                                                    Header:=xlYes
+                    Header:=xlYes
 
             'Adds new Mapping note column
             Range("M1").Select
@@ -132,11 +132,11 @@ Private Sub Nomenclature_Row_Finder()
 
             'Eventcode formula
             EventMapped = "=IFERROR(INDEX('Validated Mappings'!" & Mappings_Status_Col & ":" & Mappings_Status_Col & _
-                          ",MATCH(" & DTA_EC_Col & "2,'Validated Mappings'!" & Code_ID_Col & ":" & Code_ID_Col & ",0)),0)"
+                    ",MATCH(" & DTA_EC_Col & "2,'Validated Mappings'!" & Code_ID_Col & ":" & Code_ID_Col & ",0)),0)"
 
             'Nomenclature formula
             NomenclatureMapped = "=IFERROR(INDEX('Validated Mappings'!" & Mappings_Status_Col & ":" & Mappings_Status_Col & _
-                                 ",MATCH(" & ALPHA_NOMEN_ID & "2,'Validated Mappings'!" & Code_ID_Col & ":" & Code_ID_Col & ",0)),0)"
+                    ",MATCH(" & ALPHA_NOMEN_ID & "2,'Validated Mappings'!" & Code_ID_Col & ":" & Code_ID_Col & ",0)),0)"
 
             'Event Code mapped?
             Range("A2").Select
@@ -152,7 +152,7 @@ Private Sub Nomenclature_Row_Finder()
 
             'Hides rows which are validated in both columns
             ActiveSheet.ListObjects("Results_Tbl").Range.AutoFilter Field:=3, Criteria1:= _
-                                                                    "0"
+                    "0"
 
         End If
 
@@ -164,7 +164,7 @@ Private Sub Nomenclature_Row_Finder()
 
             'Removes Duplicates by Event Code from the Validation Sheet
             ActiveSheet.Range("Val_Tbl[#All]").RemoveDuplicates Columns:=9, Header:= _
-                                                                xlYes
+                    xlYes
 
             'Creates and names the Event_Codes Range which is used in loop
             Range("I2").Select
@@ -184,7 +184,7 @@ Private Sub Nomenclature_Row_Finder()
         'Filters sheet by event code
         Sheets("Results").Select
         ActiveSheet.ListObjects("Results_Tbl").Range.AutoFilter Field:=6, Criteria1:= _
-                                                                EventCode, Operator:=xlAnd
+                EventCode, Operator:=xlAnd
 
         Set Results_Range = Range("Results_Tbl")
 
@@ -197,7 +197,7 @@ Private Sub Nomenclature_Row_Finder()
         'Filters sheet by the current event code
         Sheets("Validation Sheet").Select
         ActiveSheet.ListObjects("Val_Tbl").Range.AutoFilter Field:=9, Criteria1:= _
-                                                            EventCode, Operator:=xlAnd
+                EventCode, Operator:=xlAnd
 
         Set StartCell = Range("A1")
 
@@ -223,7 +223,7 @@ Private Sub Nomenclature_Row_Finder()
 
             Range("A" & Next_Blank_Row).Select
             Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                            :=False, Transpose:=False
+                    :=False, Transpose:=False
 
         Next i
 
@@ -250,7 +250,7 @@ Private Sub Nomenclature_Row_Finder()
 
         Range("M" & Code_Blank_Line).Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
 
         '           Copies the Nomen_Source Column to the New Lines Sheet
@@ -272,7 +272,7 @@ Private Sub Nomenclature_Row_Finder()
 
         Range("N" & Code_Blank_Line).Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
 
         '           Copies the Event Code Mapped? Column to the New Lines Sheet
@@ -294,7 +294,7 @@ Private Sub Nomenclature_Row_Finder()
 
         Range("U" & Code_Blank_Line).Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
 
         '           Copies the Nomenclature Mapped? Column to the New Lines Sheet
@@ -316,7 +316,7 @@ Private Sub Nomenclature_Row_Finder()
 
         Range("V" & Code_Blank_Line).Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                                                                        :=False, Transpose:=False
+                :=False, Transpose:=False
 
 
         'Error handling. No codes found, so skipping
