@@ -71,7 +71,7 @@ Private Sub Nomenclature_Notes()
     End With
 
     'Creates named Range starting at column E
-    Range("E2:V2").Select
+    Sheets("New Lines").Range("E2:V2").Select
     Range(Selection, Selection.End(xlDown)).Select
 
     Selection.Name = "Data_Range"
