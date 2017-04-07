@@ -122,7 +122,7 @@ Private Sub Nomenclature_Notes()
         End If
 
         'If DocumentType is IView, then ignore the control type
-        If DocType = "IView" _
+        If LCase(DocType) = "iview"  _
            And Nomenclature_Val_Check = "Validated" _
            And EventCode_Val_Check = "0" _
            Then
@@ -130,7 +130,7 @@ Private Sub Nomenclature_Notes()
             DataRange(Irow, 12) = "This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure."
             DataRange(Irow, 16) = "PCST"
 
-        ElseIf DocType = "IView" _
+        ElseIf LCase(DocType) = "iview" _
                And Nomenclature_Val_Check = "0" _
                And EventCode_Val_Check = "Validated" _
                Then
@@ -138,7 +138,7 @@ Private Sub Nomenclature_Notes()
             DataRange(Irow, 12) = "This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure."
             DataRange(Irow, 16) = "Consulting"
 
-        ElseIf DocType = "IView" _
+        ElseIf LCase(DocType) = "iview" _
                And Nomenclature_Val_Check = "0" _
                And EventCode_Val_Check = "0" _
                Then
