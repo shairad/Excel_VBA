@@ -2,7 +2,7 @@ Sub Nomenclature_Auto()
 
     Dim Confirm_Run As Integer
 
-    Confirm_Run = MsgBox("The program is about to run. This will take roughly 2 minutes. Please verify before running that you have entered all the needed data per the automation Instructions. If you have not please click cancel. Else click OK to run. ", vbOKCancel + vbQuestion, "Empty Sheet")
+    Confirm_Run = MsgBox("The program is about to run. This will take roughly 2 minutes." & vbNextLine & vbNextLine & "Please verify before running that you have entered all the needed data per the automation Instructions. If you have not please click CANCEL. Else click OK to run. ", vbOKCancel + vbQuestion, "Empty Sheet")
 
     'If user hits cancel then close program.
     If Confirm_Run = vbCancel Then
