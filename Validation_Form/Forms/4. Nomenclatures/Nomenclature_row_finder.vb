@@ -1,18 +1,18 @@
 Private Sub Nomenclature_Row_Finder()
 
-    Dim wb As Workbook
-    Dim Table_Obj As ListObject
-    Dim Table_ObjIsVisible As Boolean
-    Dim Visible_Rows_Count As Integer
-    Dim Results_Range As Range
-    Dim Val_Vis_Row As Range
-    Dim StartCell As Range
-    Dim WkNames As Variant
-    Dim TblNames As Variant
-    Dim DTA_EC_Col As Variant
-    Dim Code_ID_Col As Variant
-    Dim Mappings_Status_Col As Variant
-    Dim ALPHA_NOMEN_ID As Variant
+Dim wb As Workbook
+Dim Table_Obj As ListObject
+Dim Table_ObjIsVisible As Boolean
+Dim Visible_Rows_Count As Integer
+Dim Results_Range As Range
+Dim Val_Vis_Row As Range
+Dim StartCell As Range
+Dim WkNames As Variant
+Dim TblNames As Variant
+Dim DTA_EC_Col As Variant
+Dim Code_ID_Col As Variant
+Dim Mappings_Status_Col As Variant
+Dim ALPHA_NOMEN_ID As Variant
 
 
     'DEBUG
