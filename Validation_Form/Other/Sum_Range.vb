@@ -1,1 +1,1 @@
-Total = WorksheetFunction.Sum(Range(“A1:A12”))
+Total = WorksheetFunction.Sum(Range("A1:A12"))
