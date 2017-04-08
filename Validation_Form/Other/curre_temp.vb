@@ -2,15 +2,13 @@ Sub BORIS_PCST()
 
 '
 '
-' PURPOSE: Creates all the PCST files formatted properly.
-'	USE:	Open validation form which will be used to make PCST files. Run program and follow on screen prompts.
+' PURPOSE: To create the PCST formatted files from the Validation Form.
 ' AUTHOR: Jonathan Adams
 '
 '
 '
 
     Dim wb As Workbook
-    Dim FirstWkbk As Workbook
     Dim sht As Worksheet
     Dim Sheet As Worksheet
     Dim Table_Obj As ListObject
@@ -33,83 +31,79 @@ Sub BORIS_PCST()
     Dim LastColumn As Long
     Dim Next_Blank_Row As Long
     Dim Table_ObjIsVisible As Boolean
-    Dim Checker_Health_Maint As Boolean
-    Dim Val_Wk_Array As Variant
-    Dim Val_Tbl_Name_Array As Variant
-    Dim CurrentSheet As String
 
+    'This disables settings to improve macro performance.
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    Application.EnableEvents = False
 
-    ' 'This disables settings to improve macro performance.
-    ' Application.ScreenUpdating = False
-    ' Application.Calculation = xlCalculationManual
-    ' Application.EnableEvents = False
-
-
-    ' DEBUG
-    User_Name = "Skynet"
-    Project_Name = "Test"
+    'Names variable current file name
     Validation_File_Name = ActiveWorkbook.Name
 
-' TODO Look at optimizing the unique code source code. Beginning on line 329
+    'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
+    Confirm_Scrubbed = MsgBox("*NOTICE* It is highly advised that you review the data on the Unmapped Codes, Clinical Documentation, and the Health Maintenance Summary Sheet before running this program." & vbNewLine & vbNewLine & "You should delete unneeded lines and review concept endings to confirm the data is correct before proceeding. Otherwise errors will multiplied accross all newly created files.", vbOKCancel + vbQuestion, "Empty Sheet")
 
-    Val_Wk_Array = Array("Clinical Documentation", "Unmapped Codes", "Health Maintenance Summary")
-    Val_Tbl_Name_Array = Array("Clinical_Table", "Unmapped_Table", "Health_Maint_Table")
+    'If user hits cancel then close program.
+    If Confirm_Scrubbed = vbCancel Then
+        MsgBox ("Program is canceling per user action.")
+        Exit Sub
+    End If
+
+    'Tells user the program is about to to and to leave their machine alone until the program is completed.
+    MsgBox ("Program is about to run. This will take a minute or two to complete. During the process you will be asked for a couple inputs at the beginning and you may receive popups asking for permission to overwrite files if you have already ran this program once before. Otherwise please leave computer alone until completed popup appears.")
 
 
-    '''''''''''FORMATS THE WORKSHEETS FOR COPYING TO THE NEW WORKBOOK'''''''''''''
+    'Checks to confirm the user entered a correct user ID. This is needed for file save path.
+    Do
+        Name_Input_Checker = 0
+        User_Name = InputBox("Please enter your Cerner userID." & vbNewLine & vbNewLine & "ex. BE042983")
 
-    For i = 0 to UBound(Val_Wk_Array)
+        If User_Name = vbNullString Then
+            MsgBox ("Canceling program per user action.")
+            Exit Sub
 
-        Sheets(Val_Wk_Array(i)).Select
+        ElseIf Len(User_Name) <> 8 Then
+            MsgBox ("That was not the correct format...Lets try this again..." & vbNewLine & "Please enter your user_ID. No spaces" & vbNewLine & vbNewLine & "ex. BE042983")
 
-        'table can not be created if autofilters are on
-        If ActiveSheet.AutoFilterMode = True Then
-            ActiveSheet.AutoFilterMode = False
-        End If
-
-        'Checks the current sheet. If it is in table format, convert it to range.
-        If ActiveSheet.ListObjects.Count > 0 Then
-            With ActiveSheet.ListObjects(1)
-                Set rList = .Range
-                .Unlist
-            End With
-            'Reverts the color of the range back to standard.
-            With rList
-                .Interior.ColorIndex = xlColorIndexNone
-                .Font.ColorIndex = xlColorIndexAutomatic
-                .Borders.LineStyle = xlLineStyleNone
-            End With
-        End If
-
-        'Sets all cells on sheet to a table.
-        Set sht = Worksheets(Val_Wk_Array(i))
-
-        ' Health Maint Sheet data starts on a different row
-        If Val_Wk_Array(i) <> "Health Maintenance Summary" Then
-            Set StartCell = Range("A2")
         Else
-            Set StartCell = Range("A5")
-        End if
+            Name_Input_Checker = 1
+        End If
+
+    Loop While Name_Input_Checker = 0
 
 
-        'Find Last Row and Column
-        LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
-        LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+    'Checks to confirm user entered correct project name. This is needed for file name.
+    Do
+        Project_Name_Checker = 0
+        Project_Name = InputBox("Please enter the abbreviation for this project." & vbNewLine & vbNewLine & "ex. NBRO")
 
-        'Select Range
-        sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+        If Project_Name = vbNullString Then
+            MsgBox ("Canceling program per user action.")
 
-        'Converts range to table.
-        Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-        tbl.Name = Val_Tbl_Name_Array(i)
-        tbl.TableStyle = "TableStyleLight12"
+        ElseIf Len(Project_Name) = 4 Or Len(Project_Name) = 7 Then    'If length of user inut incorrect, prompt user to try again.
+            Project_Name_Checker = 1
+        Else
+            MsgBox ("Lets try this again.... Please enter the project name..." & vbNewLine & vbNewLine & "ex. NBRO")
+        End If
 
-        'Filters to remove blank lines
-        ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
-        Criteria1:="<>"
+    Loop While Project_Name_Checker = 0
 
-    Next i
+    'Assigns file save path to variable.
+    Save_Path = "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files"
 
+
+    'If the folder already exists then do nothing. Else make it.
+    If Len(Dir(Save_Path, vbDirectory)) = 0 Then
+        MkDir Save_Path    'Creates the folder
+
+    Else
+        Folder_Check = MsgBox("Looks like the folder already exists... Do you want to continue?", vbOKCancel + vbQuestion, "Empty Sheet")    'Folder already exists so continuing on.
+    End If
+
+    'If user hits cancel on the folder check then cancel program.
+    If Folder_Check = vbCancel Then
+        MsgBox ("Canceling program per user action.")
+    End If
 
 
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -123,7 +117,7 @@ Sub BORIS_PCST()
     For Each Sheet In Worksheets
         If Sheet.Name = "Sources List" Then
             exists = True
-            Sheet.Delete
+            Worksheets(i).Delete
         End If
     Next Sheet
 
@@ -133,67 +127,185 @@ Sub BORIS_PCST()
     'Creates a new sheet titled 'Sources List'
     With ThisWorkbook
         .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Sources List"
-        Range("A1").Value = "Sources"
     End With
 
-    ' Assigns starting value to Next Blank Row
-    Next_Blank_Row = Sheets("Sources List").Range("A" & Rows.Count).End(xlUp).Row + 1
-    ' Loops through the sheets to find all the sources and put them on the sources list sheet
-    For i = 0 to UBound(Val_Wk_Array)
-        CurrentSheet = Val_Wk_Array(i)
-        Sheets(CurrentSheet).Select
 
-        If CurrentSheet <> "Health Maintenance Summary" Then
-            'Copies sources from the sheets to the sources list
-            Range(ActiveSheet.Range("E2"), ActiveSheet.Range("E2").End(xlDown)).Copy Sheets("Sources List").Range("A" & Next_Blank_Row)
-            Sheets("Sources List").Rows(Next_Blank_Row & ":" & Next_Blank_Row).Delete Shift:=xlUp
-        Else
-            'Copies sources from the sheets to the sources list
-            Range(ActiveSheet.Range("K5"), ActiveSheet.Range("K5").End(xlDown)).Copy Sheets("Sources List").Range("A" & Next_Blank_Row)
-            Sheets("Sources List").Rows(Next_Blank_Row & ":" & Next_Blank_Row).Delete Shift:=xlUp
-        End if
-        'Finds next blank row to add additional sources.
-        Next_Blank_Row = Sheets("Sources List").Range("A" & Rows.Count).End(xlUp).Row + 1
-    Next i
+    '''''''''''FORMATS THE UNMAPPED CODE SHEET FOR COPY TO THE NEW WORKBOOK'''''''''''''
 
+    Sheets("Unmapped Codes").Select
 
-    'Create named range of the sources
+    'If AutoFilters are on turn them off. ''''Table can not be created if autofilters are enabled within the range.''''
+    If ActiveSheet.AutoFilterMode = True Then
+        ActiveSheet.AutoFilterMode = False
+    End If
+
+    'Checks the current sheet. If it is in table format, convert it to range.
+    If ActiveSheet.ListObjects.Count > 0 Then
+        With ActiveSheet.ListObjects(1)
+            Set rList = .Range
+            .Unlist
+        End With
+        'Reverts the color of the range back to standard.
+        With rList
+            .Interior.ColorIndex = xlColorIndexNone
+            .Font.ColorIndex = xlColorIndexAutomatic
+            .Borders.LineStyle = xlLineStyleNone
+        End With
+    End If
+
+    'Sets all cells on sheet to a table.
+    Set sht = Worksheets("Unmapped Codes")
+    Set StartCell = Range("A2")
+
+    'Refresh UsedRange
+    Worksheets("Unmapped Codes").UsedRange
+
+    'Find Last Row and Column
+    LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+    LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+
+    'Select Range
+    sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+
+    'Converts range to table.
+    Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+    tbl.Name = "Unmapped_Table"    'Names table
+    tbl.TableStyle = "TableStyleLight12"    'Sets Table Style
+
+    Sheets("Unmapped Codes").Select
+
+    'Filters to remove blank lines
+    ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
+            Criteria1:="<>"
+
+    'Selects and copies range
+    Range("E2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
     Sheets("Sources List").Select
     Range("A1").Select
-    Range(Selection, Selection.End(xlDown)).Select
 
-    ' formats selected as a table
+    'Pastes copied values without formatting
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+            :=False, Transpose:=False
+
+
+    'Finds next blank row to add additional sources.
+    Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
+
+    Sheets("Clinical Documentation").Select    'Selects the clinical doc sheet
+
+    'If AutoFilters are on turn them off
+    If ActiveSheet.AutoFilterMode = True Then
+        ActiveSheet.AutoFilterMode = False
+    End If
+
+    'Checks the current sheet. If it is in table format, convert it to standard format.
+    If ActiveSheet.ListObjects.Count > 0 Then
+
+        'Converts table back to a range.
+        With ActiveSheet.ListObjects(1)
+            Set rList = .Range
+            .Unlist
+        End With
+
+        'Removes color formatting and such from previous table.
+        With rList
+            .Interior.ColorIndex = xlColorIndexNone
+            .Font.ColorIndex = xlColorIndexAutomatic
+            .Borders.LineStyle = xlLineStyleNone
+        End With
+    End If
+
+    'Formats Clinical Documentation sheet as table
+    Set sht = Worksheets("Clinical Documentation")
+    Set StartCell = Range("A2")
+
+    'Refresh UsedRange
+    Worksheets("Clinical Documentation").UsedRange
+
+    'Find Last Row and Column
+    LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+    LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+
+    'Select Range
+    sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+
+    Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+    tbl.Name = "Clinical_Table"
+    tbl.TableStyle = "TableStyleLight12"
+
+    'Filters to remove blank lines.
+    ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
+            Criteria1:="<>"
+
+    Range("E2").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.Copy
+    Sheets("Sources List").Select
+    Range("A" & Next_Blank_Row).Select
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+            :=False, Transpose:=False
+
+    'Selects the next blank row
+    Rows(Next_Blank_Row & ":" & Next_Blank_Row).Select
+    Application.CutCopyMode = False
+    Selection.Delete Shift:=xlUp
+
+    'Selects Sources List Sheet converts to table
+    Set sht = Worksheets("Sources List")
+    Set StartCell = Range("A1")
+
+    'Refresh UsedRange
+    Worksheets("Sources List").UsedRange
+
+    'Find Last Row and Column
+    LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+    LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+
+    'Select Range
+    sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+
     Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
     tbl.Name = "Sources_Table"
     tbl.TableStyle = "TableStyleLight12"
 
-    ' Removes Duplicates
     ActiveSheet.Range("Sources_Table[#All]").RemoveDuplicates Columns:=1, Header _
             :=xlYes
 
-    ' Names the range
+    'Create named range of the sources
     Range("A2").Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.Name = "Sources_List"
 
 
+    '''''''''''FORMATS HEALTHY INTENT WORKSHEET FOR COPY''''''''''''
 
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-    ' PERFORMS CHECKS ON THE VALIDATION FORM TO CONFIRM FORMAT IS CORRECT BEFORE PROCEEDING ANY FURTHER
-    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    Sheets("Health Maintenance Summary").Select
+    Worksheets("Health Maintenance Summary").AutoFilterMode = False    'Removes any autofilters on the page
 
-    ' Checks the Health Maintenance Summary
-    If LCase(Sheets("Health Maintenance Summary").Range("K5").value) <> "source" Then
-
-        MsgBox("Program has detected a possible error with the Validation Form layout" & vbNewLine & vbNewLine & _
-        "Program expected Column K on the Health Maintenance Summary sheet to be 'Source'. Please resolve the issue and then run again.")
-
-        'Re-enables previously disabled settings after all code has run.
-        Application.ScreenUpdating = True
-        Application.Calculation = xlCalculationAutomatic
-        Application.EnableEvents = True
-        Exit Sub
+    'Checks the current sheet. If it is in table format, convert it to standard format.
+    If ActiveSheet.ListObjects.Count > 0 Then
+        'convert the table back to a range
+        With ActiveSheet.ListObjects(1)
+            Set rList = .Range
+            .Unlist
+        End With
+        'Reverts the colors back to normal.
+        With rList
+            .Interior.ColorIndex = xlColorIndexNone
+            .Font.ColorIndex = xlColorIndexAutomatic
+            .Borders.LineStyle = xlLineStyleNone
+        End With
     End If
+
+    Range("K5").Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Range(Selection, Selection.End(xlToLeft)).Select
+
+    Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+    tbl.Name = "Health_Maint_Table"
+    tbl.TableStyle = "TableStyleLight9"
 
 
     '
@@ -221,112 +333,300 @@ Sub BORIS_PCST()
         'Populates basic sheets on new workbook
         With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Unmapped Codes"
+        End With
+        With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Clinical Documentation"
+        End With
+        With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Health Maintenance Summary"
+        End With
+        With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Source_Code_Systems"
         End With
 
 
         '''''''COPIES UNMAPPED CODES SHEET''''''''
 
-        For i = 0 to UBound(Val_Wk_Array)
-            CurrentSheet = Val_Wk_Array(i)
-            CurrentTable = Val_Tbl_Name_Array(i)
+        Windows(Validation_File_Name).Activate
+        Sheets("Unmapped Codes").Select
+        ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
+                Criteria1:="<>"
+        Range("Unmapped_Table[[#Headers],[Status]]").Select
+        Range(Selection, Selection.End(xlDown)).Select
+        Range(Selection, Selection.End(xlToRight)).Select
+        Application.CutCopyMode = False
+        Selection.Copy
 
-            Windows(Validation_File_Name).Activate
-            Sheets(CurrentSheet).Select
-            ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
-                    Criteria1:="<>"
-            If CurrentSheet <> Val_Wk_Array(2) Then
-                Range("A2").Select
-                Range(Selection, Selection.End(xlDown)).Select
-                Range(Selection, Selection.End(xlToRight)).Select
-                Selection.Copy
+        'Selects the newly created excel file and pastes copied cells onto unmapped codes sheet
+        Windows(Source_Name & ".xlsm").Activate
+        Sheets("Unmapped Codes").Select
+        Range("A1").Select
+        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                :=False, Transpose:=False    'Pastes values to prevent formatting errors
 
-            Elseif CurrentSheet = Val_Wk_Array(2) Then
-                Range("A5").Select
-                Range(Selection, Selection.End(xlDown)).Select
-                Range(Selection, Selection.End(xlToRight)).Select
-                Selection.Copy
-            Else
-                MsgBox("Appears to be a coding issue. There is a sheet within Val_Wk_Array which has not had rules created for it within the copy code. Debug starting like ~220")
-                ' Goto End_Program
-            End If
+        Range("L1").Select
+        Selection = "Code Short Name"
 
-            'Selects the newly created excel file and pastes copied cells onto unmapped codes sheet
-            Windows(Source_Name & ".xlsm").Activate
-            Sheets(CurrentSheet).Select
-            Range("A1").Select
-            Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                    :=False, Transpose:=False
+        Set sht = Worksheets("Unmapped Codes")
+        Set StartCell = Range("A1")
 
-        Next i
+        'Refresh UsedRange
+        Worksheets("Unmapped Codes").UsedRange
 
-        ' Formats the new sheets as tables
-        For i = 0 to UBound(Val_Wk_Array)
-            'Confirms Selection of new workbook
-            Windows(Source_Name & ".xlsm").Activate
-            Sheets(Val_Wk_Array(i)).Select
+        'Find Last Row and Column
+        LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+        LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-            'Sets all cells on sheet to a table.
-            Set sht = Worksheets(Val_Wk_Array(i))
-            Set StartCell = Range("A1")
+        'Selects range
+        sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
-            'Find Last Row and Column
-            LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
-            LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
-
-            'Select Range
-            sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
-
-            'Converts range to table.
-            Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-            tbl.Name = Val_Tbl_Name_Array(i)
-            tbl.TableStyle = "TableStyleLight12"
-
-            'Filters to remove blank lines
-            ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
-            Criteria1:="<>"
-
-        Next i
-
-
-        ' Formats the unmapped code sheet for the code ID's
-        Sheets(Val_Wk_Array(1)).Select
+        'Sets selected cells as a table and names the table
+        Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+        tbl.Name = "Unmapped_Table"
+        tbl.TableStyle = "TableStyleLight9"
 
         'Removes duplicates if any exist by Raw Code and Raw Display
-        ActiveSheet.Range(Val_Tbl_Name_Array(1)&"[#All]").RemoveDuplicates Columns:=Array(6, 7, 8 _
-            ), Header:=xlYes
-
-
-        ' Sets header for code short name column
-        Range("K1").Value = "Code Short Name"
+        ActiveSheet.Range("Unmapped_Table[#All]").RemoveDuplicates Columns:=Array(6, 7, 8 _
+                ), Header:=xlYes
 
         'Copies code id to short code id column
         Range("F2").Select
         Range(Selection, Selection.End(xlDown)).Select
         Selection.Copy
-        Range("K2").Select
+        Range("L2").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
                 :=False, Transpose:=False
 
-        ' Clears any autofilters
-        ActiveSheet.autofilter.showalldata
+        'Applies sorting by Concept -> Measure -> Registry column
+        ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
+                SortFields.Clear
+        ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
+                SortFields.Add Key:=Range("Unmapped_Table[Concept]"), SortOn:= _
+                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+        ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
+                SortFields.Add Key:=Range("Unmapped_Table[Measure]"), SortOn:= _
+                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+        ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
+                SortFields.Add Key:=Range("Unmapped_Table[Registry]"), SortOn:= _
+                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
 
-        ' filters by concept -> registry for easy reviewing in final product
-        With ActiveWorkbook.ActiveSheet.ListObjects(1).Sort
-            .SortFields.Add Key:=Range(Val_Tbl_Name_Array(1)&"[Concept]"), SortOn:= _
-                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-            .SortFields.Add Key:=Range(Val_Tbl_Name_Array(1)&"[Measure]"), SortOn:= _
-                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-            .SortFields.Add Key:=Range(Val_Tbl_Name_Array(1)&"[Registry]"), SortOn:= _
-                xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+        With ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table"). _
+                Sort
+            .Header = xlYes
+            .MatchCase = False
+            .Orientation = xlTopToBottom
+            .SortMethod = xlPinYin
             .Apply
         End With
 
 
-Next Source_Name
-' TODO Optimize code with loops!
+        ''''''''''''LOOP THROUGH SHORT NAME COLUMN AND ADJUST TO SHORT NAME VERSION''''''''''''''
+
+        'Select and assign range
+        Range("L2:L" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select    'Selects all cells not empty in column
+        Selection.Name = "Unmapped_Code_Short"    'Names Range
+
+        'Assigns range to variable
+        Set Rng = Range("Unmapped_Code_Short")
+
+
+        ''''''''''Checks if CodeID is a cerner nomenclature code id and shorten name appropriately''''''''''
+
+        For Each cell In Rng
+            If InStr(cell, "urn:cerner:coding:codingsystem:nomenclature.source_vocab:") > 0 Then  'If cell contains "x"
+                cell.Select
+                cValue = cell.Value
+                With Selection
+                    cPlace = InStr(cell, "vocab")
+                    Selection.Value = "nomenclature - " & Right(cValue, Len(cValue) - (cPlace + 5))    'Replace cell with nomenclature and all text after vocab
+                End With
+
+                'Checks if code id contains PTCARE and shortens appropriately
+            ElseIf InStr(cell, "PTCARE") > 0 Then
+                cell.Select
+                cValue = cell.Value
+                With Selection
+                    cPlace = InStr(cValue, "vocab")
+                    Selection.Value = Right(cValue, Len(cValue) - (cPlace + 5))
+                End With
+
+                'Checks if code id contains healthmaintenance and then shortens appropriately
+            ElseIf InStr(cell, "healthmaintenance") > 0 Then
+                cell.Select
+                cValue = cell.Value
+                With Selection
+                    cPlace = InStr(cValue, "healthmaintenance")
+                    Selection.Value = Right(cValue, Len(cValue) - (cPlace + 16))
+                End With
+
+                'Checks if code id is normal cerner code set and then shortens appropriately
+            ElseIf InStr(cell, "urn:cerner:coding:codingsystem:codeset:") > 0 Then
+                cell.Select
+                cValue = cell.Value
+                With Selection
+                    cPlace = InStr(cValue, "codeset:")
+                    Selection.Value = Right(cValue, Len(cValue) - (cPlace + 7))
+                End With
+
+                'Checks Catches alternate nomenclature code. This catches the general nomenclature code id's which do not contain the tail descriptor
+            ElseIf InStr(cell, "urn:cerner:coding:codingsystem:nomenclature") > 0 Then
+                cell.Select
+                cValue = cell.Value
+                With Selection
+                    cPlace = InStr(cValue, "system:")
+                    Selection.Value = Right(cValue, Len(cValue) - (cPlace + 6))
+                End With
+            End If
+        Next cell
+
+
+        ''''''''''''''Converts Nomenclature - PTCARE to Nomenclature - Patient Care to standardize naming convention.''''''''''''''
+
+        For Each cell In Rng
+            If cell = "nomenclature - PTCARE" Then
+                cell.Select
+                With Selection
+                    Selection.Value = "Nomenclature - Patient Care"
+                End With
+            End If
+        Next cell
+
+        'Names the code short name range.
+        Sheets("Unmapped Codes").Select
+        Range("L2").Select
+        Range(Selection, Selection.End(xlDown)).Select
+        Selection.Name = "Code_Short"
+
+        ''''''''''Checks Code Short length and if it is more than >28 characters then shorten the name.'''''''''
+
+        For Each Code_Short In Range("Code_Short")
+            Current_Value = Code_Short.Value
+            If (Len(Current_Value) > 28) Then
+                Code_Short.ClearContents
+                Code_Short.Value = Left(Current_Value, 28)
+            End If
+
+            'Checks code short name for invalid characters and replaces them with a space
+            If InStr(Current_Value, ":") > 0 Then
+                Code_Short.ClearContents
+                New_Value = Replace(Current_Value, ":", " ")
+                Code_Short.Value = New_Value
+            End If
+        Next Code_Short
+
+
+        ''''''''''''''POPULATES THE CLINICAL DOCUMENTATION SHEET'''''''''''''
+
+        'Goes back to validation form and copies the sheet to the new excel file
+        Windows(Validation_File_Name).Activate
+        Sheets("Clinical Documentation").Select
+        ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
+                Criteria1:="<>"
+        Range("Clinical_Table[[#Headers],[Status]]").Select
+        Range(Selection, Selection.End(xlDown)).Select
+        Range(Selection, Selection.End(xlToRight)).Select
+        Application.CutCopyMode = False
+        Selection.Copy
+
+        'Navigates back to new workbook and pastes the copied rows.
+        Windows(Source_Name & ".xlsm").Activate
+        Sheets("Clinical Documentation").Select
+        Range("A1").Select
+        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                :=False, Transpose:=False
+
+        Set sht = Worksheets("Clinical Documentation")
+        Set StartCell = Range("A1")
+
+        'Refresh UsedRange
+        Worksheets("Clinical Documentation").UsedRange
+
+        'Find Last Row and Column
+        LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+        LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+
+        'Select Range
+        sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+
+        Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+        tbl.Name = "Clinical_Table"
+        tbl.TableStyle = "TableStyleLight9"
+
+        'Removes dups by source,
+        ActiveSheet.Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(5, _
+                10, 11), Header:=xlYes
+
+        'Removes duplicates by source, nomenclature, and nomenclature ID
+        ActiveSheet.Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(5, _
+                15, 16), Header:=xlYes
+
+        Range("E2").Select
+
+        LastRow = ActiveSheet.Range("E2").End(xlDown).Row
+
+        With ActiveSheet.Range("S2")
+            .AutoFill Destination:=Range("S2:S" & LastRow&)
+        End With
+
+        'Applies sorting by Concept -> Measure -> Registry
+        Range("Clinical_Table[[#Headers],[Source]]").Select
+        ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
+                "Clinical_Table").Sort.SortFields.Clear
+        ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
+                "Clinical_Table").Sort.SortFields.Add Key:=Range("Clinical_Table[Concept]"), _
+                SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+        ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
+                "Clinical_Table").Sort.SortFields.Add Key:=Range("Clinical_Table[Measure]"), _
+                SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+        ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
+                "Clinical_Table").Sort.SortFields.Add Key:=Range("Clinical_Table[Registry]") _
+                , SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+        With ActiveWorkbook.Worksheets("Clinical Documentation").ListObjects( _
+                "Clinical_Table").Sort
+            .Header = xlYes
+            .MatchCase = False
+            .Orientation = xlTopToBottom
+            .SortMethod = xlPinYin
+            .Apply
+        End With
+
+
+        ''''''''''POPULATES THE HEALTH MAINTENANCE SUMMARY SHEET''''''''''''''
+
+        Windows(Validation_File_Name).Activate    'Go to Validation Form
+        Sheets("Health Maintenance Summary").Select
+        Range("K5").Select
+        Range(Selection, Selection.End(xlDown)).Select
+        Range(Selection, Selection.End(xlToLeft)).Select
+        Selection.Copy
+
+        Windows(Source_Name & ".xlsm").Activate    'Go to new file
+        Sheets("Health Maintenance Summary").Select
+        Range("A1").Select
+        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                :=False, Transpose:=False
+
+        Set sht = Worksheets("Health Maintenance Summary")
+        Set StartCell = Range("A1")
+
+        'Refresh UsedRange
+        Worksheets("Health Maintenance Summary").UsedRange
+
+        'Find Last Row and Column
+        LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+        LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+
+        'Select Range
+        sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
+
+        Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
+        tbl.Name = "Health_Maint_Table"
+        tbl.TableStyle = "TableStyleLight9"
+
+        'Removes duplicates by source, code and code display
+        ActiveSheet.Range("Health_Maint_Table[#All]").RemoveDuplicates Columns:=Array _
+                (9, 10, 11), Header:=xlYes
+
 
         '''''''''''''CREATES THE SOURCE CODE SHEET'''''''''''''
 
@@ -334,7 +634,7 @@ Next Source_Name
         ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
                 Criteria1:=Source_Name, Operator:=xlAnd
 
-        Range("K1").Select
+        Range("L1").Select
         Range(Selection, Selection.End(xlDown)).Select
         Selection.Copy
 
@@ -344,9 +644,7 @@ Next Source_Name
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
                 :=False, Transpose:=False
 
-
-
-        ' Formats Source_Code_Systems Sheet
+        'Formats Source_Code_Systems Sheet
         Set sht = Worksheets("Source_Code_Systems")
         Set StartCell = Range("A1")
 
@@ -368,9 +666,6 @@ Next Source_Name
         Application.CutCopyMode = False
         ActiveSheet.Range("Code_ID_Table[#All]").RemoveDuplicates Columns:=1, Header:= _
                 xlYes
-
-
-
 
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         ' Checks to determine how many unique code ID's there are for this source.
@@ -945,12 +1240,5 @@ Next Source_Name
 
     'Notifies user that the program has completed.
     MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")
-
-    End_Program:
-        'Re-enables previously disabled settings after all code has run.
-        Application.ScreenUpdating = True
-        Application.Calculation = xlCalculationAutomatic
-        Application.EnableEvents = True
-
 
 End Sub
