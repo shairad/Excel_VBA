@@ -46,7 +46,7 @@ Sub BORIS_PCST()
 
 
     ' DEBUG
-    User_Name = "Skynet"
+    User_Name = "ja052464"
     Project_Name = "Test"
     Validation_File_Name = ActiveWorkbook.Name
 
@@ -87,17 +87,18 @@ Sub BORIS_PCST()
         ' Health Maint Sheet data starts on a different row
         If Val_Wk_Array(i) <> "Health Maintenance Summary" Then
             Set StartCell = Range("A2")
+            LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
+            LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
+
+            'Select Range
+            sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
         Else
-            Set StartCell = Range("A5")
+          Range("A5").Select
+          Range(Selection, Selection.End(xlDown)).Select
+          Range(Selection, Selection.End(xlToRight)).Select
+
         End if
 
-
-        'Find Last Row and Column
-        LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
-        LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
-
-        'Select Range
-        sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
         'Converts range to table.
         Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
@@ -109,7 +110,6 @@ Sub BORIS_PCST()
         Criteria1:="<>"
 
     Next i
-
 
 
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -227,7 +227,7 @@ Sub BORIS_PCST()
         End With
 
 
-        '''''''COPIES UNMAPPED CODES SHEET''''''''
+
 
         For i = 0 to UBound(Val_Wk_Array)
             CurrentSheet = Val_Wk_Array(i)
@@ -235,31 +235,48 @@ Sub BORIS_PCST()
 
             Windows(Validation_File_Name).Activate
             Sheets(CurrentSheet).Select
-            ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
-                    Criteria1:="<>"
-            If CurrentSheet <> Val_Wk_Array(2) Then
-                Range("A2").Select
-                Range(Selection, Selection.End(xlDown)).Select
-                Range(Selection, Selection.End(xlToRight)).Select
-                Selection.Copy
 
-            Elseif CurrentSheet = Val_Wk_Array(2) Then
-                Range("A5").Select
-                Range(Selection, Selection.End(xlDown)).Select
-                Range(Selection, Selection.End(xlToRight)).Select
-                Selection.Copy
-            Else
-                MsgBox("Appears to be a coding issue. There is a sheet within Val_Wk_Array which has not had rules created for it within the copy code. Debug starting like ~220")
-                ' Goto End_Program
-            End If
+          If CurrentSheet <> Val_Wk_Array(2) Then
+            ' Finds the location of the Registry Column
+              Range("A2:K2").Select
+              Selection.Name = "Header_row"
 
-            'Selects the newly created excel file and pastes copied cells onto unmapped codes sheet
-            Windows(Source_Name & ".xlsm").Activate
-            Sheets(CurrentSheet).Select
-            Range("A1").Select
-            Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                    :=False, Transpose:=False
+              For each cell in Range("Header_row")
+                If cell = "Registry" Then
+                  start_cell = cell.Address
+                  exit for
+                End if
+              Next cell
 
+          Else
+          ' Finds the location of the Registry Column
+            Range("A5:K5").Select
+            Selection.Name = "Header_row"
+
+            For each cell in Range("Header_row")
+              If cell = "EXPECT_NAME" Then
+                start_cell = cell.Address
+                exit for
+              End if
+            Next cell
+
+          end if
+
+
+          Sheets(CurrentSheet).Select
+          ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
+                  Criteria1:="<>"
+              Range(start_cell).Select
+              Range(Selection, Selection.End(xlDown)).Select
+              Range(Selection, Selection.End(xlToRight)).Select
+              Selection.Copy
+
+          'Selects the newly created excel file and pastes copied cells onto unmapped codes sheet
+          Windows(Source_Name & ".xlsm").Activate
+          Sheets(CurrentSheet).Select
+          Range("A1").Select
+          Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                  :=False, Transpose:=False
         Next i
 
         ' Formats the new sheets as tables
@@ -326,6 +343,7 @@ Sub BORIS_PCST()
 
 
 Next Source_Name
+
 ' TODO Optimize code with loops!
 
         '''''''''''''CREATES THE SOURCE CODE SHEET'''''''''''''
