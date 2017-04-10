@@ -399,12 +399,11 @@ Next Source_Name
         If Selection.Value = "" Then
             Selection.Value = "72"
         End If
-
+        ' If A3 is empty and thus only 1 code id, then set the range of Code_ID_List to just cell A2
         Range("A3").Select
         If Selection.Value = "" Then
             Range("A2").Select
             Selection.Name = "Code_ID_List"
-
         Else
             Range("A2").Select
             Range(Selection, Selection.End(xlDown)).Select
