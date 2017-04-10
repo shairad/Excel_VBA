@@ -348,8 +348,9 @@ Next Source_Name
 
         '''''''''''''CREATES THE SOURCE CODE SHEET'''''''''''''
 
-        Sheets("Unmapped Codes").Select
-        ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
+        ' Selects the unmapped codes sheet and copies data
+        Sheets(Val_Wk_Array(1)).Select
+        ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
                 Criteria1:=Source_Name, Operator:=xlAnd
 
         Range("K1").Select
@@ -361,7 +362,6 @@ Next Source_Name
         Range("A1").Select
         Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
                 :=False, Transpose:=False
-
 
 
         ' Formats Source_Code_Systems Sheet
@@ -386,7 +386,6 @@ Next Source_Name
         Application.CutCopyMode = False
         ActiveSheet.Range("Code_ID_Table[#All]").RemoveDuplicates Columns:=1, Header:= _
                 xlYes
-
 
 
 
