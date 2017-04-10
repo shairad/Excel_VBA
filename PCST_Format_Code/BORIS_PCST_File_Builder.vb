@@ -116,7 +116,7 @@ Sub BORIS_PCST()
     For Each Sheet In Worksheets
         If Sheet.Name = "Sources List" Then
             exists = True
-            Worksheets(i).Delete
+            Sheet.Delete
         End If
     Next Sheet
 
