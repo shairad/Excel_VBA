@@ -424,6 +424,8 @@ Next Source_Name
 
             Code_Sheet = code
 
+' TODO Create a range and use a loop and an arra to populate sheet headers
+
             'Special instructions for code set 72
             If code = "72" Then
 
@@ -471,7 +473,7 @@ Next Source_Name
                 Range("Q2").Select
 
                 ''''''''''''Copies Clinical Documentation to 72'''''''''''''
-
+' TODO Look to see what we can do to clean this up
                 Sheets("Clinical Documentation").Select
 
                 'Filters for only the current source
@@ -519,7 +521,7 @@ Next Source_Name
 
 
                 ''''''''''Copies unmapped codes to 72 sheet''''''''''
-
+' TODO clean up
                 Sheets("Unmapped Codes").Select
 
                 'Applies filters for only this source and code being currently reviewed.
@@ -569,7 +571,7 @@ Next Source_Name
 
 
                 '''''''''Populates Health Maintenance to CS 72''''''''''''''
-
+' TODO Cleanup
                 Sheets("Health Maintenance Summary").Select
 
                 ActiveSheet.ListObjects("Health_Maint_Table").Range.AutoFilter Field:=11, _
@@ -658,7 +660,7 @@ Next Source_Name
 
 
                 '''''''''Populates headers for all other sheets''''''''''
-
+' TODO use loop and array to populate headers
             Else
                 Sheets(Code_Sheet).Select
 
