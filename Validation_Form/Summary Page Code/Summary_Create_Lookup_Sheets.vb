@@ -72,7 +72,8 @@ ClearError:
     Next i
 
 
-
+    ' Loop through each of the worksheets needed and format them in a standardized way
+    ' That is used later on with different programs
     For i = 0 To UBound(WkNames)
 
         CurrentExistCheck = WkExistCheck(i)
