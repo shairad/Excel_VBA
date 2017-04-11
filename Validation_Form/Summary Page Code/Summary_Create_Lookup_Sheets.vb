@@ -29,6 +29,16 @@ Private Sub Summary_Create_Lookup_Sheet()
     PivotNames = Array("Potential_Pivot", "Unmapped_Pivot", "Clinical_Pivot")
     PivotSheetNames = Array("Potential_Summary_Pivot", "Unmapped_Summary_Pivot", "Clinical_Summary_Pivot")
 
+    ' Unhides the needed Worksheets
+
+    For Each Sheet in Worksheets
+      For i = 0 to UBound(WkNames)
+        If WkNames(i) = Sheet.Name Then
+          Sheet.Visible = xlSheetVisible
+        End If
+      Next i
+    Next Sheet
+
 
     'Deletes the Sheets if they already exist to allow user to re-run program
     Application.DisplayAlerts = False
