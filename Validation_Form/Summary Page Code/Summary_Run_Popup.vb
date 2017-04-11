@@ -11,7 +11,7 @@ Sub Summary_Sheet_Setup()
     End If
 
 
-    Call Summary_Create_Lookup_Sheets
+    Call Summary_Create_Lookup_Sheet
     Call Summary_Combined_Lookup_Sheet
     Call Summary_Sheet_Initial_Setup
     Call Summary_Pop_Dots
