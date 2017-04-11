@@ -1,4 +1,4 @@
-Private Sub Summary_Combined_Lookup_Sheet()
+Private Sub Summary_Create_Lookup_Sheet()
 
 
     Dim wb As Workbook
