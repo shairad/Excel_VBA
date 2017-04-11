@@ -115,7 +115,8 @@ Sub BORIS_PCST()
     'Checks to see if sources list sheet already exists and if so deletes the worksheet so a new one can be created.
     For Each Sheet In Worksheets
         If Sheet.Name = "Sources List" Then
-          Sheet.Delete
+            exists = True
+            Sheet.Delete
         End If
     Next Sheet
 
