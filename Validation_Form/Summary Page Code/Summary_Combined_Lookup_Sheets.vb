@@ -36,7 +36,7 @@ Private Sub Summary_Combined_Lookup_Sheet()
 
         'If the worksheet does not exist tell the user to fix the issue then end the program
         If WkNamesCheck = False Then
-            Msgbox("Program can not find worksheet - " WkNames(1) & vbNewLine & vbNewLine & "This worksheet is required for the program to run. Please alter the program and/or the worksheet name then re-run the program.")
+            Msgbox("Program can not find worksheet - " & WkNames(1) & vbNewLine & vbNewLine & "This worksheet is required for the program to run. Please alter the program and/or the worksheet name then re-run the program.")
             Exit Sub
         End If
 
