@@ -1,6 +1,7 @@
 Private Sub Summary_Combined_Lookup_Sheet()
 '
-' Takes the Registries, Measures and Concepts from the Unmapped and Validated Sheets and combinds them into one sheet.Then creates a CONCATENATE column for lookup.
+' Takes the Registries, Measures and Concepts from the Unmapped and Validated Sheets and combinds them into one sheet.
+' Then creates a CONCATENATE column for lookup.
 '
     Dim WkNames As Variant
     Dim HeaderNames As Variant
@@ -21,16 +22,12 @@ Private Sub Summary_Combined_Lookup_Sheet()
 
     'Loops through all worksheets and checks the worksheet names for a match against the array.
     For i = 0 To UBound(WkNames)
-
         WkNamesCheck = False
 
         For Each Sheet In Worksheets
-
             If Sheet.Name = WkNames(i) Then
-
                 WkNamesCheck = True
                 Exit For
-
             End If
         Next Sheet
 

@@ -332,14 +332,8 @@ Sub BORIS_PCST()
         'Populates basic sheets on new workbook
         With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Unmapped Codes"
-        End With
-        With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Clinical Documentation"
-        End With
-        With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Health Maintenance Summary"
-        End With
-        With ActiveWorkbook
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Source_Code_Systems"
         End With
 
@@ -388,13 +382,32 @@ Sub BORIS_PCST()
         ActiveSheet.Range("Unmapped_Table[#All]").RemoveDuplicates Columns:=Array(7, 8 _
                 ), Header:=xlYes
 
-        'Copies code id to short code id column
-        Range("F2").Select
-        Range(Selection, Selection.End(xlDown)).Select
-        Selection.Copy
-        Range("L2").Select
-        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                :=False, Transpose:=False
+        ' Copies code id to short code id column
+        ' Check to see there are any unmapped codes, if there are, then create code short name
+
+        Set Table_Obj = ActiveSheet.ListObjects(1)
+
+        'Checks current table to determine if any cells are visible. If cells are visible then set "Table_ObjIsVisible" = TRUE
+        If Table_Obj.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
+            Table_ObjIsVisible = True
+        Else
+          Table_ObjIsVisible = False
+        End If
+
+        'If Table_ObjIsVisible = True then "X"
+        If Table_ObjIsVisible = True Then
+          Range("F2").Select
+          Range(Selection, Selection.End(xlDown)).Select
+          Selection.Copy
+          Range("L2").Select
+          Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+                  :=False, Transpose:=False
+
+            'If Table_ObjIsVisible = False then "Y"
+        Else
+
+        End If
+
 
         'Applies sorting by Concept -> Measure -> Registry column
         ActiveWorkbook.Worksheets("Unmapped Codes").ListObjects("Unmapped_Table").Sort. _
@@ -492,8 +505,7 @@ Sub BORIS_PCST()
 
         'Names the code short name range.
         Sheets("Unmapped Codes").Select
-        Range("L2").Select
-        Range(Selection, Selection.End(xlDown)).Select
+        Range("L2:L" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select
         Selection.Name = "Code_Short"
 
         ''''''''''Checks Code Short length and if it is more than >28 characters then shorten the name.'''''''''
@@ -668,7 +680,7 @@ Sub BORIS_PCST()
 
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         ' Checks to determine how many unique code ID's there are for this source.
-        ' If there is only 1 source "72" then set range to one cell, otherwise select all cells and set the range.
+        ' If there is only 1 or no code id's, then set the code id source to just  codeset "72"
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
         'If there are no unmapped codes for this source, then set code source to 72 only.
