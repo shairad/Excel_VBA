@@ -8,6 +8,7 @@ Sub BORIS_PCST()
 '
 '
 '
+' TODO - Add in logic to filter the clinical documentation sheet for JUST the rows where the nomenclature is not mapped
 
 Dim wb As Workbook
 Dim FirstWkbk As Workbook
@@ -73,8 +74,8 @@ Dim Checker_Health_Maint As Boolean
     Others_Header_Array = Array("Registry", "Measure", "Concept", "Source", "DocumentType", "Name", "Section", "DTA", "Code", "Display", "ESH", "ControlType", "NomenclatureID", "Nomenclature", "vlookup", "Team", "Comments", "Standard Code", "Standard Coding System")
     Others_Header_Temp_Array = Array("Registry", "Measure", "Concept", "Source", "DocumentType", "Name", "Section", "DTA", "Code", "Display", "ESH", "ControlType", "NomenclatureID", "Nomenclature", "vlookup", "Team", "Comments", "Standard Code", "Standard Coding System")
 
-    Clin_Doc_Col_Num_Array = Array("Source", "EventCode", "EventDisplay", "NomenclatureID", "Nomenclature")
-    Clin_Doc_Col_Ltr_Array = Array("Source", "EventCode", "EventDisplay", "NomenclatureID", "Nomenclature")
+    Clin_Doc_Col_Num_Array = Array("Source", "EventCode", "EventDisplay", "NomenclatureID", "Nomenclature", "Nomenclature Notes")
+    Clin_Doc_Col_Ltr_Array = Array("Source", "EventCode", "EventDisplay", "NomenclatureID", "Nomenclature", "Nomenclature Notes")
 
     Unmapped_Col_Ltr_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
     Unmapped_Col_Num_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
@@ -345,7 +346,7 @@ Dim Checker_Health_Maint As Boolean
 
             ' Finds the location of the Registry Column
             If CurrentSheet <> Val_Wk_Array(2) Then
-                Range("A2:K2").Name = "Header_row"
+                Range("A2:U2").Name = "Header_row"
 
                 For Each cell In Range("Header_row")
                     If cell = "Registry" Then
@@ -418,7 +419,7 @@ Dim Checker_Health_Maint As Boolean
         Next i
 
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        ' PRIMARY - Finds Location of headers for the sheets
+        ' PRIMARY - Finds Location of headers for the Main Sheets
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
@@ -667,6 +668,10 @@ Dim Checker_Health_Maint As Boolean
                 'Filters for only the current source
                 Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(0), _
                         Criteria1:=Source_Name, Operator:=xlAnd
+
+                ' Filters the notes field for nomenclatures which have not been mapped
+                Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(0), _
+                                Criteria1:=Source_Name, Operator:=xlAnd
 
 
                 'Checks current table to determine if any cells are visible. If cells are visible then set "Table_ObjIsVisible" = TRUE
