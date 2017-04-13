@@ -1082,6 +1082,7 @@ ErrHandler:
 
   ' Clears the filesystem descriptor allowing you to delete the folder
   Dir "C:\"
+  ChDir "C:\"
   MsgBox("Program encountered an error " & vbCrLf & Err.Description & vbCrLf & DisplayErr & vbCrLf & Err.Number)
 
 End Sub
