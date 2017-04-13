@@ -1150,9 +1150,6 @@ Sub BORIS_PCST()
             'Finds last row with text
             LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
 
-            'Removes duplicates from sheet by source, nom ID and Nom description
-            ActiveSheet.Range("$A$1:$O$" & LastRow).RemoveDuplicates Columns:=Array(4, 14, 15), _
-                    Header:=xlYes
 
         Else
             'Do Nothing

@@ -62,7 +62,7 @@ Dim Checker_Health_Maint As Boolean
     ' Validation_File_Name = ActiveWorkbook.Name
 
     ' Error Handling
-    ' On Error GoTo ErrHandler
+     On Error GoTo ErrHandler
 
     Val_Wk_Array = Array("Clinical Documentation", "Unmapped Codes", "Health Maintenance Summary")
     Val_Tbl_Name_Array = Array("Clinical_Table", "Unmapped_Table", "Health_Maint_Table")
@@ -79,10 +79,6 @@ Dim Checker_Health_Maint As Boolean
     Unmapped_Col_Ltr_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
     Unmapped_Col_Num_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
 
-    'This disables settings to improve macro performance.
-    ' Application.ScreenUpdating = False
-    ' Application.Calculation = xlCalculationManual
-    ' Application.EnableEvents = False
 
     'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
     Confirm_Scrubbed = MsgBox("*NOTICE* It is highly advised that you review the data on the Unmapped Codes, Clinical Documentation, and the Health Maintenance Summary Sheet before running this program." & vbNewLine & vbNewLine & "You should delete unneeded lines and review concept endings to confirm the data is correct before proceeding. Otherwise errors will multiplied accross all newly created files.", vbOKCancel + vbQuestion, "Empty Sheet")
@@ -785,73 +781,40 @@ Dim Checker_Health_Maint As Boolean
                 ' If data is visible then copy visible data
                 If Table_ObjIsVisible = True Then
 
-                    'Copies Sources Column
-                    Range("K2:K" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                  ' Sets next blank row
+                  Sheets(Code_Sheet).Select
+                  Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
-                    'Uses The CodeSet 72 column "Sources" to determine next blank row
-                    Next_Blank_Row = Range("D" & Rows.Count).End(xlUp).Row + 1
+                    ' Copies Sources Column to Source
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("K2:K").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("D" & Next_Blank_Row)
 
-                    ' Pastes Sources on new sheet
-                    Range("D" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Expect_Meaning Column to Name
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("B2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("F" & Next_Blank_Row)
 
-                    ' Copies Expect_Meaning Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("B2:B" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                    ' Copies Satisfier_Meaning Column to Section
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("G2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("G" & Next_Blank_Row)
 
-                    'Pastes Expect_Meaning on new sheet
-                    Range("F" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Entry_Type Column to ControlType
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("C2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("L" & Next_Blank_Row)
 
-                    ' Copies Satisfier_Meaning Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("G2:G" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                    ' Copies Event_CD Column to EventCode
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("I2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
 
-                    ' Pastes Satisfier_Meaning on new sheet
-                    Range("G" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Event_CD_DISP Column to EventDisplay
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("J2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("J" & Next_Blank_Row)
 
-                    ' Copies Entry_Type Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("C2:C" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-
-                    ' Pastes Entry_Type on new sheet
-                    Range("L" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
-
-                    ' Copies Event_CD Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("I2:I" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-
-                    ' Pastes Event_CD on new sheet
-                    Range("I" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
-
-                    ' Copies Event_CD_DISP Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("J2:J" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-
-                    ' Pastes Event_CD_DISP on new sheet
-                    Range("J" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
                 End If
 
 
@@ -1062,11 +1025,14 @@ Dim Checker_Health_Maint As Boolean
 
             sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
+            ' Clears all extra formats from the sheet
+            Selection.ClearFormats
+
             Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-            tbl.Name = Sheet_Name
-            tbl.TableStyle = "TableStyleLight9"
-            Columns.AutoFit
-            Range("A1").Select
+              tbl.Name = Sheet_Name
+              tbl.TableStyle = "TableStyleLight9"
+              Columns.AutoFit
+              Range("A1").Select
 
         Next Sheet
 
@@ -1086,7 +1052,7 @@ Dim Checker_Health_Maint As Boolean
         '  SUB - Saves the new workbook
         ''''''''''''''''''''''''''''''''''''''
 
-        Workbooks(Source_Name & ".xlsm").Close SaveChanges:=True
+        Workbooks(Source_Name & ".xlsx").Close SaveChanges:=True
         Windows(Validation_File_Name).Activate    'Switches back to old workbook to begin next loop
 
     Next Source_Name    'Start over with next source from list
@@ -1101,6 +1067,7 @@ End_Program:
 
   ' Clears the filesystem descriptor allowing you to delete the folder
   Dir "C:\"
+  ChDir "C:\"
 
   'Notifies user that the program has completed.
   MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")

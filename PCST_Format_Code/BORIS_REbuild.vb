@@ -22,8 +22,10 @@ Dim CS_72_Header_Array As Variant
 Dim Others_Header_Array As Variant
 Dim Clin_Doc_Col_Num_Array As Variant
 Dim Clin_Doc_Col_Ltr_Array As Variant
-Dim Unmapped_Col_Adr_Array As Variant
+Dim Unmapped_Col_Ltr_Array As Variant
 Dim Unmapped_Col_Num_Array As Variant
+Dim CS_72_Header_Temp_Array As Variant
+Dim Others_Header_Temp_Array As Variant
 Dim StartCell As Range
 Dim rList As Range
 Dim User_Name As String
@@ -60,25 +62,23 @@ Dim Checker_Health_Maint As Boolean
     ' Validation_File_Name = ActiveWorkbook.Name
 
     ' Error Handling
-    ' On Error GoTo ErrHandler
+     On Error GoTo ErrHandler
 
     Val_Wk_Array = Array("Clinical Documentation", "Unmapped Codes", "Health Maintenance Summary")
     Val_Tbl_Name_Array = Array("Clinical_Table", "Unmapped_Table", "Health_Maint_Table")
 
     CS_72_Header_Array = Array("Registry", "Measure", "Concept", "Source", "DocumentType", "Name", "Section", "DTA", "EventCode", "EventDisplay", "ESH", "ControlType", "NomenclatureID", "Nomenclature", "TaskAssay", "Notes", "Comments", "Standard Code", "Standard Coding System")
+    CS_72_Header_Temp_Array = Array("Registry", "Measure", "Concept", "Source", "DocumentType", "Name", "Section", "DTA", "EventCode", "EventDisplay", "ESH", "ControlType", "NomenclatureID", "Nomenclature", "TaskAssay", "Notes", "Comments", "Standard Code", "Standard Coding System")
 
     Others_Header_Array = Array("Registry", "Measure", "Concept", "Source", "DocumentType", "Name", "Section", "DTA", "Code", "Display", "ESH", "ControlType", "NomenclatureID", "Nomenclature", "vlookup", "Team", "Comments", "Standard Code", "Standard Coding System")
+    Others_Header_Temp_Array = Array("Registry", "Measure", "Concept", "Source", "DocumentType", "Name", "Section", "DTA", "Code", "Display", "ESH", "ControlType", "NomenclatureID", "Nomenclature", "vlookup", "Team", "Comments", "Standard Code", "Standard Coding System")
 
     Clin_Doc_Col_Num_Array = Array("Source", "EventCode", "EventDisplay", "NomenclatureID", "Nomenclature")
     Clin_Doc_Col_Ltr_Array = Array("Source", "EventCode", "EventDisplay", "NomenclatureID", "Nomenclature")
 
-    Unmapped_Col_Adr_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
+    Unmapped_Col_Ltr_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
     Unmapped_Col_Num_Array = Array("Source", "Code System", "Raw Code", "Raw Display", "Code Short Name")
 
-    'This disables settings to improve macro performance.
-    ' Application.ScreenUpdating = False
-    ' Application.Calculation = xlCalculationManual
-    ' Application.EnableEvents = False
 
     'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
     Confirm_Scrubbed = MsgBox("*NOTICE* It is highly advised that you review the data on the Unmapped Codes, Clinical Documentation, and the Health Maintenance Summary Sheet before running this program." & vbNewLine & vbNewLine & "You should delete unneeded lines and review concept endings to confirm the data is correct before proceeding. Otherwise errors will multiplied accross all newly created files.", vbOKCancel + vbQuestion, "Empty Sheet")
@@ -197,8 +197,8 @@ Dim Checker_Health_Maint As Boolean
 
         'Converts range to table.
         Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-        tbl.Name = Val_Tbl_Name_Array(i)
-        tbl.TableStyle = "TableStyleLight12"
+          tbl.Name = Val_Tbl_Name_Array(i)
+          tbl.TableStyle = "TableStyleLight12"
 
         'Filters to remove blank lines
         ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
@@ -288,7 +288,6 @@ Dim Checker_Health_Maint As Boolean
     If Sources_Check = vbCancel Then
         MsgBox ("Program is canceling per user action.")
         GoTo End_Program
-        Exit Sub
     End If
 
 
@@ -296,17 +295,12 @@ Dim Checker_Health_Maint As Boolean
     ' PRIMARY - Performs Checks on the Validation Form to Confirm Format is Correct Before Proceeding Any Further
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    ' Checks the Health Maintenance Summary
+    ' Checks the Health Maintenance Summary If format is incorrect, then tell user and end program
     If LCase(Sheets("Health Maintenance Summary").Range("K5").Value) <> "source" Then
 
         MsgBox ("Program has detected a possible error with the Validation Form layout" & vbNewLine & vbNewLine & _
                 "Program expected Column K on the Health Maintenance Summary sheet to be 'Source'. Please resolve the issue and then run again.")
-
-        ' Re-enables previously disabled settings after all code has run.
-        Application.ScreenUpdating = True
-        Application.Calculation = xlCalculationAutomatic
-        Application.EnableEvents = True
-        Exit Sub
+        GoTo End_Program
     End If
 
 
@@ -339,7 +333,9 @@ Dim Checker_Health_Maint As Boolean
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Source_Code_Systems"
         End With
 
-
+        ' SUB - Copies the data from the sheets in the validation form to the new workbook sheets
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        ' Finds the start cell to begin range for copying. Different rules for Health Maint Sheet
         For i = 0 To UBound(Val_Wk_Array)
             CurrentSheet = Val_Wk_Array(i)
             CurrentTable = Val_Tbl_Name_Array(i)
@@ -349,8 +345,7 @@ Dim Checker_Health_Maint As Boolean
 
             ' Finds the location of the Registry Column
             If CurrentSheet <> Val_Wk_Array(2) Then
-                Range("A2:K2").Select
-                Selection.Name = "Header_row"
+                Range("A2:K2").Name = "Header_row"
 
                 For Each cell In Range("Header_row")
                     If cell = "Registry" Then
@@ -361,8 +356,7 @@ Dim Checker_Health_Maint As Boolean
 
             Else
                 ' Changes range for the Health Maintenance Summary Sheet
-                Range("A5:K5").Select
-                Selection.Name = "Header_row"
+                Range("A5:K5").Name = "Header_row"
 
                 For Each cell In Range("Header_row")
                     If cell = "EXPECT_NAME" Then
@@ -373,7 +367,7 @@ Dim Checker_Health_Maint As Boolean
 
             End If
 
-
+            ' Copies the data to the new sheet
             Sheets(CurrentSheet).Select
             ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
                     Criteria1:="<>"
@@ -388,6 +382,11 @@ Dim Checker_Health_Maint As Boolean
             Range("A1").Select
             Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
                     :=False, Transpose:=False
+
+            ' Sets header for code short name column
+            If CurrentSheet = Val_Wk_Array(1) Then
+              Range("K1").Value = "Code Short Name"
+            End If
         Next i
 
         ' Formats the new sheets as tables
@@ -419,25 +418,58 @@ Dim Checker_Health_Maint As Boolean
         Next i
 
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-        ' PRIMARY - Remove Duplicates and Set Code Short Name
+        ' PRIMARY - Finds Location of headers for the sheets
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        ' SUB - Unmapped Codes Special
-        Sheets(Val_Wk_Array(1)).Select
-' TODO - Use loop to dynamically find the columns locations. Will need column number loop
-        ' Unampped codes removes duplicates by Source, Code and Code Display
-        ActiveSheet.Range(Val_Tbl_Name_Array(1) & "[#All]").RemoveDuplicates Columns:=Array(4, 6, 7), Header:=xlYes
 
-        ' Sets header for code short name column
-        Range("K1").Value = "Code Short Name"
+        ' Finds column Header Locations for Unmapped Columns
+        Sheets(Val_Wk_Array(1)).Select
+        Range("A1:Q1").Name = "Header_row"
+
+        For i = 0 to UBound(Unmapped_Col_Ltr_Array)
+        col_count = 0
+          For each header in Range("Header_row")
+            col_count = col_count + 1
+            If LCase(Unmapped_Col_Ltr_Array(i)) = LCase(header) Then
+              Unmapped_Col_Ltr_Array(i) = Mid(header.Address, 2, 1)
+              Unmapped_Col_Num_Array(i) = col_count
+              exit For
+            End If
+          Next header
+        Next i
+
+
+        ' Finds Column Header Locations for Clinical Documentation
+        Sheets(Val_Wk_Array(0)).Select
+        Range("A1:Q1").Name = "Header_row"
+
+        For i = 0 to UBound(Clin_Doc_Col_Num_Array)
+        col_Count = 0
+          For each header in Range("Header_row")
+          col_Count = col_Count + 1
+            If LCase(Clin_Doc_Col_Num_Array(i)) = LCase(header) Then
+              Clin_Doc_Col_Ltr_Array(i) = Mid(header.Address, 2, 1)
+              Clin_Doc_Col_Num_Array(i) = col_Count
+              exit For
+            End If
+          Next header
+        Next i
+
+
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        ' PRIMARY - Unmapped Remove Duplicates and Set Code Short Name
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+        ' Unampped codes removes duplicates by Source, EvCode, and Code Display
+        Sheets(Val_Wk_Array(1)).Range(Val_Tbl_Name_Array(1) & "[#All]").RemoveDuplicates Columns:=Array(Unmapped_Col_Num_Array(0), Unmapped_Col_Num_Array(2), Unmapped_Col_Num_Array(3)), Header:=xlYes
 
         ''
         ' SUB - Code Short Name Creation
         ''''''''''''''''''''''''''''''''
-        Set Table_Obj = ActiveSheet.ListObjects(1)
+        Set Table_Obj = Sheets(Val_Wk_Array(1)).ListObjects(1)
 
         'Checks current table to determine if any cells are visible. If cells are visible then set "Table_ObjIsVisible" = TRUE
-        Set tbl = ActiveSheet.ListObjects(1)
+        Set tbl = Sheets(Val_Wk_Array(1)).ListObjects(1)
 
         If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
             Table_ObjIsVisible = True
@@ -445,32 +477,18 @@ Dim Checker_Health_Maint As Boolean
             Table_ObjIsVisible = tbl.Range.SpecialCells(xlCellTypeVisible).Rows.Count > 1
         End If
 
-        'If cells were visible then "X"
+        'If there are unmapped codes, copy the code id to the code id short name column
         If Table_ObjIsVisible = True Then
-
-        ' Find location of the Code System Column
-        Range("A1:M1").Name = "Header_row"
-
-        For Each cell In Range("Header_row")
-            If LCase(cell) = "code system" Then
-                Code_System_col = Mid(cell.Address, 2, 1)
-                Exit For
-            End If
-        Next cell
-
-        Range(Code_System_col & "2:" &Code_System_col & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-        Selection.Copy
-        Range("K2").Select
-        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                :=False, Transpose:=False
+            Sheets(Val_Wk_Array(1)).select
+            Range(Unmapped_Col_Ltr_Array(1) & "2:" & Unmapped_Col_Ltr_Array(1) & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Range(Unmapped_Col_Ltr_Array(4) & "2")
         End If
 
         ' Clears any autofilters
-        ActiveSheet.AutoFilter.ShowAllData
+        Sheets(Val_Wk_Array(1)).AutoFilter.ShowAllData
 
 
         ' filters by concept -> registry for easy reviewing in final product
-        With ActiveWorkbook.ActiveSheet.ListObjects(1).Sort
+        With ActiveWorkbook.Sheets(Val_Wk_Array(1)).ListObjects(1).Sort
             .SortFields.Add Key:=Range(Val_Tbl_Name_Array(1) & "[Concept]"), SortOn:= _
                     xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
             .SortFields.Add Key:=Range(Val_Tbl_Name_Array(1) & "[Measure]"), SortOn:= _
@@ -484,21 +502,8 @@ Dim Checker_Health_Maint As Boolean
         'PRIMARY - Change Format of Code Short Name
         '''''''''''''''''''''''''''''''''''''''''''''
 
-        ' Finds Location of Unmapped Columns
-        Range("A1:Q1").Name = "Header_row"
-
-        For i = 0 to UBound(Unmapped_Col_Adr_Array)
-
-          For each header in Range("Header_row")
-            If LCase(Unmapped_Col_Adr_Array(i)) = LCase(header) Then
-              Unmapped_Col_Adr_Array(i) = header.Address
-              exit For
-            End If
-          Next header
-        Next i
-
         'Selects Code Short Column and applies name to range
-        Range(Mid(Unmapped_Col_Adr_Array(4), 2, 1)&"2:" & Mid(Unmapped_Col_Adr_Array(4), 2, 1) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "Code_Short"
+        Sheets(Val_Wk_Array(1)).Range(Unmapped_Col_Ltr_Array(4)&"2:" & Unmapped_Col_Ltr_Array(4) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "Code_Short"
 
         'Assigns range to variable
         Set Rng = Range("Code_Short")
@@ -546,8 +551,7 @@ Dim Checker_Health_Maint As Boolean
         Next cell
 
 
-        ''''''''''Checks Code Short length and if it is more than >28 characters then shorten the name.'''''''''
-
+        ' Checks Code Short length and if it is more than >28 characters then shorten the name.
         For Each Code_Short In Range("Code_Short")
             Current_Value = Code_Short.Value
             If (Len(Current_Value) > 28) Then
@@ -555,7 +559,7 @@ Dim Checker_Health_Maint As Boolean
                 Code_Short.Value = Left(Current_Value, 28)
             End If
 
-            'Checks code short name for invalid characters and replaces them with a space
+            ' Checks code short name for invalid characters and replaces them with a space
             If InStr(Current_Value, ":") > 0 Then
                 Code_Short.ClearContents
                 New_Value = Replace(Current_Value, ":", " ")
@@ -565,70 +569,49 @@ Dim Checker_Health_Maint As Boolean
 
 
 
-        ' SUB - Clinical Documentation SpecialCells
+        ' SUB - Clinical Documentation Remove Duplicates
         '''''''''''''''''''''''''''''''''''''''''''''
 
-        ' Removes Duplicates from the Clinical Documentation Sheet
-        Sheets(Val_Wk_Array(0)).Select
-
-        ' Finds location of needed columns for Clinical Documentation
-        Range("A1:Q1").Name = "Header_row"
-
-        For i = 0 to UBound(Clin_Doc_Col_Num_Array)
-        col_Count = 0
-          For each header in Range("Header_row")
-          col_Count = col_Count + 1
-            If LCase(Clin_Doc_Col_Num_Array(i)) = LCase(header) Then
-              Clin_Doc_Col_Num_Array(i) = col_Count
-              exit For
-            End If
-          Next header
-        Next i
-
-
-        'Removes dups by source, evcode, evcode display
-        ActiveSheet.Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(0), _
+        ' Removes dups by source, evcode, evcode display,
+        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(0), _
                 Clin_Doc_Col_Num_Array(1), Clin_Doc_Col_Num_Array(2)), Header:=xlYes
 
-        'Removes duplicates by source, nomenclature, and nomenclature ID
-        ActiveSheet.Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(0), _
+        ' Removes dups by source, nomenclature ID, Nomenclature Display
+        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(0), _
                 Clin_Doc_Col_Num_Array(3), Clin_Doc_Col_Num_Array(4)), Header:=xlYes
-
 
 
         ' SUB - Creates the source code worksheet
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''
         Windows(Source_Name & ".xlsx").Activate
-        ' Selects the unmapped codes sheet and copies data
-        Sheets(Val_Wk_Array(1)).Select
 
-        ' Filters for just the current source
-        Sheets("Unmapped Codes").Select
-        ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=4, _
+        Sheets(Val_Wk_Array(1)).ListObjects("Unmapped_Table").Range.AutoFilter Field:=4, _
                 Criteria1:=Source_Name, Operator:=xlAnd
 
         ' Pastes the values from the Code Short Name onto the Source_Code_Systems Sheet
-        Range(Mid(Unmapped_Col_Adr_Array(4), 2, 1)&"1:" & Mid(Unmapped_Col_Adr_Array(4), 2, 1) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets("Source_Code_Systems").Range("A1")
+        Sheets(Val_Wk_Array(1)).Range(Unmapped_Col_Ltr_Array(4) & "1:" & Unmapped_Col_Ltr_Array(4) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets("Source_Code_Systems").Range("A1")
 
         Sheets("Source_Code_Systems").Select
-        'Formats Source_Code_Systems Sheet
+
+        ' Formats Source_Code_Systems Sheet
         Set sht = Worksheets("Source_Code_Systems")
         Set StartCell = Range("A1")
 
-        'Refresh UsedRange
+        ' Refresh UsedRange
         Worksheets("Source_Code_Systems").UsedRange
 
-        'Find Last Row and Column
+        ' Find Last Row and Column
         LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
         LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-        'Select Range
+        ' Select Range
         sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
         Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-        tbl.Name = "Code_ID_Table"
-        tbl.TableStyle = "TableStyleLight9"
+          tbl.Name = "Code_ID_Table"
+          tbl.TableStyle = "TableStyleLight9"
 
+          ' Removes Duplicates from the Code ID Lists
         Range("Code_ID_Table[[#Headers],[Code Short Name]]").Select
         Application.CutCopyMode = False
         ActiveSheet.Range("Code_ID_Table[#All]").RemoveDuplicates Columns:=1, Header:= _
@@ -641,19 +624,17 @@ Dim Checker_Health_Maint As Boolean
 
 
         'If there are no unmapped codes for this source, then set code source to 72 only.
-        Range("A2").Select
-        If Selection.Value = "" Then
-            Selection.Value = "72"
+        If Range("A2") = "" Then
+            Range("A2").Value = "72"
         End If
+
         ' If A3 is empty and thus only 1 code id, then set the range of Code_ID_List to just cell A2
-        Range("A3").Select
-        If Selection.Value = "" Then
-            Range("A2").Select
-            Selection.Name = "Code_ID_List"
+        If Range("A3") = "" Then
+            Range("A2").Name = "Code_ID_List"
         Else
-            Range("A2").Select
-            Range(Selection, Selection.End(xlDown)).Select
-            Selection.Name = "Code_ID_List"
+        Range("A2").Select
+        Range(Selection, Selection.End(xlDown)).Select
+        Selection.Name = "Code_ID_List"
         End If
 
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -672,112 +653,111 @@ Dim Checker_Health_Maint As Boolean
             'Special instructions for code set 72
             If code = "72" Then
 
-                Sheets(Code_Sheet).Select
 
                 Off_Count = 0
                 For i = 0 To UBound(CS_72_Header_Array)
                     ' Uses cell "A1" as the starting point for the header row.
-                    Range("A1").Offset(0, Off_Count).Value = CS_72_Header_Array(i)    ' places next array value within the next column
+                    Sheets(Code_Sheet).Range("A1").Offset(0, Off_Count).Value = CS_72_Header_Array(i)    ' places next array value within the next column
                     Off_Count = Off_Count + 1    'Increases the offset count on each loop
                 Next i
 
                 ' SUB - Copies Clinical Documentation to 72
                 '''''''''''''''''''''''''''''''''''''
-                Sheets("Clinical Documentation").Select
 
                 'Filters for only the current source
-                ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
+                Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(0), _
                         Criteria1:=Source_Name, Operator:=xlAnd
 
-                Set tbl = ActiveSheet.ListObjects(1)
 
-                'Checks filtered table for visible data
+                'Checks current table to determine if any cells are visible. If cells are visible then set "Table_ObjIsVisible" = TRUE
+                Set tbl = Sheets(Val_Wk_Array(1)).ListObjects(1)
+
+                If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
+                    Table_ObjIsVisible = True
+                Else:
+                    Table_ObjIsVisible = tbl.Range.SpecialCells(xlCellTypeVisible).Rows.Count > 1
+                End If
+
                 If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
                     Table_ObjIsVisible = True
                 Else
                     Table_ObjIsVisible = False
+
                 End If
 
                 'If data is visible, then copy visible data
                 If Table_ObjIsVisible = True Then
 
-                    Sheets("Clinical Documentation").Select
-                    Columns("B:O").Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-                    Range("A1").Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Registry - TaskAssay columns
+                    Sheets(Val_Wk_Array(0)).Select
+                    Range("A1:O1").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("A1")
 
-                    Sheets("Clinical Documentation").Select
-                    Columns("Q:Q").Select
-                    Application.CutCopyMode = False
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-                    Columns("O:O").Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
-
-                    Sheets("Clinical Documentation").Select
-                    Columns("R:R").Select
-                    Application.CutCopyMode = False
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                    ' Copies the Notes Column
+                    Sheets(Val_Wk_Array(0)).Select
                     Range("P1").Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("P1")
+
+                    ' Copies the Team Column
+                    Sheets(Val_Wk_Array(0)).Select
+                    Range("Q1").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("O1")
+
                 End If
 
 
                 '    SUB - Copies unmapped codes to 72 sheet
                 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-                Sheets("Unmapped Codes").Select
+                Sheets(Val_Wk_Array(1)).Select
 
-' TODO - Use Column Number dynamic loopup in the filter instead of hard coding
+
                 ' Applies filters for only this source and code being currently reviewed.
-                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
+                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=Unmapped_Col_Num_Array(0), _
                         Criteria1:=Source_Name, Operator:=xlAnd
-                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=11, _
+                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=Unmapped_Col_Num_Array(4), _
                         Criteria1:=code, Operator:=xlAnd
 
                 Set tbl = ActiveSheet.ListObjects(1)
 
-                ' Checks table for visible data
+                If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
+                    Table_ObjIsVisible = True
+                Else:
+                    Table_ObjIsVisible = tbl.Range.SpecialCells(xlCellTypeVisible).Rows.Count > 1
+                End If
+
                 If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
                     Table_ObjIsVisible = True
                 Else
                     Table_ObjIsVisible = False
-                End If
 
+                End If
                 ' If data is visible then copy data
                 If Table_ObjIsVisible = True Then
 
-' TODO - Use dynamic col location for range select
-                    Range("B2:F2").Select
-                    Range(Selection, Selection.End(xlToLeft)).Select
-                    Range("B2:F2").Select
-                    Range(Selection, Selection.End(xlDown)).Select
-                    Selection.Copy
-
+                    ' Finds the next blank row on the code sheet
                     Sheets(Code_Sheet).Select
-
                     Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
-                    'Selects next blank row
-                    Range("A" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
 
-                    Sheets("Unmapped Codes").Select
+                    ' Copies Registry through Code System ID to new sheet
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("A2:E2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("A" & Next_Blank_Row)
 
-                    Range("G2:I2").Select
-                    Range(Selection, Selection.End(xlDown)).Select
-                    Application.CutCopyMode = False
-                    Selection.Copy
+                    ' Copies Raw Code through Count
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("F2:H2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
 
-                    Sheets(Code_Sheet).Select
-                    Range("I" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies unmapped Code Notes Column
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("I2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("P" & Next_Blank_Row)
+
+                    ' Copies unmapped Team Column
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("J2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("O" & Next_Blank_Row)
+
                 End If
 
 
@@ -800,74 +780,41 @@ Dim Checker_Health_Maint As Boolean
 
                 ' If data is visible then copy visible data
                 If Table_ObjIsVisible = True Then
-' TODO - Use Dynamic col location for range select
-                    'Copies Sources Column
-                    Range("K2:K" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
 
-                    'Uses The CodeSet 72 column "Sources" to determine next blank row
-                    Next_Blank_Row = Range("D" & Rows.Count).End(xlUp).Row + 1
+                  ' Sets next blank row
+                  Sheets(Code_Sheet).Select
+                  Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
-                    ' Pastes Sources on new sheet
-                    Range("D" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Sources Column to Source
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("K2:K").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("D" & Next_Blank_Row)
 
-                    ' Copies Expect_Meaning Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("B2:B" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                    ' Copies Expect_Meaning Column to Name
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("B2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("F" & Next_Blank_Row)
 
-                    'Pastes Expect_Meaning on new sheet
-                    Range("F" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Satisfier_Meaning Column to Section
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("G2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("G" & Next_Blank_Row)
 
-                    ' Copies Satisfier_Meaning Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("G2:G" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                    ' Copies Entry_Type Column to ControlType
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("C2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("L" & Next_Blank_Row)
 
-                    ' Pastes Satisfier_Meaning on new sheet
-                    Range("G" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Event_CD Column to EventCode
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("I2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
 
-                    ' Copies Entry_Type Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("C2:C" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
+                    ' Copies Event_CD_DISP Column to EventDisplay
+                    Sheets(Val_Wk_Array(2)).Select
+                    Range("J2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("J" & Next_Blank_Row)
 
-                    ' Pastes Entry_Type on new sheet
-                    Range("L" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
-
-                    ' Copies Event_CD Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("I2:I" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-
-                    ' Pastes Event_CD on new sheet
-                    Range("I" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
-
-                    ' Copies Event_CD_DISP Column
-                    Sheets("Health Maintenance Summary").Select
-                    Range("J2:J" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
-                    Selection.Copy
-                    Sheets(Code_Sheet).Select
-
-                    ' Pastes Event_CD_DISP on new sheet
-                    Range("J" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
                 End If
 
 
@@ -883,54 +830,55 @@ Dim Checker_Health_Maint As Boolean
                     Off_Count = Off_Count + 1    'Increases the offset count on each loop
                 Next i
 
-' TODO - Add loop to find the number of the column for unmapped codes to be used here
+
                 ' Filters unmapped codes table for current source and code within loop.
-                Sheets("Unmapped Codes").Select
-                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=5, _
+                Sheets(Val_Wk_Array(1)).Select
+                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=Unmapped_Col_Num_Array(0), _
                         Criteria1:=Source_Name, Operator:=xlAnd
-                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=12, _
+                ActiveSheet.ListObjects("Unmapped_Table").Range.AutoFilter Field:=Unmapped_Col_Num_Array(4), _
                         Criteria1:=code, Operator:=xlAnd
 
                 ' Sets variable to the table on the active sheet.
                 Set tbl = ActiveSheet.ListObjects(1)
 
-                ' Checks filtered table for visible data.
+                If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
+                    Table_ObjIsVisible = True
+                Else:
+                    Table_ObjIsVisible = tbl.Range.SpecialCells(xlCellTypeVisible).Rows.Count > 1
+                End If
+
                 If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
                     Table_ObjIsVisible = True
                 Else
                     Table_ObjIsVisible = False
-                End If
 
+                End If
                 ' If data is visible then copy data.
                 If Table_ObjIsVisible = True Then
 
-                    Sheets("Unmapped Codes").Select
-                    Range("B2:F2").Select
-                    Range(Selection, Selection.End(xlDown)).Select
-                    Selection.Copy
-
-                    Sheets(Code_Sheet).Select
-
                     ' Finds next blank row
+                    Sheets(Code_Sheet).Select
                     Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
-                    ' Pastes data on next blank row
-                    Range("A" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
+                    ' Copies Registry through Code System ID to new sheet
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("A2:E2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("A" & Next_Blank_Row)
 
-                    Sheets("Unmapped Codes").Select
+                    ' Copies Raw Code through Count
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("F2:H2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
 
-                    Range("G2:I2").Select
-                    Range(Selection, Selection.End(xlDown)).Select
-                    Application.CutCopyMode = False
-                    Selection.Copy
+                    ' Copies unmapped Code Notes Column
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("I2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("P" & Next_Blank_Row)
 
-                    Sheets(Code_Sheet).Select
-                    Range("I" & Next_Blank_Row).Select
-                    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                            :=False, Transpose:=False
-
+                    ' Copies unmapped Team Column
+                    Sheets(Val_Wk_Array(1)).Select
+                    Range("J2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("O" & Next_Blank_Row)
                 End If
 
             End If
@@ -942,12 +890,14 @@ Dim Checker_Health_Maint As Boolean
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-        Sheets("Clinical Documentation").Select
+        Sheets(Val_Wk_Array(0)).Select
 
         'Filters table for current source.
-        ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=5, _
+        Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(0), _
                 Criteria1:=Source_Name, Operator:=xlAnd
-        ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=15, _
+
+        ' Filters to remove lines without nomenclature
+        Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=13, _
                 Criteria1:="<>"
 
         ' Eventually update this to filter out all rows which ARE MAPPED CORRECTLY. To only leave
@@ -955,7 +905,7 @@ Dim Checker_Health_Maint As Boolean
         ' ActiveSheet.ListObjects("Clinical_Table").Range.AutoFilter Field:=18, _
           '  Criteria1:="<>"
 
-        Set tbl = ActiveSheet.ListObjects(1)
+        Set tbl = Sheets(Val_Wk_Array(0)).ListObjects(1)
 
         ' Checks filtered table for visible data.
         If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
@@ -966,7 +916,7 @@ Dim Checker_Health_Maint As Boolean
 
         ' If data is visible then copy data.
         If Table_ObjIsVisible = True Then
-            'Check to see if Nomenclature - Patient Care sheet already exists
+            ' Check to see if Nomenclature - Patient Care sheet already exists
             For Each Sheet In Worksheets
                 If Sheet.Name = "Nomenclature - Patient Care" Then
                     exists = True
@@ -989,28 +939,36 @@ Dim Checker_Health_Maint As Boolean
             End If
 
             ' Populates the Nomenclature - Patient Care Sheet with data from Clinical Documentation
-            Sheets("Clinical Documentation").Select
-            Range("B2:Q2").Select
-            Range(Selection, Selection.End(xlDown)).Select
-            Selection.Copy
-
+            ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+            ' Finds next Available Row
             Sheets("Nomenclature - Patient Care").Select
-' TODO - Use Dynamic col lookup
-            ' Selects next blank row
             Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
-            Range("A" & Next_Blank_Row).Select
-            Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
-                    :=False, Transpose:=False
+
+            Sheets(Val_Wk_Array(0)).Select
+            Range("A2:O2").Select
+            Range(Selection, Selection.End(xlDown)).Copy Sheets("Nomenclature - Patient Care").Range("A" & Next_Blank_Row)
+
+            ' Copies the Notes / Comments Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range("P2").Select
+            Range(Selection, Selection.End(xlDown)).Copy Sheets("Nomenclature - Patient Care").Range("Q" & Next_Blank_Row)
+
+            ' Copies the Team Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range("Q2").Select
+            Range(Selection, Selection.End(xlDown)).Copy Sheets("Nomenclature - Patient Care").Range("P" & Next_Blank_Row)
+
 
             Set StartCell = Range("A1")
             Set sht = Worksheets("Nomenclature - Patient Care")
 
             ' Finds last row with text
             LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
-' TODO - Use dynamic col loopup
+
+
             ' Removes duplicates from sheet by source, nom ID and Nom description
-            ActiveSheet.Range("$A$1:$O$" & LastRow).RemoveDuplicates Columns:=Array(4, 14, 15), _
-                    Header:=xlYes
+            ' Sheets("Nomenclature - Patient Care").Range("$A$1:$O$" & LastRow).RemoveDuplicates Columns:=Array(4, 13, 14), _
+                    ' Header:=xlYes
 
         End If
 
@@ -1067,11 +1025,14 @@ Dim Checker_Health_Maint As Boolean
 
             sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
+            ' Clears all extra formats from the sheet
+            Selection.ClearFormats
+
             Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-            tbl.Name = Sheet_Name
-            tbl.TableStyle = "TableStyleLight9"
-            Columns.AutoFit
-            Range("A1").Select
+              tbl.Name = Sheet_Name
+              tbl.TableStyle = "TableStyleLight9"
+              Columns.AutoFit
+              Range("A1").Select
 
         Next Sheet
 
@@ -1091,7 +1052,7 @@ Dim Checker_Health_Maint As Boolean
         '  SUB - Saves the new workbook
         ''''''''''''''''''''''''''''''''''''''
 
-        Workbooks(Source_Name & ".xlsm").Close SaveChanges:=True
+        Workbooks(Source_Name & ".xlsx").Close SaveChanges:=True
         Windows(Validation_File_Name).Activate    'Switches back to old workbook to begin next loop
 
     Next Source_Name    'Start over with next source from list
@@ -1106,6 +1067,7 @@ End_Program:
 
   ' Clears the filesystem descriptor allowing you to delete the folder
   Dir "C:\"
+  ChDir "C:\"
 
   'Notifies user that the program has completed.
   MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")
