@@ -694,15 +694,18 @@ Dim Checker_Health_Maint As Boolean
 
                     ' Copies Registry - TaskAssay columns
                     Sheets(Val_Wk_Array(0)).Select
-                    Columns("A:O").Copy Sheets(Code_Sheet).Range("A1")
+                    Range("A1:O1").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("A1")
 
                     ' Copies the Notes Column
                     Sheets(Val_Wk_Array(0)).Select
-                    Columns("P:P").Copy Sheets(Code_Sheet).Range("P1")
+                    Range("P1").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("P1")
 
                     ' Copies the Team Column
                     Sheets(Val_Wk_Array(0)).Select
-                    Columns("Q:Q").Copy Sheets(Code_Sheet).Range("O1")
+                    Range("Q1").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("O1")
 
                 End If
 
@@ -741,19 +744,23 @@ Dim Checker_Health_Maint As Boolean
 
                     ' Copies Registry through Code System ID to new sheet
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("A2:E2" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("A" & Next_Blank_Row)
+                    Range("A2:E2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("A" & Next_Blank_Row)
 
                     ' Copies Raw Code through Count
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("F2:H" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
+                    Range("F2:H2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
 
                     ' Copies unmapped Code Notes Column
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("I2:I" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("P" & Next_Blank_Row)
+                    Range("I2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("P" & Next_Blank_Row)
 
                     ' Copies unmapped Team Column
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("J2:J" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("O" & Next_Blank_Row)
+                    Range("J2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("O" & Next_Blank_Row)
 
                 End If
 
@@ -777,7 +784,7 @@ Dim Checker_Health_Maint As Boolean
 
                 ' If data is visible then copy visible data
                 If Table_ObjIsVisible = True Then
-' TODO - Use Dynamic col location for range select
+
                     'Copies Sources Column
                     Range("K2:K" & Cells.SpecialCells(xlCellTypeLastCell).Row).Select
                     Selection.Copy
@@ -892,19 +899,23 @@ Dim Checker_Health_Maint As Boolean
 
                     ' Copies Registry through Code System ID to new sheet
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("A2:E2" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("A" & Next_Blank_Row)
+                    Range("A2:E2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("A" & Next_Blank_Row)
 
                     ' Copies Raw Code through Count
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("F2:H" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
+                    Range("F2:H2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("I" & Next_Blank_Row)
 
                     ' Copies unmapped Code Notes Column
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("I2:I" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("P" & Next_Blank_Row)
+                    Range("I2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("P" & Next_Blank_Row)
 
                     ' Copies unmapped Team Column
                     Sheets(Val_Wk_Array(1)).Select
-                    Range("J2:J" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets(Code_Sheet).Range("O" & Next_Blank_Row)
+                    Range("J2").Select
+                    Range(Selection, Selection.End(xlDown)).Copy Sheets(Code_Sheet).Range("O" & Next_Blank_Row)
                 End If
 
             End If
@@ -970,18 +981,19 @@ Dim Checker_Health_Maint As Boolean
             Sheets("Nomenclature - Patient Care").Select
             Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
-            ' Copies Registry - TaskAssay columns
             Sheets(Val_Wk_Array(0)).Select
-            Range("A1:E" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets("Nomenclature - Patient Care").Range("A1" & Next_Blank_Row)
+            Range("A2:O2").Select
+            Range(Selection, Selection.End(xlDown)).Copy Sheets("Nomenclature - Patient Care").Range("A" & Next_Blank_Row)
 
-            ' Copies the Notes Column
+            ' Copies the Notes / Comments Column
             Sheets(Val_Wk_Array(0)).Select
-            Range("P1:P" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets("Nomenclature - Patient Care").Range("Q1" & Next_Blank_Row)
+            Range("P2").Select
+            Range(Selection, Selection.End(xlDown)).Copy Sheets("Nomenclature - Patient Care").Range("Q" & Next_Blank_Row)
 
             ' Copies the Team Column
             Sheets(Val_Wk_Array(0)).Select
-            Columns("Q:Q").Copy Sheets(Code_Sheet).Range("O1")
-            Range("Q1:Q" & Cells.SpecialCells(xlCellTypeLastCell).Row).Copy Sheets("Nomenclature - Patient Care").Range("P1" & Next_Blank_Row)
+            Range("Q2").Select
+            Range(Selection, Selection.End(xlDown)).Copy Sheets("Nomenclature - Patient Care").Range("P" & Next_Blank_Row)
 
 
             Set StartCell = Range("A1")
@@ -992,8 +1004,8 @@ Dim Checker_Health_Maint As Boolean
 
 
             ' Removes duplicates from sheet by source, nom ID and Nom description
-            ActiveSheet.Range("$A$1:$O$" & LastRow).RemoveDuplicates Columns:=Array(4, 13, 14), _
-                    Header:=xlYes
+            ' Sheets("Nomenclature - Patient Care").Range("$A$1:$O$" & LastRow).RemoveDuplicates Columns:=Array(4, 13, 14), _
+                    ' Header:=xlYes
 
         End If
 
