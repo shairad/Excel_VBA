@@ -769,6 +769,7 @@ Dim LR As Long
                 Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(3), _
                         Criteria1:=Source_Name, Operator:=xlAnd
 
+' TODO - add filter to only add lines where the nomenclature has not already been mapped
                 ' Filters the notes column for nomenclatures which have not been mapped
                 ' Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(15), _
                                 ' Criteria1:=Source_Name, Operator:=xlAnd
