@@ -17,13 +17,8 @@ Dim tbl As ListObject
 Dim Validation_File_Name As Variant
 Dim cValue As Variant
 Dim Val_Wk_Array As Variant
-
-
 Dim Val_Tbl_Name_Array As Variant
 Dim CS_72_Header_Num_Array As Variant
-
-
-
 Dim CS_72_Header_Ltr_Array As Variant
 Dim Others_Header_Array As Variant
 Dim Clin_Doc_Col_Num_Array As Variant
