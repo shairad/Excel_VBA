@@ -468,7 +468,6 @@ Err1:
 
             Next i
 
-
             ' Finds column Header Locations for Unmapped Columns
             Sheets(Val_Wk_Array(1)).Select
             Range("A1").Select
