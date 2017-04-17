@@ -669,7 +669,6 @@ Err1:
         Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
                         Clin_Doc_Col_Num_Array(8), Clin_Doc_Col_Num_Array(9)), Header:=xlYes
 
-
         ' Copies values from the Clin Nom to the Clinical Doc sheet
         Sheets(Val_Wk_Array(0)).Select
         Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
@@ -690,7 +689,7 @@ Err1:
         ' Deletes the extra title row
         Sheets(Val_Wk_Array(0)).Rows(Next_Blank_Row & ":" & Next_Blank_Row).Delete Shift:=xlUp
 
-        ' Removes duplicates AGAIN to account for the 1 duplicate lines
+        ' Removes duplicates AGAIN to account for the 1 duplicate line
         ' source, nomenclature ID, Nomenclature Display
         Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
                 Clin_Doc_Col_Num_Array(12), Clin_Doc_Col_Num_Array(13)), Header:=xlYes
@@ -707,6 +706,12 @@ Err1:
             .Apply
         End With
 
+        ' SUB - Filters to exclude lines were the nomenclature is mapped
+        Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(15), _
+                 Criteria1:= _
+                 "<>*This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure.*" _
+                 , Operator:=xlAnd, Criteria2:= _
+                 "<>*This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure.*"
 
         ' SUB - Creates the source code worksheet
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -741,11 +746,11 @@ Err1:
         ActiveSheet.Range("Code_ID_Table[#All]").RemoveDuplicates Columns:=1, Header:= _
                 xlYes
 
+
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         ' PRIMARY - Checks to determine how many unique code ID's there are for this source.
         ' If there is only 1 source "72" then set range to one cell, otherwise select all cells and set the range.
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
 
         'If there are no unmapped codes for this source, then set code source to 72 only.
         If Range("A2") = "" Then
@@ -784,7 +789,6 @@ Err1:
                     Off_Count = Off_Count + 1
                 Next i
 
-
                 ' Records the Addresses of the CS 72 headers
                 Sheets(Code_Sheet).Select
                 Range("A1").Select
@@ -808,11 +812,6 @@ Err1:
                 ' Filters The Source column for current source
                 Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(3), _
                         Criteria1:=Source_Name, Operator:=xlAnd
-
-                ' TODO - add filter to only add lines where the nomenclature has not already been mapped
-                ' Filters the notes column for nomenclatures which have not been mapped
-                ' Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(15), _
-                  ' Criteria1:=Source_Name, Operator:=xlAnd
 
 
                 'Checks current table to determine if any cells are visible to copy
