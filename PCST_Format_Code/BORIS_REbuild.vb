@@ -281,7 +281,6 @@ Err1:
           Next_Blank_Row = Sheets("Sources List").Range("A" & Rows.Count).End(xlUp).Row + 1
     Next i
 
-
     Sheets("Sources List").Select
     Range("A1").Select
     Range(Selection, Selection.End(xlDown)).Select
@@ -434,7 +433,6 @@ Err1:
         ' PRIMARY - Finds Location of headers for the Main Sheets
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-
         ' All worksheets are identical no need to check column locations over and over again....
         If First_Time = True Then
             'Re-enables previously disabled settings after all code has run.
@@ -533,7 +531,7 @@ Err1:
         ' Re-enables previously disabled settings after all code has run.
         Application.ScreenUpdating = False
         Application.EnableEvents = False
-
+        ' Sets value to prevent repeat of column header finders
         First_Time = False
 
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -566,7 +564,6 @@ Err1:
         ' Clears any autofilters
         Sheets(Val_Wk_Array(1)).AutoFilter.ShowAllData
 
-
         ' filters by concept -> registry for easy reviewing in final product
         With ActiveWorkbook.Sheets(Val_Wk_Array(1)).ListObjects(1).Sort
             .SortFields.Add Key:=Range(Val_Tbl_Name_Array(1) & "[Concept]"), SortOn:= _
@@ -579,7 +576,7 @@ Err1:
         End With
 
         '''''''''''''''''''''''''''''''''''''''''''''
-        ' PRIMARY - Change Format of Code Short Name
+        ' PRIMARY - Change Format of Unmapped Code Sheet Code Short Name
         '''''''''''''''''''''''''''''''''''''''''''''
 
         ' Selects Code Short Name Column and names the range for loop
@@ -648,7 +645,18 @@ Err1:
         Next Code_Short
 
 
-        ' SUB - Clinical Documentation Remove Duplicates
+        ' SUB - Remove Duplicates Clinical Documentation, Filter For duplicates, Then Combine
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+        ' Copies the Clinical Documentation Sheet
+        With ThisWorkbook
+          Sheets(Val_Wk_Array(0)).Copy After:=Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Clin Doc Nom"
+        End With
+
+        ' Removes Duplicates from the Clin Doc Nom Sheet
+
+
+        ' REmoves duplicates by Event Code
         '''''''''''''''''''''''''''''''''''''''''''''
 
         ' Removes dups by source, evcode, evcode display,
