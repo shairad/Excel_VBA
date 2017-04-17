@@ -278,7 +278,7 @@ Err1:
             Range(ActiveSheet.Range("K5"), ActiveSheet.Range("K5").End(xlDown)).Copy Sheets("Sources List").Range("A" & Next_Blank_Row)
             Sheets("Sources List").Rows(Next_Blank_Row & ":" & Next_Blank_Row).Delete Shift:=xlUp
         End If
-        Next_Blank_Row = Sheets("Sources List").Range("A" & Rows.Count).End(xlUp).Row + 1
+          Next_Blank_Row = Sheets("Sources List").Range("A" & Rows.Count).End(xlUp).Row + 1
     Next i
 
 
@@ -316,7 +316,6 @@ Err1:
     If Sources_Check = vbCancel Then
         GoTo User_Exit
     End If
-
 
 
 
@@ -488,7 +487,7 @@ Err1:
                     End If
                 Next Header
                 If Header_Check = False Then
-                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Unmapped_Col_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Unmapped_Col_Name_Array(i) & " on the " & Val_Wk_Array(1) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
                     'If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
@@ -517,7 +516,7 @@ Err1:
                     End If
                 Next Header
                 If Header_Check = False Then
-                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Health_Maint_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Health_Maint_Name_Array(i) & " on the " & Val_Wk_Array(2) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
                     ' If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
