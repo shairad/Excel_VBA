@@ -489,7 +489,6 @@ Err1:
 
                     'If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
-                        MsgBox ("Program is canceling per user action.")
                         GoTo User_Exit
                     Else
                         Unmapped_Col_Ltr_Array(i) = Header_User_Response
@@ -1232,6 +1231,7 @@ User_Exit:
     If ActiveWorkbook.Name = (Source_Name & ".xlsx") Then
         Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
     End If
+
     MsgBox ("Program quitting per user action.")
 
     Exit Sub
