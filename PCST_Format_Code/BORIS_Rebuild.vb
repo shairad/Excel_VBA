@@ -71,7 +71,7 @@ Dim LR As Long
     ' DEBUG
 
     ' Error Handling
-    ' On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
     ' Arrays used for sheet creation.
 
@@ -110,7 +110,7 @@ Dim LR As Long
 
     ' Names variable current file name
     Validation_File_Name = ActiveWorkbook.Name
-Retry_UserID:
+    Retry_UserID:
 
     ' Checks to confirm the user entered a correct user ID. This is needed for file save path.
     Name_Input_Checker = 0
@@ -149,7 +149,7 @@ Retry_UserID:
     Save_Path = "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files"
 
 
-    ' On Error GoTo Err1:
+    On Error GoTo Err1:
     ' If the folder already exists then do nothing. Else make it.
     If Len(Dir(Save_Path, vbDirectory)) = 0 Then
         MkDir Save_Path        'Creates the folder
@@ -164,7 +164,7 @@ Retry_UserID:
 
     ' Error handling for wrong user ID entered. If computer fails to find path, it is because username was wrong. Send user back to fix.
     If Err1 <> 0 Then
-Err1:
+    Err1:
         MsgBox ("I think you entered your user ID wrong... Computer told me so. Sending you back to try again.")
         Resume Retry_UserID:
     End If
@@ -172,6 +172,9 @@ Err1:
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     ' PRIMARY - Formats worksheets for copying to new workbook
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    ' Switches Error handling back to normal
+    On Error GoTo ErrHandler
 
     For i = 0 To UBound(Val_Wk_Array)
 
@@ -1279,7 +1282,6 @@ User_Exit:
 
 
 ErrHandler:
-
     'Re-enables previously disabled settings after all code has run.
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
@@ -1289,6 +1291,6 @@ ErrHandler:
     Dir "C:\"
     ChDir "C:\"
     Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
-    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(")
+    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & Err Object & vbNewLine & Err.Number & vbNewLine & Err.Description)
 
 End Sub
