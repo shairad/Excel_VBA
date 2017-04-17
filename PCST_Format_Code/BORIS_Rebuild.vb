@@ -1291,6 +1291,6 @@ ErrHandler:
     Dir "C:\"
     ChDir "C:\"
     Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
-    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & Err Object & vbNewLine & Err.Number & vbNewLine & Err.Description)
+    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & vbNewLine & Err.Number & vbNewLine & Err.Description)
 
 End Sub
