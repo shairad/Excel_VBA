@@ -71,7 +71,7 @@ Dim LR As Long
     ' DEBUG
 
     ' Error Handling
-      On Error GoTo ErrHandler
+    ' On Error GoTo ErrHandler
 
     ' Arrays used for sheet creation.
 
@@ -149,7 +149,7 @@ Retry_UserID:
     Save_Path = "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files"
 
 
-    On Error GoTo Err1:
+    ' On Error GoTo Err1:
     ' If the folder already exists then do nothing. Else make it.
     If Len(Dir(Save_Path, vbDirectory)) = 0 Then
         MkDir Save_Path        'Creates the folder
@@ -455,7 +455,7 @@ Err1:
                     End If
                 Next Header
                 If Header_Check = False Then
-                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Clin_Doc_Col_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine &  "'" & Clin_Doc_Col_Name_Array(i) & "'" & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
                     'If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
@@ -484,7 +484,7 @@ Err1:
                     End If
                 Next Header
                 If Header_Check = False Then
-                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Unmapped_Col_Name_Array(i) & " on the " & Val_Wk_Array(1) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & "'" & Unmapped_Col_Name_Array(i) & "'" & " on the " & Val_Wk_Array(1) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
                     'If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
@@ -512,7 +512,7 @@ Err1:
                     End If
                 Next Header
                 If Header_Check = False Then
-                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Health_Maint_Name_Array(i) & " on the " & Val_Wk_Array(2) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & "'" & Health_Maint_Name_Array(i) & "'" & " on the " & Val_Wk_Array(2) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
                     ' If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
@@ -643,27 +643,69 @@ Err1:
         Next Code_Short
 
 
-        ' SUB - Remove Duplicates Clinical Documentation, Filter For duplicates, Then Combine
+        ' PRIMARY - Remove Duplicates Clinical Documentation, Filter For duplicates, Then Combines the sheets into one
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        ' Copies the Clinical Documentation Sheet
-        With ThisWorkbook
-          Sheets(Val_Wk_Array(0)).Copy After:=Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Clin Doc Nom"
-        End With
+        ' Duplicates the Clinical Documentation Sheet to Clin Doc Nom sheet for different duplicate filtering
+        Sheets(Val_Wk_Array(0)).Copy After:=Sheets(Sheets.Count)
+        Set test = ActiveSheet
+        test.Name = "Clin Doc Nom"
 
-        ' Removes Duplicates from the Clin Doc Nom Sheet
+        ' Names the new pasted table
+        ActiveSheet.ListObjects(1).Name = "Clin_Nom"
 
-
-        ' REmoves duplicates by Event Code
-        '''''''''''''''''''''''''''''''''''''''''''''
-
-        ' Removes dups by source, evcode, evcode display,
-        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
+        ' SUB - Removes duplicates on the Clin Doc Nom Sheet
+        ' Removes Duplicates from the Clin Doc Nom Sheet by source, evcode, evcode display
+        Sheets("Clin Doc Nom").Range("Clin_Nom[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
                 Clin_Doc_Col_Num_Array(8), Clin_Doc_Col_Num_Array(9)), Header:=xlYes
 
-        ' Removes dups by Concept, source, nomenclature ID, Nomenclature Display
-        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(2), Clin_Doc_Col_Num_Array(3), _
+
+        ' SUB - Removes duplicates on the clinical Documentation sheet
+        ' Removes dups on the MAIN Clinical Documentation sheet by source, nomenclature ID, Nomenclature Display
+        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
                 Clin_Doc_Col_Num_Array(12), Clin_Doc_Col_Num_Array(13)), Header:=xlYes
+
+        ' Removes Duplicates from the Clin Doc Nom Sheet by source, evcode, evcode display
+        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
+                        Clin_Doc_Col_Num_Array(8), Clin_Doc_Col_Num_Array(9)), Header:=xlYes
+
+
+        ' Copies values from the Clin Nom to the Clinical Doc sheet
+        Sheets(Val_Wk_Array(0)).Select
+        Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
+
+        Sheets("Clin Doc Nom").Select
+        ' Filters to remove lines which have nomenclature ID value
+        ActiveSheet.ListObjects("Clin_Nom").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(12), Criteria1:= _
+          "=", Operator:=xlAnd
+
+        ' Copies Registry Column
+        Range("A1").Select
+        Range(Selection, Selection.End(xlToRight)).Select
+        Range(Selection, Selection.End(xlDown)).Select
+
+        ' Copies and pastes the values to the clinical documentation sheet
+        Selection.Copy Sheets(Val_Wk_Array(0)).Range("A" & Next_Blank_Row)
+
+        ' Deletes the extra title row
+        Sheets(Val_Wk_Array(0)).Rows(Next_Blank_Row & ":" & Next_Blank_Row).Delete Shift:=xlUp
+
+        ' Removes duplicates AGAIN to account for the 1 duplicate lines
+        ' source, nomenclature ID, Nomenclature Display
+        Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
+                Clin_Doc_Col_Num_Array(12), Clin_Doc_Col_Num_Array(13)), Header:=xlYes
+
+
+        ' filters by concept -> registry for easy reviewing in final product
+        With ActiveWorkbook.Sheets(Val_Wk_Array(0)).ListObjects(1).Sort
+            .SortFields.Add Key:=Range(Val_Tbl_Name_Array(0) & "[Concept]"), SortOn:= _
+                    xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+            .SortFields.Add Key:=Range(Val_Tbl_Name_Array(0) & "[Measure]"), SortOn:= _
+                    xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+            .SortFields.Add Key:=Range(Val_Tbl_Name_Array(0) & "[Registry]"), SortOn:= _
+                    xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+            .Apply
+        End With
 
 
         ' SUB - Creates the source code worksheet
@@ -1123,6 +1165,7 @@ Err1:
                     Or Sheet.Name = "Clinical Documentation" _
                     Or Sheet.Name = "Source_Code_Systems" _
                     Or Sheet.Name = "Sheet1" _
+                    Or Sheet.Name = "Clin Doc Nom" _
                     Then
                 Sheet.Delete
             End If
