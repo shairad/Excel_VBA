@@ -539,8 +539,8 @@ Dim LR As Long
         ' PRIMARY - Unmapped Remove Duplicates and Set Code Short Name
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        ' Unampped codes removes duplicates by Source, EvCode, and Code Display
-        Sheets(Val_Wk_Array(1)).Range(Val_Tbl_Name_Array(1) & "[#All]").RemoveDuplicates Columns:=Array(Unmapped_Col_Num_Array(3), Unmapped_Col_Num_Array(5), Unmapped_Col_Num_Array(6)), Header:=xlYes
+        ' Unampped codes removes duplicates by EvCode
+        Sheets(Val_Wk_Array(1)).Range(Val_Tbl_Name_Array(1) & "[#All]").RemoveDuplicates Columns:=Array(Unmapped_Col_Num_Array(5)), Header:=xlYes
 
         '
         ' SUB - Code Short Name Creation
