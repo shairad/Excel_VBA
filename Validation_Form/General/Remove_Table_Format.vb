@@ -18,6 +18,13 @@ Private Sub Remove_Table_Format()
                 .Unlist                           ' convert the table back to a range
             End With
 
+            ' Changes header row font color to white
+            Rows("2:2").Select
+            With Selection.Font
+                .ThemeColor = xlThemeColorDark1
+                .TintAndShade = 0
+            End With
+
         End If
 
         If Not ActiveSheet.AutoFilterMode Then  'Adds the filter buttons to the sheet

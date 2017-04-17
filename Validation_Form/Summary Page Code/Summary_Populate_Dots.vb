@@ -22,7 +22,7 @@ Private Sub Summary_Pop_Dots()
     Dim EndSum As Variant
 
 
-    'This disables settings to improve macro performance.
+    ' This disables settings to improve macro performance.
     Application.ScreenUpdating = False
     Application.Calculation = xlCalculationManual
     Application.EnableEvents = False
@@ -41,7 +41,7 @@ Private Sub Summary_Pop_Dots()
         .MergeCells = False
     End With
 
-    'Refreshes pivot table data
+    ' Refreshes pivot table data
     WkNames = Array("Potential_Summary_Pivot", "Clinical_Summary_Pivot", "Unmapped_Summary_Pivot")
     PivotNames = Array("Potential_Pivot", "Clinical_Pivot", "Unmapped_Pivot")
     CombinedCopyColumns = Array("E2", "F2", "G2")
@@ -51,21 +51,20 @@ Private Sub Summary_Pop_Dots()
     SummaryHeaderChecker = Array(False, False, False)
 
     For i = 0 To UBound(WkNames)
-
         CurrentWk = WkNames(i)
         Sheets(CurrentWk).Select
         ActiveSheet.PivotTables(PivotNames(i)).PivotCache.Refresh
-
     Next i
 
-
-    ''''''finds and stores summary header columns''''''''
+    '
+    ' PRIMARY - finds and stores summary header columns
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''
     Sheets("Summary View").Select
     Range("B1:J1").Select
     Selection.Name = "Header_Row"
 
 
-    'finds column letter for each of the colums we care about
+    ' finds column letter for each of the colums we care about
     For Each cell In Range("Header_Row")
 
         If cell = "Potential Mapping Issues" Then
@@ -87,16 +86,15 @@ Private Sub Summary_Pop_Dots()
 
     Next cell
 
+    ' Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
     For i = 0 To UBound(SummaryHeaderChecker)
 
         If SummaryHeaderChecker(i) = False Then
-            'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
             Header_Missing = MsgBox("It looks like a column is missing or has a different header name." & vbNewLine & vbNewLine & "Unable to find header " & HeaderNames(i) & vbNewLine & vbNewLine & "If the header column exists or should exist please click Cancel and update the column header accordingly then rerun. If the column is not needed and thus was deleted or hidden on purpose please click Ok to continue running the program", vbOKCancel + vbQuestion, "Empty Sheet")
         End If
 
-        'If user hits cancel then close program.
+        ' If user hits cancel then close program.
         If Header_Missing = vbCancel Then
-
             Application.ScreenUpdating = True
             Application.Calculation = xlCalculationAutomatic
             Application.EnableEvents = True
@@ -105,14 +103,12 @@ Private Sub Summary_Pop_Dots()
         End If
     Next i
 
-
-
     For i = 0 To UBound(CombinedCopyColumns)
         CurrentWk = WkNames(i)
         CurrentCopyCol = CombinedCopyColumns(i)
         CurrentSumCol = SummaryColumns(i)
 
-        'Confirms the column exists. If the column does not exist then skip it.
+        ' Confirms the column exists. If the column does not exist then skip it.
         If CurrentSumCol <> False Then
 
             Sheets("Combined Registry Measures").Select
@@ -129,15 +125,16 @@ Private Sub Summary_Pop_Dots()
 
     Next i
 
-
     Range("B2:H2").Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.ClearFormats
 
-    'Autofit for all cells on screen.
+    ' Autofit for all cells on screen.
     Cells.Select
     Cells.EntireColumn.AutoFit
 
+    ' SUB - If column exists then copy the data to the coresponding column on the summary sheet
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     For i = 0 To UBound(SummaryColumns)
 
         If SummaryColumns(i) <> False Then
@@ -181,14 +178,14 @@ Private Sub Summary_Pop_Dots()
     Next i
 
 
-    'Adds the hyperlink address to the street lights
+    ' Adds the hyperlink address to the street lights
     For i = 0 To UBound(SummaryColumns)
         CurrentWk = WkNames(i)
         CurrentCopyCol = CombinedCopyColumns(i)
         CurrentSumCol = SummaryColumns(i)
         CurrentHyperSht = HyperLinkSheets(i)
 
-        'Confirms the column exists. If the column does not exist then skip it.
+        ' Confirms the column exists. If the column does not exist then skip it.
         If CurrentSumCol <> False Then
 
             Range(CurrentSumCol & "2").Select
@@ -201,7 +198,7 @@ Private Sub Summary_Pop_Dots()
     Next i
 
 
-    'Formats the angle for the header row of Summary Sheet
+    ' Formats the angle for the header row of Summary Sheet
     Rows("1:1").Select
 
     With Selection
@@ -214,14 +211,14 @@ Private Sub Summary_Pop_Dots()
         .MergeCells = False
     End With
 
-    'Autofit for all cells on screen.
+    ' Autofit for all cells on screen.
     Cells.Select
     Cells.EntireColumn.AutoFit
 
-    'Cleans up selected cells on sheet.
+    ' Cleans up selected cells on sheet.
     Range("A1").Select
 
-    'Re-enables previously disabled settings after all code has run.
+    ' Re-enables previously disabled settings after all code has run.
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
     Application.EnableEvents = True

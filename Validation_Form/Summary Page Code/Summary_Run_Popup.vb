@@ -15,6 +15,7 @@ Sub Summary_Sheet_Setup()
     Call Summary_Combined_Lookup_Sheet
     Call Summary_Sheet_Initial_Setup
     Call Summary_Pop_Dots
+    Call Summary_Cleanup
     Call Remove_Table_Format
 
     Sheets("Summary View").Select

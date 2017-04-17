@@ -3,12 +3,12 @@ Sub BORIS_PCST()
 '
 '
 ' PURPOSE: Creates all the PCST files formatted properly.
-'   USE:    Open validation form which will be used to make PCST files. Run program and follow on screen prompts.
+' USE:    Open validation form which will be used to make PCST files. Run program and follow on screen prompts.
 ' AUTHOR: Jonathan Adams
 '
 '
 '
-' TODO - Add in logic to filter the clinical documentation sheet for JUST the rows where the nomenclature is not mapped
+'
 
 Dim wb As Workbook
 Dim sht As Worksheet
@@ -71,7 +71,9 @@ Dim LR As Long
     ' DEBUG
 
     ' Error Handling
-    '  On Error GoTo ErrHandler
+      On Error GoTo ErrHandler
+
+    ' Arrays used for sheet creation.
 
     Val_Wk_Array = Array("Clinical Documentation", "Unmapped Codes", "Health Maintenance Summary")
     Val_Tbl_Name_Array = Array("Clinical_Table", "Unmapped_Table", "Health_Maint_Table")
@@ -93,7 +95,7 @@ Dim LR As Long
     Unmapped_Col_Name_Array = Array("Registry", "Measure", "Concept", "Source", "Code System", "Raw Code", "Raw Display", "Count", "Notes", "Team", "Code Short Name")
 
     Health_Maint_Num_Array = Array("EXPECT_NAME", "EXPECT_MEANING", "ENTRY_TYPE", "EXPECT_SAT_ID", "EXPECT_SAT_NAME", "EXPECT_ID", "SATISFIER_MEANING", "PARENT_VALUE", "EVENT_CD", "EVENT_CD_DISP", "SOURCE")
-    Health_Maint_Ltr_Array = Array("EXPECT_NAME", "EXPECT_MEANING", "ENTRY_TYPE", "EXPECT_SAT_ID", "EXPECT_SAT_NAME", "EXPECT_ID", "SATISFIER_MEANING", "PARENT_VALUE", "EVENT_CD","EVENT_CD_DISP", "SOURCE")
+    Health_Maint_Ltr_Array = Array("EXPECT_NAME", "EXPECT_MEANING", "ENTRY_TYPE", "EXPECT_SAT_ID", "EXPECT_SAT_NAME", "EXPECT_ID", "SATISFIER_MEANING", "PARENT_VALUE", "EVENT_CD", "EVENT_CD_DISP", "SOURCE")
     Health_Maint_Name_Array = Array("EXPECT_NAME", "EXPECT_MEANING", "ENTRY_TYPE", "EXPECT_SAT_ID", "EXPECT_SAT_NAME", "EXPECT_ID", "SATISFIER_MEANING", "PARENT_VALUE", "EVENT_CD", "EVENT_CD_DISP", "SOURCE")
 
     'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
@@ -106,11 +108,11 @@ Dim LR As Long
     End If
 
 
-    'Names variable current file name
+    ' Names variable current file name
     Validation_File_Name = ActiveWorkbook.Name
-    Retry_UserID:
+Retry_UserID:
 
-    'Checks to confirm the user entered a correct user ID. This is needed for file save path.
+    ' Checks to confirm the user entered a correct user ID. This is needed for file save path.
     Name_Input_Checker = 0
     User_Name = InputBox("Please enter your Cerner userID." & vbNewLine & vbNewLine & "ex. BE042983", "BORIS will know...")
     Do
@@ -127,16 +129,15 @@ Dim LR As Long
 
     Loop While Name_Input_Checker = 0
 
-
-    'Checks to confirm user entered correct project name. This is needed for file name.
-      Project_Name_Checker = 0
-      Project_Name = InputBox("Please enter the abbreviation for this project." & vbNewLine & vbNewLine & "ex. NBRO")
+    ' Checks to confirm user entered correct project name. This is needed for file name.
+    Project_Name_Checker = 0
+    Project_Name = InputBox("Please enter the abbreviation for this project." & vbNewLine & vbNewLine & "ex. NBRO")
     Do
 
         If Project_Name = vbNullString Then
             GoTo User_Exit
 
-        ElseIf Len(Project_Name) = 4 Or Len(Project_Name) = 7 Then    'If length of user inut incorrect, prompt user to try again.
+        ElseIf Len(Project_Name) = 4 Or Len(Project_Name) = 7 Then        'If length of user inut incorrect, prompt user to try again.
             Project_Name_Checker = 1
         Else
             Project_Name = InputBox("Why must we fight.... Lets try this again.... Please enter the project name..." & vbNewLine & vbNewLine & "ex. NBRO")
@@ -144,31 +145,31 @@ Dim LR As Long
 
     Loop While Project_Name_Checker = 0
 
-    'Assigns file save path to variable.
+    ' Assigns file save path to variable.
     Save_Path = "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files"
 
 
     On Error GoTo Err1:
-    'If the folder already exists then do nothing. Else make it.
+    ' If the folder already exists then do nothing. Else make it.
     If Len(Dir(Save_Path, vbDirectory)) = 0 Then
-        MkDir Save_Path    'Creates the folder
+        MkDir Save_Path        'Creates the folder
     Else
-        Folder_Check = MsgBox("Looks like the folder already exists... Do you want to continue?", vbOKCancel + vbQuestion, "BORIS!")    'Folder already exists so continuing on.
+        Folder_Check = MsgBox("Looks like the folder already exists... Do you want to continue?", vbOKCancel + vbQuestion, "BORIS!")        'Folder already exists so continuing on.
     End If
 
-    'If user hits cancel on the folder check then cancel program.
+    ' If user hits cancel on the folder check then cancel program.
     If Folder_Check = vbCancel Then
         GoTo User_Exit
     End If
 
-    ' Error handling
+    ' Error handling for wrong user ID entered. If computer fails to find path, it is because username was wrong. Send user back to fix.
     If Err1 <> 0 Then
-      Err1:
-        MsgBox("I think you entered your user ID wrong... Computer told me so. Sending you back to try again.")
+Err1:
+        MsgBox ("I think you entered your user ID wrong... Computer told me so. Sending you back to try again.")
         Resume Retry_UserID:
     End If
 
-
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     ' PRIMARY - Formats worksheets for copying to new workbook
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
@@ -195,7 +196,7 @@ Dim LR As Long
             End With
         End If
 
-        'Sets all cells on sheet to a table.
+        ' Sets all cells on sheet to a table.
         Set sht = Worksheets(Val_Wk_Array(i))
 
         ' Health Maint Sheet data starts on a different row
@@ -204,7 +205,6 @@ Dim LR As Long
             LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
             LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-            'Select Range
             sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
         Else
             Range("A5").Select
@@ -216,8 +216,8 @@ Dim LR As Long
 
         'Converts range to table.
         Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-          tbl.Name = Val_Tbl_Name_Array(i)
-          tbl.TableStyle = "TableStyleLight12"
+        tbl.Name = Val_Tbl_Name_Array(i)
+        tbl.TableStyle = "TableStyleLight12"
 
         'Filters to remove blank lines
         ActiveSheet.ListObjects(1).Range.AutoFilter Field:=5, _
@@ -242,10 +242,10 @@ Dim LR As Long
     'PRMARY - CREATES THE SOURCE CODE SHEET AND TABLE FOR LOOP ON THE VALIDATION FORM
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    'Disables screen alert which would prompt user to confirm sheet deletion.
+    ' Disables screen alert which would prompt user to confirm sheet deletion.
     Application.DisplayAlerts = False
 
-    'Checks to see if sources list sheet already exists and if so deletes the worksheet so a new one can be created.
+    ' Checks to see if sources list sheet already exists and if so deletes the worksheet so a new one can be created.
     For Each Sheet In Worksheets
         If Sheet.Name = "Sources List" Then
             exists = True
@@ -253,7 +253,7 @@ Dim LR As Long
         End If
     Next Sheet
 
-    're-enables screen alert after handling source code sheet deletion.
+    ' re-enables screen alert after handling source code sheet deletion.
     Application.DisplayAlerts = True
 
     'Creates a new sheet titled 'Sources List'
@@ -278,17 +278,14 @@ Dim LR As Long
             Range(ActiveSheet.Range("K5"), ActiveSheet.Range("K5").End(xlDown)).Copy Sheets("Sources List").Range("A" & Next_Blank_Row)
             Sheets("Sources List").Rows(Next_Blank_Row & ":" & Next_Blank_Row).Delete Shift:=xlUp
         End If
-        'Finds next blank row to add additional sources.
         Next_Blank_Row = Sheets("Sources List").Range("A" & Rows.Count).End(xlUp).Row + 1
     Next i
 
 
-    ' Create named range of the sources
     Sheets("Sources List").Select
     Range("A1").Select
     Range(Selection, Selection.End(xlDown)).Select
 
-    ' formats selected as a table
     Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
     tbl.Name = "Sources_Table"
     tbl.TableStyle = "TableStyleLight12"
@@ -297,7 +294,6 @@ Dim LR As Long
     ActiveSheet.Range("Sources_Table[#All]").RemoveDuplicates Columns:=1, Header _
             :=xlYes
 
-    ' Names the range
     LR = Range("A" & Rows.Count).End(xlUp).Row
     Range("A2" & ":A" & LR).SpecialCells(xlCellTypeVisible).Select
     Selection.Name = "Sources_List"
@@ -313,26 +309,27 @@ Dim LR As Long
 
     Next Source_Name
 
+    ' Asks user to confirm the sources are correct before continuing.
     Sources_Check = MsgBox("BORIS found the following sources. Please confirm that all sources are unique and there are no duplicates. If there are please click Cancel, rename the sources and then re-run the program. If the sources are good to go click OK to continue." & vbNewLine & vbNewLine & "Sources List:" & vbNewLine & Source_Combined, vbOKCancel + vbQuestion, "There can only be one BORIS!")
 
-    'If user hits cancel then close program.
+    ' If user hits cancel then close program.
     If Sources_Check = vbCancel Then
         GoTo User_Exit
     End If
 
 
 
-    '
+
     ''''''''''''''''''''''''''''''''''''''''
     '   PRIMARY - Create New Workbook
     ''''''''''''''''''''''''''''''''''''''''
-    '
 
+    ' Variable used to track column header location loop to only find column header locations once instead of repeating for each source.
     First_Time = True
 
-    ' Loop through the sources
+    ' Loop through the sources and create the file for each source
     For Each Source_Name In Range("Sources_List")
-        Set wb = Workbooks.Add    'Opens a new workbook
+        Set wb = Workbooks.Add
 
         ' Saves the new workbook
         With NewBook
@@ -341,7 +338,6 @@ Dim LR As Long
                     "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files\" & Source_Name
         End With
 
-        ' Selects new workbook
         Windows(Source_Name & ".xlsx").Activate
 
         ' Populates basic sheets on new workbook
@@ -352,8 +348,10 @@ Dim LR As Long
             .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "Source_Code_Systems"
         End With
 
+        '
         ' SUB - Copies the data from the sheets in the validation form to the new workbook sheets
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
         ' Finds the start cell to begin range for copying. Different rules for Health Maint Sheet
         For i = 0 To UBound(Val_Wk_Array)
             CurrentSheet = Val_Wk_Array(i)
@@ -404,7 +402,7 @@ Dim LR As Long
 
             ' Sets header for code short name column
             If CurrentSheet = Val_Wk_Array(1) Then
-              Range("K1").Value = "Code Short Name"
+                Range("K1").Value = "Code Short Name"
             End If
         Next i
 
@@ -414,15 +412,12 @@ Dim LR As Long
             Windows(Source_Name & ".xlsx").Activate
             Sheets(Val_Wk_Array(i)).Select
 
-            ' Sets all cells on sheet to a table.
             Set sht = Worksheets(Val_Wk_Array(i))
             Set StartCell = Range("A1")
 
-            ' Find Last Row and Column
             LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
             LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-            'Select Range
             sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
             ' Converts range to table.
@@ -442,104 +437,106 @@ Dim LR As Long
 
 
         ' All worksheets are identical no need to check column locations over and over again....
-      If First_Time = True Then
-        'Re-enables previously disabled settings after all code has run.
-        Application.ScreenUpdating = True
-        Application.EnableEvents = True
+        If First_Time = True Then
+            'Re-enables previously disabled settings after all code has run.
+            Application.ScreenUpdating = True
+            Application.EnableEvents = True
 
-        ' Finds Column Header Locations for Clinical Documentation
-        Sheets(Val_Wk_Array(0)).Select
-        Range("A1").Select
-        Range("A1", Selection.End(xlToRight)).Name = "Header_row"
+            ' Finds Column Header Locations for Clinical Documentation
+            Sheets(Val_Wk_Array(0)).Select
+            Range("A1").Select
+            Range("A1", Selection.End(xlToRight)).Name = "Header_row"
 
-        For i = 0 to UBound(Clin_Doc_Col_Num_Array)
-        Header_Check = False
-          For each header in Range("Header_row")
-            If LCase(Clin_Doc_Col_Name_Array(i)) = LCase(header) Then
-              Clin_Doc_Col_Ltr_Array(i) = Mid(header.Address, 2, 1)
-              Clin_Doc_Col_Num_Array(i) = Range(Clin_Doc_Col_Ltr_Array(i) & "1").Column
-              Header_Check = True
-              exit For
-            End If
-          Next header
-          If Header_Check = False Then
-            Header_User_Response = InputBox("BORIS was unable to find the header:"& vbNewLine & Clin_Doc_Col_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine &"Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+            For i = 0 To UBound(Clin_Doc_Col_Num_Array)
+                Header_Check = False
+                For Each Header In Range("Header_row")
+                    If LCase(Clin_Doc_Col_Name_Array(i)) = LCase(Header) Then
+                        Clin_Doc_Col_Ltr_Array(i) = Mid(Header.Address, 2, 1)
+                        Clin_Doc_Col_Num_Array(i) = Range(Clin_Doc_Col_Ltr_Array(i) & "1").Column
+                        Header_Check = True
+                        Exit For
+                    End If
+                Next Header
+                If Header_Check = False Then
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Clin_Doc_Col_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
-              'If user hits cancel then close program.
-              If Header_User_Response = vbNullString Then
-                GoTo User_Exit
-              Else
-                Clin_Doc_Col_Ltr_Array(i) = Header_User_Response
-                Clin_Doc_Col_Num_Array(i) = Range(Clin_Doc_Col_Ltr_Array(i) & "1").Column
-              End If
-            End If
+                    'If user hits cancel then close program.
+                    If Header_User_Response = vbNullString Then
+                        GoTo User_Exit
+                    Else
+                        Clin_Doc_Col_Ltr_Array(i) = Header_User_Response
+                        Clin_Doc_Col_Num_Array(i) = Range(Clin_Doc_Col_Ltr_Array(i) & "1").Column
+                    End If
+                End If
 
-        Next i
+            Next i
 
 
-        ' Finds column Header Locations for Unmapped Columns
-        Sheets(Val_Wk_Array(1)).Select
-        Range("A1").Select
-        Range("A1", Selection.End(xlToRight)).Name = "Header_row"
+            ' Finds column Header Locations for Unmapped Columns
+            Sheets(Val_Wk_Array(1)).Select
+            Range("A1").Select
+            Range("A1", Selection.End(xlToRight)).Name = "Header_row"
 
-        For i = 0 to UBound(Unmapped_Col_Ltr_Array)
-        Header_Check = False
-          For each header in Range("Header_row")
-            If LCase(Unmapped_Col_Name_Array(i)) = LCase(header) Then
-              Unmapped_Col_Ltr_Array(i) = Mid(header.Address, 2, 1)
-              Unmapped_Col_Num_Array(i) = Range(Unmapped_Col_Ltr_Array(i) & "1").Column
-              Header_Check = True
-              exit For
-            End If
-          Next header
-          If Header_Check = False Then
-            Header_User_Response = InputBox("BORIS was unable to find the header:"& vbNewLine & Unmapped_Col_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine &"Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+            For i = 0 To UBound(Unmapped_Col_Ltr_Array)
+                Header_Check = False
+                For Each Header In Range("Header_row")
+                    If LCase(Unmapped_Col_Name_Array(i)) = LCase(Header) Then
+                        Unmapped_Col_Ltr_Array(i) = Mid(Header.Address, 2, 1)
+                        Unmapped_Col_Num_Array(i) = Range(Unmapped_Col_Ltr_Array(i) & "1").Column
+                        Header_Check = True
+                        Exit For
+                    End If
+                Next Header
+                If Header_Check = False Then
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Unmapped_Col_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
-            'If user hits cancel then close program.
-            If Header_User_Response = vbNullString Then
-              MsgBox ("Program is canceling per user action.")
-              GoTo User_Exit
-            Else
-              Unmapped_Col_Ltr_Array(i) = Header_User_Response
-              Unmapped_Col_Num_Array(i) = Range(Unmapped_Col_Ltr_Array(i) & "1").Column
-            End If
-          End If
-        Next i
+                    'If user hits cancel then close program.
+                    If Header_User_Response = vbNullString Then
+                        MsgBox ("Program is canceling per user action.")
+                        GoTo User_Exit
+                    Else
+                        Unmapped_Col_Ltr_Array(i) = Header_User_Response
+                        Unmapped_Col_Num_Array(i) = Range(Unmapped_Col_Ltr_Array(i) & "1").Column
+                    End If
+                End If
+            Next i
 
-        ' Finds Column Header Locations for Health Maintenance Summary
-        Sheets(Val_Wk_Array(2)).Select
-        Range("A1").Select
-        Range("A1", Selection.End(xlToRight)).Name = "Header_row"
+            ' Finds Column Header Locations for Health Maintenance Summary
+            Sheets(Val_Wk_Array(2)).Select
+            Range("A1").Select
+            Range("A1", Selection.End(xlToRight)).Name = "Header_row"
 
-        For i = 0 to UBound(Health_Maint_Name_Array)
-          Header_Check = False
-          For each header in Range("Header_row")
-            If LCase(Health_Maint_Name_Array(i)) = LCase(header) Then
-              Health_Maint_Ltr_Array(i) = Mid(header.Address, 2, 1)
-              Health_Maint_Num_Array(i) = Range(Health_Maint_Ltr_Array(i) & "1").Column
-              Header_Check = True
-              exit For
-            End If
-          Next header
-          If Header_Check = False Then
-            Header_User_Response = InputBox("BORIS was unable to find the header:"& vbNewLine & Health_Maint_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine &"Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
+            For i = 0 To UBound(Health_Maint_Name_Array)
+                Header_Check = False
+                For Each Header In Range("Header_row")
+                    If LCase(Health_Maint_Name_Array(i)) = LCase(Header) Then
+                        Health_Maint_Ltr_Array(i) = Mid(Header.Address, 2, 1)
+                        Health_Maint_Num_Array(i) = Range(Health_Maint_Ltr_Array(i) & "1").Column
+                        Header_Check = True
+                        Exit For
+                    End If
+                Next Header
+                If Header_Check = False Then
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & Health_Maint_Name_Array(i) & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However, All is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one. If you would rather fix the issue within the file or program (lame) then click cancel.", "If I am BORIS who are you?")
 
-            'If user hits cancel then close program.
-            If Header_User_Response = vbNullString Then
-              GoTo User_Exit
-            Else
-              Health_Maint_Ltr_Array(i) = Header_User_Response
-              Health_Maint_Num_Array(i) = Range(Health_Maint_Ltr_Array(i) & "1").Column
-            End If
-          End If
-        Next i
+                    ' If user hits cancel then close program.
+                    If Header_User_Response = vbNullString Then
+                        GoTo User_Exit
+                    Else
+                        Health_Maint_Ltr_Array(i) = Header_User_Response
+                        Health_Maint_Num_Array(i) = Range(Health_Maint_Ltr_Array(i) & "1").Column
+                    End If
+                End If
+            Next i
 
-      End If
-      'Re-enables previously disabled settings after all code has run.
-      Application.ScreenUpdating = False
-      Application.EnableEvents = False
+        End If
+
+        ' Re-enables previously disabled settings after all code has run.
+        Application.ScreenUpdating = False
+        Application.EnableEvents = False
 
         First_Time = False
+
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         ' PRIMARY - Unmapped Remove Duplicates and Set Code Short Name
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -547,12 +544,12 @@ Dim LR As Long
         ' Unampped codes removes duplicates by Source, EvCode, and Code Display
         Sheets(Val_Wk_Array(1)).Range(Val_Tbl_Name_Array(1) & "[#All]").RemoveDuplicates Columns:=Array(Unmapped_Col_Num_Array(3), Unmapped_Col_Num_Array(5), Unmapped_Col_Num_Array(6)), Header:=xlYes
 
-        ''
+        '
         ' SUB - Code Short Name Creation
         ''''''''''''''''''''''''''''''''
         Set Table_Obj = Sheets(Val_Wk_Array(1)).ListObjects(1)
 
-        'Checks current table to determine if any cells are visible. If cells are visible then set "Table_ObjIsVisible" = TRUE
+        ' Checks current table to determine if any cells are visible. If cells are visible then set "Table_ObjIsVisible" = TRUE
         Set tbl = Sheets(Val_Wk_Array(1)).ListObjects(1)
 
         If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
@@ -583,20 +580,20 @@ Dim LR As Long
         End With
 
         '''''''''''''''''''''''''''''''''''''''''''''
-        'PRIMARY - Change Format of Code Short Name
+        ' PRIMARY - Change Format of Code Short Name
         '''''''''''''''''''''''''''''''''''''''''''''
 
-        'Selects Code Short Name Column and names the range for loop
-        Sheets(Val_Wk_Array(1)).Range(Unmapped_Col_Ltr_Array(10)&"2:" & Unmapped_Col_Ltr_Array(10) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "Code_Short"
+        ' Selects Code Short Name Column and names the range for loop
+        Sheets(Val_Wk_Array(1)).Range(Unmapped_Col_Ltr_Array(10) & "2:" & Unmapped_Col_Ltr_Array(10) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "Code_Short"
 
         'Assigns range to variable
         Set Rng = Range("Code_Short")
 
         For Each cell In Rng
-            If InStr(cell, "urn:cerner:coding:codingsystem:nomenclature.source_vocab:") > 0 Then  'If cell contains "x"
+            If InStr(cell, "urn:cerner:coding:codingsystem:nomenclature.source_vocab:") > 0 Then
                 cValue = cell.Value
                 cPlace = InStr(cell, "vocab")
-                cell.Value = "nomenclature - " & Right(cValue, Len(cValue) - (cPlace + 5))    'Replace cell with nomenclature and all text after vocab
+                cell.Value = "nomenclature - " & Right(cValue, Len(cValue) - (cPlace + 5))
 
                 'Checks if code id contains PTCARE and shortens appropriately
             ElseIf InStr(cell, "PTCARE") > 0 Then
@@ -622,6 +619,7 @@ Dim LR As Long
                 cPlace = InStr(cValue, "system:")
                 cell.Value = Right(cValue, Len(cValue) - (cPlace + 6))
             End If
+
         Next cell
 
 
@@ -630,10 +628,9 @@ Dim LR As Long
 
         For Each cell In Rng
             If cell = "nomenclature - PTCARE" Then
-              cell.Value = "Nomenclature - Patient Care"
+                cell.Value = "Nomenclature - Patient Care"
             End If
         Next cell
-
 
         ' Checks Code Short length and if it is more than >28 characters then shorten the name.
         For Each Code_Short In Range("Code_Short")
@@ -650,7 +647,6 @@ Dim LR As Long
                 Code_Short.Value = New_Value
             End If
         Next Code_Short
-
 
 
         ' SUB - Clinical Documentation Remove Duplicates
@@ -677,25 +673,22 @@ Dim LR As Long
 
         Sheets("Source_Code_Systems").Select
 
-        ' Formats Source_Code_Systems Sheet
         Set sht = Worksheets("Source_Code_Systems")
         Set StartCell = Range("A1")
 
-        ' Refresh UsedRange
         Worksheets("Source_Code_Systems").UsedRange
 
         ' Find Last Row and Column
         LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
         LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
 
-        ' Select Range
         sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
         Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-          tbl.Name = "Code_ID_Table"
-          tbl.TableStyle = "TableStyleLight9"
+        tbl.Name = "Code_ID_Table"
+        tbl.TableStyle = "TableStyleLight9"
 
-          ' Removes Duplicates from the Code ID Lists
+        ' Removes Duplicates from the Code ID Lists
         Range("Code_ID_Table[[#Headers],[Code Short Name]]").Select
         Application.CutCopyMode = False
         ActiveSheet.Range("Code_ID_Table[#All]").RemoveDuplicates Columns:=1, Header:= _
@@ -716,16 +709,16 @@ Dim LR As Long
         If Range("A3") = "" Then
             Range("A2").Name = "Code_ID_List"
         Else
-        Range("A2").Select
-        Range(Selection, Selection.End(xlDown)).Select
-        Selection.Name = "Code_ID_List"
+            Range("A2").Select
+            Range(Selection, Selection.End(xlDown)).Select
+            Selection.Name = "Code_ID_List"
         End If
 
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         '      PRIMARY - Creates a new sheet and names the sheet with the current source
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-        'Loops through each unique Code ID for this source and creates a sheet with the relavant data.
+        ' Loops through each unique Code ID for this source and creates a sheet with the relavant data.
         For Each code In Range("Code_ID_List")
 
             With ActiveWorkbook
@@ -734,7 +727,7 @@ Dim LR As Long
 
             Code_Sheet = code
 
-            'Special instructions for code set 72
+            ' Special instructions for code set 72
             If code = "72" Or code = "Nomenclature - Patient Care" Then
 
                 ' Populates the headers on the CS72 sheet
@@ -748,31 +741,31 @@ Dim LR As Long
                 ' Records the Addresses of the CS 72 headers
                 Sheets(Code_Sheet).Select
                 Range("A1").Select
-                Range("A1",Selection.End(xlToRight)).Name = "Header_row"
+                Range("A1", Selection.End(xlToRight)).Name = "Header_row"
 
-                For i = 0 to UBound(CS_72_Header_Num_Array)
-                col_Count = 0
-                  For each header in Range("Header_row")
-                  col_Count = col_Count + 1
-                    If LCase(CS_72_Header_Num_Array(i)) = LCase(header) Then
-                      CS_72_Header_Ltr_Array(i) = Mid(header.Address, 2, 1)
-                      CS_72_Header_Num_Array(i) = col_Count
-                      exit For
-                    End If
-                  Next header
+                For i = 0 To UBound(CS_72_Header_Num_Array)
+                    col_Count = 0
+                    For Each Header In Range("Header_row")
+                        col_Count = col_Count + 1
+                        If LCase(CS_72_Header_Num_Array(i)) = LCase(Header) Then
+                            CS_72_Header_Ltr_Array(i) = Mid(Header.Address, 2, 1)
+                            CS_72_Header_Num_Array(i) = col_Count
+                            Exit For
+                        End If
+                    Next Header
                 Next i
 
                 ' SUB - Copies Clinical Documentation to 72
                 '''''''''''''''''''''''''''''''''''''
 
-                'Filters The Source column for current source
+                ' Filters The Source column for current source
                 Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(3), _
                         Criteria1:=Source_Name, Operator:=xlAnd
 
-' TODO - add filter to only add lines where the nomenclature has not already been mapped
+                ' TODO - add filter to only add lines where the nomenclature has not already been mapped
                 ' Filters the notes column for nomenclatures which have not been mapped
                 ' Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(15), _
-                                ' Criteria1:=Source_Name, Operator:=xlAnd
+                  ' Criteria1:=Source_Name, Operator:=xlAnd
 
 
                 'Checks current table to determine if any cells are visible to copy
@@ -789,13 +782,13 @@ Dim LR As Long
                 'If data is visible, then copy visible data
                 If Table_ObjIsVisible = True Then
 
-                ' Finds the last row of the Clinical Documentation Sheet for copy Range
-                  Sheets(Val_Wk_Array(0)).Select
-                  LR = Range("A" & Rows.Count).End(xlUp).Row
+                    ' Finds the last row of the Clinical Documentation Sheet for copy Range
+                    Sheets(Val_Wk_Array(0)).Select
+                    LR = Range("A" & Rows.Count).End(xlUp).Row
 
-                  ' Copies Registry Column
-                  Sheets(Val_Wk_Array(0)).Select
-                  Range(Clin_Doc_Col_Ltr_Array(0) & "2:" & Clin_Doc_Col_Ltr_Array(0) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(0) & "2")
+                    ' Copies Registry Column
+                    Sheets(Val_Wk_Array(0)).Select
+                    Range(Clin_Doc_Col_Ltr_Array(0) & "2:" & Clin_Doc_Col_Ltr_Array(0) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(0) & "2")
 
 
                     ' Copies Measure Column
@@ -901,9 +894,9 @@ Dim LR As Long
                 ' If data is visible then copy data
                 If Table_ObjIsVisible = True Then
 
-                ' Finds the last row of the data sheet for copying
-                  Sheets(Val_Wk_Array(1)).Select
-                  LR = Range("A" & Rows.Count).End(xlUp).Row
+                    ' Finds the last row of the data sheet for copying
+                    Sheets(Val_Wk_Array(1)).Select
+                    LR = Range("A" & Rows.Count).End(xlUp).Row
 
                     ' Finds the next blank row on the code sheet
                     Sheets(Code_Sheet).Select
@@ -949,7 +942,6 @@ Dim LR As Long
                     Sheets(Val_Wk_Array(1)).Select
                     Range(Unmapped_Col_Ltr_Array(9) & "2:" & Unmapped_Col_Ltr_Array(9) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(15) & Next_Blank_Row)
 
-
                 End If
 
 
@@ -963,7 +955,6 @@ Dim LR As Long
 
                 Set tbl = Sheets(Val_Wk_Array(2)).ListObjects(1)
 
-                ' Checks table for visible data
                 If tbl.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
                     Table_ObjIsVisible = True
                 Else
@@ -973,13 +964,13 @@ Dim LR As Long
                 ' If data is visible then copy visible data
                 If Table_ObjIsVisible = True Then
 
-                ' Finds the last row of the data sheet for copying
-                  Sheets(Val_Wk_Array(2)).Select
-                  LR = Range("A" & Rows.Count).End(xlUp).Row
+                    ' Finds the last row of the data sheet for copying
+                    Sheets(Val_Wk_Array(2)).Select
+                    LR = Range("A" & Rows.Count).End(xlUp).Row
 
-                  ' Sets next blank row
-                  Sheets(Code_Sheet).Select
-                  Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
+                    ' Sets next blank row
+                    Sheets(Code_Sheet).Select
+                    Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
                     ' Copies the Source Column to Source
                     Sheets(Val_Wk_Array(2)).Select
@@ -1015,26 +1006,25 @@ Dim LR As Long
 
                 Off_Count = 0
                 For i = 0 To UBound(Gen_Sht_Header_Name_Array)
-                    ' Uses cell "A1" as the starting point for the header row.
-                    Range("A1").Offset(0, Off_Count).Value = Gen_Sht_Header_Name_Array(i)    ' places next array value within the next column
-                    Off_Count = Off_Count + 1    'Increases the offset count on each loop
+                    Range("A1").Offset(0, Off_Count).Value = Gen_Sht_Header_Name_Array(i)
+                    Off_Count = Off_Count + 1
                 Next i
 
                 ' Records the Addresses of the Non-CS72 sheet headers
                 Sheets(Code_Sheet).Select
                 Range("A1").Select
-                Range("A1",Selection.End(xlToRight)).Name = "Header_row"
+                Range("A1", Selection.End(xlToRight)).Name = "Header_row"
 
-                For i = 0 to UBound(Gen_Sht_Header_Ltr_Array)
-                col_Count = 0
-                  For each header in Range("Header_row")
-                  col_Count = col_Count + 1
-                    If LCase(Gen_Sht_Header_Num_Array(i)) = LCase(header) Then
-                      Gen_Sht_Header_Ltr_Array(i) = Mid(header.Address, 2, 1)
-                      Gen_Sht_Header_Num_Array(i) = col_Count
-                      exit For
-                    End If
-                  Next header
+                For i = 0 To UBound(Gen_Sht_Header_Ltr_Array)
+                    col_Count = 0
+                    For Each Header In Range("Header_row")
+                        col_Count = col_Count + 1
+                        If LCase(Gen_Sht_Header_Num_Array(i)) = LCase(Header) Then
+                            Gen_Sht_Header_Ltr_Array(i) = Mid(Header.Address, 2, 1)
+                            Gen_Sht_Header_Num_Array(i) = col_Count
+                            Exit For
+                        End If
+                    Next Header
                 Next i
 
 
@@ -1060,9 +1050,9 @@ Dim LR As Long
                 ' If data is visible then copy data.
                 If Table_ObjIsVisible = True Then
 
-                ' Finds the last row of the data sheet for copying
-                  Sheets(Val_Wk_Array(1)).Select
-                  LR = Range("A" & Rows.Count).End(xlUp).Row
+                    ' Finds the last row of the data sheet for copying
+                    Sheets(Val_Wk_Array(1)).Select
+                    LR = Range("A" & Rows.Count).End(xlUp).Row
 
                     ' Finds next blank row
                     Sheets(Code_Sheet).Select
@@ -1119,9 +1109,9 @@ Dim LR As Long
         '   PRIMARY - Workbook Cleanup
         '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-
-        Application.DisplayAlerts = False
         ' Deletes the extra sheets not needed
+        Application.DisplayAlerts = False
+
         For Each Sheet In Worksheets
             If Sheet.Name = "Unmapped Codes" _
                     Or Sheet.Name = "Health Maintenance Summary" _
@@ -1143,12 +1133,12 @@ Dim LR As Long
 
         Range("A1").Select
         Selection.Value = "Index Sheet"
-        ActiveCell.Offset(1, 0).Select    'Moves down a row
+        ActiveCell.Offset(1, 0).Select
 
         For Each Sheet In Worksheets
             If Sheet.Name <> "Index Sheet" Then
                 ActiveSheet.Hyperlinks.Add Anchor:=Selection, Address:="", SubAddress:="'" & Sheet.Name & "'" & "!A1", TextToDisplay:=Sheet.Name
-                ActiveCell.Offset(1, 0).Select    'Moves down a row
+                ActiveCell.Offset(1, 0).Select
             End If
         Next Sheet
 
@@ -1159,12 +1149,12 @@ Dim LR As Long
         For Each Sheet In Worksheets
             Sheet.Activate
 
-            Set sht = Sheet    ' Sets value
-            Set StartCell = Range("A1")    ' Start cell used to determine where to begin creating the table range
+            Set sht = Sheet
+            Set StartCell = Range("A1")
 
             LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
             LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
-            Sheet_Name = Sheet.Name    ' Assigns sheet name to a variable as a string
+            Sheet_Name = Sheet.Name
 
             sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
@@ -1172,10 +1162,10 @@ Dim LR As Long
             Selection.ClearFormats
 
             Set tbl = ActiveSheet.ListObjects.Add(xlSrcRange, Selection, , xlYes)
-              tbl.Name = Sheet_Name
-              tbl.TableStyle = "TableStyleLight9"
-              Columns.AutoFit
-              Range("A1").Select
+            tbl.Name = Sheet_Name
+            tbl.TableStyle = "TableStyleLight9"
+            Columns.AutoFit
+            Range("A1").Select
 
         Next Sheet
 
@@ -1195,59 +1185,62 @@ Dim LR As Long
         '  SUB - Saves the new workbook
         ''''''''''''''''''''''''''''''''''''''
 
+        ' Saves new workbook then Switches back to the validation form to begin next loop
         Workbooks(Source_Name & ".xlsx").Close SaveChanges:=True
-        Windows(Validation_File_Name).Activate    'Switches back to old workbook to begin next loop
+        Windows(Validation_File_Name).Activate
 
-    Next Source_Name    'Start over with next source from list
+        ' Start over with next source from list
+    Next Source_Name
 
 
 
 End_Program:
-  'Re-enables previously disabled settings after all code has run.
-  Application.ScreenUpdating = True
-  Application.Calculation = xlCalculationAutomatic
-  Application.EnableEvents = True
 
-  ' Clears the filesystem descriptor allowing you to delete the folder
-  Dir "C:\"
-  ChDir "C:\"
+    'Re-enables previously disabled settings after all code has run.
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
 
-  'Notifies user that the program has completed.
-  MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")
+    ' Clears the filesystem descriptor allowing you to delete the folder
+    Dir "C:\"
+    ChDir "C:\"
 
-Exit Sub
+    'Notifies user that the program has completed.
+    MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")
+
+    Exit Sub
 
 User_Exit:
 
-  'Re-enables previously disabled settings after all code has run.
-  Application.ScreenUpdating = True
-  Application.Calculation = xlCalculationAutomatic
-  Application.EnableEvents = True
+    'Re-enables previously disabled settings after all code has run.
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
 
-  ' Clears the filesystem descriptor allowing you to delete the folder
-  Dir "C:\"
-  ChDir "C:\"
+    ' Clears the filesystem descriptor allowing you to delete the folder
+    Dir "C:\"
+    ChDir "C:\"
 
-  ' If the active workbook is not the validation form then close it without saving
-  If ActiveWorkbook.Name = (Source_Name & ".xlsx") Then
-    Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
-  End If
-  MsgBox("Program quitting per user action.")
+    ' If the active workbook is not the validation form then close it without saving
+    If ActiveWorkbook.Name = (Source_Name & ".xlsx") Then
+        Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
+    End If
+    MsgBox ("Program quitting per user action.")
 
-Exit Sub
+    Exit Sub
 
 
 ErrHandler:
 
-  'Re-enables previously disabled settings after all code has run.
-  Application.ScreenUpdating = True
-  Application.Calculation = xlCalculationAutomatic
-  Application.EnableEvents = True
+    'Re-enables previously disabled settings after all code has run.
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
 
-  ' Clears the filesystem descriptor allowing you to delete the folder
-  Dir "C:\"
-  ChDir "C:\"
-  Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
-  MsgBox("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(")
+    ' Clears the filesystem descriptor allowing you to delete the folder
+    Dir "C:\"
+    ChDir "C:\"
+    Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
+    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(")
 
 End Sub
