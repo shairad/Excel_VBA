@@ -10,7 +10,6 @@ Dim StartCell As Range
 Dim rList As Range
 Dim Header_Array As Variant
 Dim Validated_Map_Headers As Variant
-Dim DataRange As Variant
 Dim Result_Check As Boolean
 Dim Header_Check As Boolean
 Dim Start_Check As Integer
@@ -144,13 +143,12 @@ Dim Start_Check As Integer
     ' Sets Code ID range for looping to check format
     Range(Validated_Map_Headers(0) & "2:" & Validated_Map_Headers(0) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "CodeID_Column"
 
-    ' Checks the code id column to confirm format
-    For i = 0 to UBound(DataRange)
-        If IsNumeric(DataRange(i)) Then
-            DataRange(i).Value = Val(DataRange(i).Value)
-            DataRange(i).NumberFormat = "0"
+    For Each cell In Range("CodeID_Column")
+        If IsNumeric(cell) Then
+            cell.Value = Val(cell.Value)
+            cell.NumberFormat = "0"
         End If
-    Next i
+    Next cell
 
 
     ' Checks code columns and makes sure values are in number format for lookup
