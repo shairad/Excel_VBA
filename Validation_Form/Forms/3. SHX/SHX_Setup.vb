@@ -8,11 +8,14 @@ Sub SHX_Setup()
     Dim LastColumn As Long
     Dim StartCell As Range
     Dim rList As Range
+    Dim Header_Array As Variant
 
     'Disables settings to improve performance
     Application.ScreenUpdating = False
     Application.Calculation = xlCalculationManual
     Application.EnableEvents = False
+
+    Header_Array = Array("NOMEN_ID", "CS_72", "CS_14003", "CS_4002165")
 
     MsgBox ("Program is about to run. Please leave computer alone until completed")
 
@@ -63,33 +66,75 @@ Sub SHX_Setup()
 
     Sheets("Social History Results").Select
 
-    Range("I1:I" & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Select    'Selects all cells not empty in column
-    Selection.Name = "Nomen_Code_ID"    'Names Range
+    Range("A1").Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Name = "Header_Row"
 
-    Set Rng = Range("Nomen_Code_ID")    'Assigns range to variable
 
-    For Each cell In Rng    'Loops through cells in range
+    ' Finds the locations of the lookup columns
+    For each header in Range("Header_Row")
+      For i = 0 to UBound(Header_Array)
+        If Header_Array(i) = header Then
+          Header_Array(i) = Mid(header.Address, 2, 1)
+          Exit For
+        End If
+      Next i
+    Next header
+
+
+    ' Checks Validated Mappings Code ID Column to confirm format is NumberFormat
+    Sheets("Validated Mappings").Select
+
+    Range("A1").Select
+    Range(Selection, Selection.End(xlToRight)).Name = "Val_Headers"
+
+    For Each cell in Range("Val_Headers")
+      If cell = LCase("Code ID") Then
+        CodeID = Mid(cell.Address, 2, 1)
+      End If
+    Exit For
+
+    ' Sets Code ID range for looping to check format
+    Range(CodeID & "2:" & CodeID & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "CodeID_Column"
+
+    For Each cell In Range("CodeID_Column")
         If IsNumeric(cell) Then
             cell.Value = Val(cell.Value)
             cell.NumberFormat = "0"
         End If
     Next cell
 
+
+  ' Checks code columns and makes sure values are in number format for lookup
+  For i = 0 to UBound(Header_Array)
+    'Selects all cells not empty in the code column and assigns named range for loop
+    Range(Header_Array(i) & "2:" & Header_Array(i) & ActiveSheet.Cells.SpecialCells(xlCellTypeLastCell).Row).Name = "Code_Column"
+
+    For Each cell In Range("Code_Column")
+        If IsNumeric(cell) Then
+            cell.Value = Val(cell.Value)
+            cell.NumberFormat = "0"
+        End If
+    Next cell
+  Next i
+
+
+    ' CS Nomenclature Mapped
     Range("A2").Select
-    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(I2,'Validated Mappings'!D:D,0)),0)"
-    Selection.AutoFill Destination:=Range("SHX_Results[Nomenclature Mapped?]")
+    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(" & Header_Array(0) & "2,'Validated Mappings'!D:D,0))," & Header_Array(0) & "2)"
 
+    ' CS 72 formula
     Range("B2").Select
-    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(F2,'Validated Mappings'!D:D,0)),0)"
-    Selection.AutoFill Destination:=Range("SHX_Results[CS 72 Mapped?]")
+    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(" & Header_Array(1) & "2,'Validated Mappings'!D:D,0))," & Header_Array(1) & "2)"
 
+    ' CS 14003 Formula
     Range("C2").Select
-    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(K2,'Validated Mappings'!D:D,0)),0)"
-    Selection.AutoFill Destination:=Range("SHX_Results[CS 14003 Mapped?]")
+    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(" & Header_Array(2) & "2,'Validated Mappings'!D:D,0))," & Header_Array(2) & "2)"
 
+    ' CS 4002165
     Range("D2").Select
-    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(M2,'Validated Mappings'!D:D,0)),0)"
-    Selection.AutoFill Destination:=Range("SHX_Results[CS 4002165 Mapped?]")
+    ActiveCell = "=IFERROR(INDEX('Validated Mappings'!I:I,MATCH(" & Header_Array(3) & "2,'Validated Mappings'!D:D,0))," & Header_Array(3) & "2)"
+
 
     'Centers cell values
     Columns("A:D").Select
