@@ -15,9 +15,12 @@ Dim Header_Check As Boolean
 Dim Start_Check As Integer
 
     'Disables settings to improve performance
-    ' Application.ScreenUpdating = False
-    ' Application.Calculation = xlCalculationManual
-    ' Application.EnableEvents = False
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    Application.EnableEvents = False
+
+    ' Error Handling
+    On Error GoTo ErrHandler
 
     Header_Array = Array("NOMEN_ID", "CS_72", "CS_14003", "CS_4002165")
     Validated_Map_Headers = Array("CODE ID", "MAPPING STATUS")
@@ -88,16 +91,16 @@ Dim Start_Check As Integer
     Selection.Name = "Header_Row"
 
     For i = 0 To UBound(Header_Array)
-      Header_Check = False
-      For Each Header In Range("Header_Row")
-              If LCase(Header_Array(i)) = LCase(Header) Then
-                  Header_Array(i) = Mid(Header.Address, 2, 1)
-                  Header_Check = True
-                  Exit For
-              End If
+        Header_Check = False
+        For Each Header In Range("Header_Row")
+            If LCase(Header_Array(i)) = LCase(Header) Then
+                Header_Array(i) = Mid(Header.Address, 2, 1)
+                Header_Check = True
+                Exit For
+            End If
         Next Header
         If Header_Check = False Then
-            Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine &  "'" & Header_Array(i) & "'" & " on the Social History Results Sheet....." & vbNewLine & vbNewLine & "However all is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one." & vbNewLine & vbNewLine & "If you don't want to replace data from another column in place of the missing one then enter the letter of an empty column(like T). If you would rather fix the issue within the file or program then click cancel.", "If I am BORIS who are you?")
+            Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & "'" & Header_Array(i) & "'" & " on the Social History Results Sheet....." & vbNewLine & vbNewLine & "However all is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one." & vbNewLine & vbNewLine & "If you don't want to replace data from another column in place of the missing one then enter the letter of an empty column(like T). If you would rather fix the issue within the file or program then click cancel.", "If I am BORIS who are you?")
 
             'If user hits cancel then close program.
             If Header_User_Response = vbNullString Then
@@ -116,16 +119,16 @@ Dim Start_Check As Integer
     Range(Selection, Selection.End(xlToRight)).Name = "Val_Headers"
 
     For i = 0 To UBound(Validated_Map_Headers)
-    Header_Check = False
-      For Each Header In Range("Val_Headers")
-        If LCase(Validated_Map_Headers(i)) = LCase(Header) Then
-            Validated_Map_Headers(i) = Mid(Header.Address, 2, 1)
-            Header_Check = True
-            Exit For
-        End If
-      Next header
+        Header_Check = False
+        For Each Header In Range("Val_Headers")
+            If LCase(Validated_Map_Headers(i)) = LCase(Header) Then
+                Validated_Map_Headers(i) = Mid(Header.Address, 2, 1)
+                Header_Check = True
+                Exit For
+            End If
+        Next Header
         If Header_Check = False Then
-            Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine &  "'" & Validated_Map_Headers(i) & "'" & " on the Social History Results Sheet....." & vbNewLine & vbNewLine & "However all is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one." & vbNewLine & vbNewLine & "If you don't want to replace data from another column in place of the missing one then enter the letter of an empty column(like T). If you would rather fix the issue within the file or program then click cancel.", "If I am BORIS who are you?")
+            Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & "'" & Validated_Map_Headers(i) & "'" & " on the Social History Results Sheet....." & vbNewLine & vbNewLine & "However all is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one." & vbNewLine & vbNewLine & "If you don't want to replace data from another column in place of the missing one then enter the letter of an empty column(like T). If you would rather fix the issue within the file or program then click cancel.", "If I am BORIS who are you?")
 
             'If user hits cancel then close program.
             If Header_User_Response = vbNullString Then
@@ -184,6 +187,7 @@ Dim Start_Check As Integer
 
 
     'Centers cell values
+    Sheets("Social History Results").Select
     Columns("A:D").Select
     With Selection
         .HorizontalAlignment = xlCenter
@@ -238,6 +242,12 @@ Dim Start_Check As Integer
             .Font.ColorIndex = xlColorIndexAutomatic
             .Borders.LineStyle = xlLineStyleNone
         End With
+        ' Changes header font color to white
+        Rows("1:1").Select
+        With Selection.Font
+            .ThemeColor = xlThemeColorDark1
+            .TintAndShade = 0
+        End With
 
     End If
 
@@ -282,11 +292,20 @@ Dim Start_Check As Integer
 
     Exit Sub
 
-    User_Exit:
-      Application.ScreenUpdating = True
-      Application.EnableEvents = True
-      Application.Calculation = xlCalculationAutomatic
+User_Exit:
+    Application.ScreenUpdating = True
+    Application.EnableEvents = True
+    Application.Calculation = xlCalculationAutomatic
 
-      MsgBox ("Program quitting per user action.")
+    MsgBox ("Program quitting per user action.")
+    Exit Sub
+
+ErrHandler:
+    'Re-enables previously disabled settings after all code has run.
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
+
+    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & vbNewLine & Err.Number & vbNewLine & Err.Description)
 
 End Sub
