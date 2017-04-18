@@ -207,6 +207,10 @@ Dim Start_Check As Integer
     For Each Sheet In Worksheets
         Result_Check = False
         If Sheet.Name = "To_Review" Then
+            ' Delete all data on the sheet
+            Sheets("To_Review").Select
+            Cells.Select
+            Selection.Clear
             Result_Check = True
             Exit For
         End If
@@ -219,10 +223,13 @@ Dim Start_Check As Integer
     End If
 
     ' SUB - Copies the data to the To_Review Sheet
+    ''''''''''''''''''''''''''''''''''''''''''''''''
+
     ' Disables calculation again
     Application.Calculation = xlCalculationManual
-    Sheets("Social History Results").Cells.Select
-    Selection.Copy Sheets("To_Review").Range("A1")
+
+    Sheets("Social History Results").Cells.Copy Sheets("To_Review").Range("A1")
+
 
 
     ' SUB - Formats the data on the To Review Sheet
@@ -288,7 +295,7 @@ Dim Start_Check As Integer
     Application.EnableEvents = True
     Application.Calculation = xlCalculationAutomatic
 
-    MsgBox ("All Done!")
+    MsgBox "GJ Team - All Done!", vbOKOnly, "BORIS"
 
     Exit Sub
 
@@ -297,7 +304,7 @@ User_Exit:
     Application.EnableEvents = True
     Application.Calculation = xlCalculationAutomatic
 
-    MsgBox ("Program quitting per user action.")
+    MsgBox "Program quitting per user action.", vbOKOnly, ":("
     Exit Sub
 
 ErrHandler:
@@ -306,6 +313,6 @@ ErrHandler:
     Application.Calculation = xlCalculationAutomatic
     Application.EnableEvents = True
 
-    MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & vbNewLine & Err.Number & vbNewLine & Err.Description)
+    MsgBox "Something went wrong that you won't be able to fix. (code vs. form version issue most likely) Contact code creator for troubleshooting" & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & vbNewLine & Err.Number & vbNewLine & Err.Description, vbOKOnly, ":("
 
 End Sub
