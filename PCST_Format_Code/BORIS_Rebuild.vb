@@ -312,7 +312,7 @@ Dim LR As Long
     Next Source_Name
 
     ' Asks user to confirm the sources are correct before continuing.
-    Sources_Check = MsgBox("BORIS found the following sources. Please confirm that all sources are unique and there are no duplicates. If there are please click Cancel, rename the sources and then re-run the program. If the sources are good to go click OK to continue." & vbNewLine & vbNewLine & "Sources List:" & vbNewLine & Source_Combined, vbOKCancel + vbQuestion, "There can only be one BORIS!")
+    Sources_Check = MsgBox("BORIS found the following source(s). Please confirm that all sources are unique and there are no duplicates. If there are please click Cancel, rename the source(s) and then re-run the program. If the source(s) are good to go click OK to continue." & vbNewLine & vbNewLine & "List:" & vbNewLine & Source_Combined, vbOKCancel + vbQuestion, "There can only be one BORIS!")
 
     ' If user hits cancel then close program.
     If Sources_Check = vbCancel Then
