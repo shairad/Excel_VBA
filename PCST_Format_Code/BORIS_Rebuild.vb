@@ -236,7 +236,7 @@ Dim LR As Long
     If LCase(Sheets("Health Maintenance Summary").Range("K5").Value) <> "source" Then
 
         MsgBox ("BORIS has detected a possible error with the Validation Form layout" & vbNewLine & vbNewLine & _
-                "BORIS expected Column K on the Health Maintenance Summary sheet to be 'Source'. Please resolve the issue and then run again.")
+                "BORIS expected Column K on the Health Maintenance Summary sheet to be 'Source'. He needs the source column for Health Maintenance. Please resolve the issue and then run again.")
         GoTo User_Exit
     End If
 
