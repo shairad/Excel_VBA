@@ -9,8 +9,7 @@ Dim sheet As Worksheet
     Application.DisplayAlerts = False
 
     For Each sheet In Worksheets
-        If sheet.Name = "BlackList_Table" _
-                Then
+        If sheet.Name = "BlackList_Table" Then
             sheet.Delete
         End If
     Next sheet
