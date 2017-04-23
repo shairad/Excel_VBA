@@ -122,8 +122,14 @@ Dim sResult_Value As Variant
     ' Write the updated DataRange Array to the excel file
     Range("EvCodeCheck").Value = EvCodeCheckAnswerArray
 
+    ' Deletes the lookup column
+    Sheets(SheetArray(0)).Select
+    Columns(UnmappedHeaders(1) & ":" & UnmappedHeaders(1)).Select
+    Selection.Delete Shift:=xlToLeft
+
     ' Tells user program is completed
     Sheets(SheetArray(0)).Select
+    Range("A1").Select
     MsgBox ("BORIS has completed the Blacklist Code System check")
     Exit Sub
 
