@@ -9,7 +9,7 @@ Dim HeaderLocations As Variant
 Dim HeaderNames As Variant
 Dim EvCodeCheck As Variant
 Dim EvCodeCheckAnswerArray As Variant
-Dim UnmappedEvCodeArray As Variant
+Dim EVCodeCheckArray As Variant
 Dim EvCodeCheckHeader As String
 Dim EvCodeConcat As String
 Dim LR As Long
@@ -22,7 +22,7 @@ HeaderLocations = Array("Unmapped Location", "Raw Code", "Blacklist Location")
 HeaderNames = Array("Coding System ID", "Raw Code", "EventCodeCheck")
 UnmappedAddHeaders = Array("EvCodeCheck", "CodeLookup")
 
-' TODO - Write the code whic concats the code system ID and the RawCode column
+' TODO - Write the code which concats the code system ID and the RawCode column
 ' TODO - Then Pass that column to memory and handle vlookup and writing out results
 
 
@@ -35,8 +35,7 @@ Sheets(SheetArray(i)).Select
 Range("A1").Select
 Range("A2", Selection.End(xlToRight)).Name = "Header_row"
 
-' Finds the Code System ID header column
-
+' Finds columns by header name
 Header_Check = False
   For each header in Range("Header_row")
     If LCase(header) = LCase("Coding System ID") _
@@ -85,15 +84,13 @@ For i = 0 to UBound(UnmappedAddHeaders)
 Next i
 
 
-
-
   ' SUB - Assigns Unmapped Codes Code System ID's to array in memory
   ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Sheets(SheetArray(0)).Select
   LR = Range(HeaderLocations(0) & Rows.Count).End(xlUp).Row
-  Range(HeaderLocations(0)&"3:"  & HeaderLocations(0) & LR).SpecialCells(xlCellTypeVisible).Name = "UnmappedCodeID_Range"
+  Range(HeaderLocations(0)&"3:"  & HeaderLocations(0) & LR).SpecialCells(xlCellTypeVisible).Name = "CodeLookup"
 
-  UnmappedEvCodeArray = Range("UnmappedCodeID_Range").Value
+  EVCodeCheckArray = Range("CodeLookup").Value
 
   ' SUB - Set EvCodeCheck answer range to array in memory
   Sheets(SheetArray(0)).Select
@@ -102,7 +99,7 @@ Next i
   EvCodeCheckAnswerArray = Range("EvCodeChecker")
 
 
-  ' SUB - Assigns Blacklist Codes from the BlackList Table to an array in memory
+  ' SUB - Assigns Previous Codes from the Previous Codes Table to an array in memory
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Sheets(SheetArray(1)).Select
   LR = Range(HeaderLocations(1) & Rows.Count).End(xlUp).Row
@@ -110,22 +107,21 @@ Next i
 
   BlacklistArray = Range("PreviousEvCodes").Value
 
+' creates the concat column for te Lookup
+
+
+
 
 
   For i = 1 to UBound(UnmappedEvCodeArray)
-
-      cell_Lookup = UnmappedEvCodeArray(i,1)  'The cell value you want to look for a match with
-
-      sResult = Application.VLookup(cell_Lookup, Range("BlackList_Range"), 1, False)
-
+    cell_Lookup = UnmappedEvCodeArray(i,1)
+    sResult = Application.VLookup(cell_Lookup, Range("BlackList_Range"), 1, False)
       If IsError(sResult) Then
           sResult_Value = "0"
           EvCodeCheckAnswerArray(i,1) = sResult_Value
       Else
           EvCodeCheckAnswerArray(i,1) = "On Blacklist"
-
       End If
-
   Next i
 
   'Write the updated DataRange Array to the excel file
