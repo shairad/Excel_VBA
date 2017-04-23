@@ -1,14 +1,29 @@
 Sub BlacklistImport()
-'
-' access Macro
-'
 
-' PRIMARY - Imports the blacklist code table to the excel sheet for review
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Dim sheet As Worksheet
 
-    With ThisWorkbook
-      .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "BlackList_Table"
-    End With
+
+' Checks to see if current workbook has the blacklist sheet and if it does, delete it then remake with new data.
+
+
+Application.DisplayAlerts = False
+
+For Each sheet In Worksheets
+    If sheet.Name = "BlackList_Table" _
+       Then
+        sheet.Delete
+    End If
+Next sheet
+
+Application.DisplayAlerts = True
+
+With ThisWorkbook
+  .Sheets.Add(After:=.Sheets(.Sheets.Count)).Name = "BlackList_Table"
+End With
+
+
+    ' PRIMARY - Imports the blacklist code table to the excel sheet for review
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     With ActiveSheet.ListObjects.Add(SourceType:=0, Source:=Array( _
         "OLEDB;Provider=Microsoft.ACE.OLEDB.12.0;Password="""";User ID=Admin;Data Source=Y:\Data Intelligence\Code_Submittion_Database\CodeFeedba" _

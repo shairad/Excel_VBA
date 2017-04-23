@@ -131,7 +131,7 @@ Next i
   Range("BlackListAnswers").Value = BlacklistAnswerArray
 
   Sheets(SheetArray(0)).Select
-  MsgBox ("BORIS has completed the Black List Check for the Code System ID's")
+  MsgBox ("BORIS has completed the Blacklist Code System check")
 
 
 End Sub
