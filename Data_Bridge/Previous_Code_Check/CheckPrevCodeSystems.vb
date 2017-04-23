@@ -112,7 +112,7 @@ Dim sResult_Value As Variant
         cell_Lookup = EVCodeCheckArray(i, 1)
         sResult = Application.VLookup(cell_Lookup, Range("PreviousEvCodes"), 1, False)
         If IsError(sResult) Then
-            sResult_Value = "0"
+            sResult_Value = ""
             EvCodeCheckAnswerArray(i, 1) = sResult_Value
         Else
             EvCodeCheckAnswerArray(i, 1) = "Previously Reviewed"
@@ -127,11 +127,22 @@ Dim sResult_Value As Variant
     Columns(UnmappedHeaders(1) & ":" & UnmappedHeaders(1)).Select
     Selection.Delete Shift:=xlToLeft
 
+    ' Deletes the extra sheet
+    Application.DisplayAlerts = False
+
+    For Each sheet In Worksheets
+        If sheet.Name = "CodeSystemCheck" Then
+          sheet.Delete
+        End If
+    Next sheet
+
+    Application.DisplayAlerts = True
+
     ' Tells user program is completed
     Sheets(SheetArray(0)).Select
     Range("A1").Select
     MsgBox ("BORIS has completed the Blacklist Code System check")
-    Exit Sub
+    End
 
 User_Exit:
     MsgBox ("Exiting per user action")

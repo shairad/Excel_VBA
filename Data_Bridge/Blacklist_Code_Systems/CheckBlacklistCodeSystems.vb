@@ -47,7 +47,7 @@ Header_Check = False
   If Header_Check = False Then
       Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & HeaderNames(i) & " on the " & SheetArray(i) & vbNewLine & vbNewLine & "BORIS needs your help. Please enter the letter of the column containing the Coding System ID's.","If I am BORIS who are you?")
       If Header_User_Response = vbNullString Then
-          ' GoTo User_Exit
+          GoTo User_Exit
       Else
           HeaderLocations(i) = UCase(Header_User_Response)
       End If
@@ -115,7 +115,7 @@ Next i
       sResult = Application.VLookup(cell_Lookup, Range("BlackList_Range"), 1, False)
 
       If IsError(sResult) Then
-          sResult_Value = "0"
+          sResult_Value = ""
           BlacklistAnswerArray(i,1) = sResult_Value
       Else
           BlacklistAnswerArray(i,1) = "On Blacklist"
@@ -124,11 +124,26 @@ Next i
 
   Next i
 
+  ' Deletes extra sheet
+  Application.DisplayAlerts = False
+
+  For Each sheet In Worksheets
+      If sheet.Name = "BlackList_Table" _
+              Then
+          sheet.Delete
+      End If
+  Next sheet
+
+  Application.DisplayAlerts = True
+
   'Write the updated DataRange Array to the excel file
   Range("BlackListAnswers").Value = BlacklistAnswerArray
 
   Sheets(SheetArray(0)).Select
   MsgBox ("BORIS has completed the Blacklist Code System check")
+
+  User_Exit:
+    MsgBox ("Exiting per user action")
 
 
 End Sub
