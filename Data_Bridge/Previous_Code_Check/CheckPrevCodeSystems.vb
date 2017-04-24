@@ -10,19 +10,27 @@ Dim EvCodeCheckAnswerArray As Variant
 Dim EVCodeCheckArray As Variant
 Dim EvCodeCheckHeader As String
 Dim EvCodeConcat As String
+Dim Client_Mnemonic As String
 Dim LR As Long
 Dim Lookup As Variant
 Dim cell_Lookup As Variant
 Dim sResult_Value As Variant
 
     SheetArray = Array("Unmapped Codes", "CodeSystemCheck")
-    HeaderLocations = Array("Unmapped Location", "Raw Code", "EventCodeCheck")
+    HeaderLocations = Array("Code System ID", "Raw Code", "EventCodeCheck")
     HeaderNames = Array("Coding System ID", "Raw Code", "EventCodeCheck")
     UnmappedHeaders = Array("EvCodeCheck", "CodeLookup")
 
 
     ' SUB - Finds the column for the code system ID on the unmapped codes Sheet
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+    ' SUB - Prompts user for current client mnemonic id
+    Client_Mnemonic = InputBox("What is the full client mnemonic for this client?" & vbNewLine & vbNewLine & "ex. CERN_PH")
+
+    ' Makes sure case is upper
+    Client_Mnemonic = UCase(Client_Mnemonic)
+
 
     For i = 0 To UBound(SheetArray)
         ' Sets header row range
@@ -83,6 +91,7 @@ Dim sResult_Value As Variant
     LR = Range(HeaderLocations(0) & Rows.Count).End(xlUp).Row
     Range(UnmappedHeaders(1) & "3:" & UnmappedHeaders(1) & LR).Formula = "=CONCATENATE(F3,""|"",G3)"
 
+    "=CONCATENATE(" & Client_Mnemonic & "",|"" & HeaderLocations(0) & ""3,|"" & HeaderLocations(1) & "3)"
 
     ' SUB - Assigns CodeLookup Column to an array in memory
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -103,10 +112,10 @@ Dim sResult_Value As Variant
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Sheets(SheetArray(1)).Select
     LR = Range(HeaderLocations(1) & Rows.Count).End(xlUp).Row
-    Range(HeaderLocations(1) & "3:" & HeaderLocations(1) & LR).SpecialCells(xlCellTypeVisible).Name = "PreviousEvCodes"
+    Range(HeaderLocations(1) & "1:" & HeaderLocations(1) & LR).SpecialCells(xlCellTypeVisible).Name = "PreviousEvCodes"
 
 
-    ' SUB - Chehcks each cell in the EvCodeCheck for matches and either assigns a match or returns 0
+    ' SUB - checks each cell in the EvCodeCheck for matches and either assigns a match or returns 0
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     For i = 1 To UBound(EVCodeCheckArray)
         cell_Lookup = EVCodeCheckArray(i, 1)
@@ -142,7 +151,7 @@ Dim sResult_Value As Variant
     Sheets(SheetArray(0)).Select
     Range("A1").Select
     MsgBox ("BORIS has completed the Blacklist Code System check")
-    End
+    Exit Sub
 
 User_Exit:
     MsgBox ("Exiting per user action")
