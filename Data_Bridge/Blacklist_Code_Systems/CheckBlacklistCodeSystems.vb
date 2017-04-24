@@ -58,7 +58,6 @@ Next i
 ' PRIMARY - Check Code Systems against the blacklist
 '''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-
   ' SUB - Create a new column on unmapped code sheet at the end which will be the blacklist check response
 
   Sheets(SheetArray(0)).Select
@@ -102,7 +101,7 @@ Next i
   '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
   Sheets(SheetArray(1)).Select
   LR = Range(HeaderLocations(1) & Rows.Count).End(xlUp).Row
-  Range(HeaderLocations(1) &"3:" & HeaderLocations(1) & LR).SpecialCells(xlCellTypeVisible).Name = "BlackList_Range"
+  Range(HeaderLocations(1) &"1:" & HeaderLocations(1) & LR).SpecialCells(xlCellTypeVisible).Name = "BlackList_Range"
 
   BlacklistArray = Range("BlackList_Range").Value
 
@@ -118,7 +117,7 @@ Next i
           sResult_Value = ""
           BlacklistAnswerArray(i,1) = sResult_Value
       Else
-          BlacklistAnswerArray(i,1) = "On Blacklist"
+          BlacklistAnswerArray(i,1) = "On Code System Blacklist"
 
       End If
 
@@ -141,6 +140,8 @@ Next i
 
   Sheets(SheetArray(0)).Select
   MsgBox ("BORIS has completed the Blacklist Code System check")
+
+  Exit Sub
 
   User_Exit:
     MsgBox ("Exiting per user action")

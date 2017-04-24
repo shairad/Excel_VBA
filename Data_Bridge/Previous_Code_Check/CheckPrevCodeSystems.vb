@@ -115,7 +115,7 @@ Dim sResult_Value As Variant
             sResult_Value = ""
             EvCodeCheckAnswerArray(i, 1) = sResult_Value
         Else
-            EvCodeCheckAnswerArray(i, 1) = "Previously Reviewed"
+            EvCodeCheckAnswerArray(i, 1) = "Previously Submitted"
         End If
     Next i
 
