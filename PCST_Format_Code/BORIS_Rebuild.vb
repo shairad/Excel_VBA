@@ -101,16 +101,15 @@ Dim LR As Long
     'Prompts user to confirm they have reviewed the data in the validation form BEFORE running this.
     Confirm_Scrubbed = MsgBox("*NOTICE* It is highly advised that you review the data on the Unmapped Codes, Clinical Documentation, and the Health Maintenance Summary Sheet before running this program." & vbNewLine & vbNewLine & "You should delete unneeded lines and review concept endings to confirm the data is correct before proceeding. Otherwise errors will multiplied accross all newly created files." & vbNewLine & vbNewLine & "Once you click OK BORIS will start. Follow on screen prompts otherwise leave your computer alone until BORIS is done.", vbOKCancel + vbQuestion, "BORIS!")
 
-    'If user hits cancel then close program.
+    ' If user hits cancel then close program.
     If Confirm_Scrubbed = vbCancel Then
         GoTo User_Exit
-
     End If
 
 
     ' Names variable current file name
     Validation_File_Name = ActiveWorkbook.Name
-    Retry_UserID:
+Retry_UserID:
 
     ' Checks to confirm the user entered a correct user ID. This is needed for file save path.
     Name_Input_Checker = 0
@@ -136,7 +135,6 @@ Dim LR As Long
 
         If Project_Name = vbNullString Then
             GoTo User_Exit
-
         ElseIf Len(Project_Name) = 4 Or Len(Project_Name) = 7 Then        'If length of user inut incorrect, prompt user to try again.
             Project_Name_Checker = 1
         Else
@@ -149,7 +147,7 @@ Dim LR As Long
     Save_Path = "C:\Users\" & User_Name & "\Documents\" & Project_Name & "_" & "PCST_Files"
 
 
-    On Error GoTo Err1:
+    On Error GoTo UserNameErr:
     ' If the folder already exists then do nothing. Else make it.
     If Len(Dir(Save_Path, vbDirectory)) = 0 Then
         MkDir Save_Path        'Creates the folder
@@ -163,8 +161,8 @@ Dim LR As Long
     End If
 
     ' Error handling for wrong user ID entered. If computer fails to find path, it is because username was wrong. Send user back to fix.
-    If Err1 <> 0 Then
-    Err1:
+    If UserNameErr <> 0 Then
+UserNameErr:
         MsgBox ("I think you entered your user ID wrong... Computer told me so. Sending you back to try again.")
         Resume Retry_UserID:
     End If
@@ -173,10 +171,22 @@ Dim LR As Long
     ' PRIMARY - Formats worksheets for copying to new workbook
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
+    ' SUB - Unhides needed worksheets
+    ''''''''''''''''''''''''''''''''''''
+    For Each Sheet In Worksheets
+      For i = 0 To UBound(Val_Wk_Array)
+        If Val_Wk_Array(i) = Sheet.Name Then
+          Sheet.Visible = xlSheetVisible
+        End If
+      Next i
+    Next Sheet
+
+
     ' Switches Error handling back to normal
     On Error GoTo ErrHandler
 
     For i = 0 To UBound(Val_Wk_Array)
+
 
         Sheets(Val_Wk_Array(i)).Select
 
@@ -458,7 +468,7 @@ Dim LR As Long
                     End If
                 Next Header
                 If Header_Check = False Then
-                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine &  "'" & Clin_Doc_Col_Name_Array(i) & "'" & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However all is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one." & vbNewLine & vbNewLine & "If you don't want to replace data from another column in place of the missing one then enter the letter of an empty column(like T or something). If you would rather fix the issue within the file or program then click cancel.", "If I am BORIS who are you?")
+                    Header_User_Response = InputBox("BORIS was unable to find the header:" & vbNewLine & "'" & Clin_Doc_Col_Name_Array(i) & "'" & " on the " & Val_Wk_Array(0) & " Sheet....." & vbNewLine & vbNewLine & "However all is not lost! BORIS and you can do this!" & vbNewLine & vbNewLine & "To resolve the issue BORIS needs you to enter the letter of a column to use in place of the one he couldn't find." & vbNewLine & vbNewLine & "Look at the excel sheet behind this box and enter (in uppercase) the letter of the column you want to use in place of the missing one." & vbNewLine & vbNewLine & "If you don't want to replace data from another column in place of the missing one then enter the letter of an empty column(like T or something). If you would rather fix the issue within the file or program then click cancel.", "If I am BORIS who are you?")
 
                     'If user hits cancel then close program.
                     If Header_User_Response = vbNullString Then
@@ -1290,7 +1300,9 @@ ErrHandler:
     ' Clears the filesystem descriptor allowing you to delete the folder
     Dir "C:\"
     ChDir "C:\"
-    Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
+    If Source_Name <> vbNullString then
+      Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
+    End If
     MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & vbNewLine & Err.Number & vbNewLine & Err.Description)
 
 End Sub
