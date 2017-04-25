@@ -25,7 +25,7 @@ Private Sub Nomenclature_Row_Finder()
 
   'DEBUG
 
-  'This disables settings to improve macro performance.
+  ' This disables settings to improve macro performance.
   Application.ScreenUpdating = False
   Application.Calculation = xlCalculationManual
   Application.EnableEvents = False
@@ -185,9 +185,8 @@ Private Sub Nomenclature_Row_Finder()
   Next i
 
 
-
   ' SUB - Finds column locations for the New Lines Sheet
-  '''''''''''''''''''''''''''''''''''''''''''''''''''
+  ''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
   ' Sets header row range
   Sheets("New Lines").Select
@@ -217,7 +216,7 @@ Private Sub Nomenclature_Row_Finder()
   Next i
 
 
-  'SUB - Converts important sheets to TableStyle
+  ' SUB - Converts important sheets to TableStyle
   '''''''''''''''''''''''''''''''''''''''''''''''
   For i = 0 To UBound(WkNames)
 
@@ -227,13 +226,13 @@ Private Sub Nomenclature_Row_Finder()
       Sheets(WkNames(i)).AutoFilterMode = False
     End If
 
-    'Checks the current sheet. If it is in table format, convert it to range.
+    ' Checks the current sheet. If it is in table format, convert it to range.
     If Sheets(WkNames(i)).ListObjects.Count > 0 Then
       With Sheets(WkNames(i)).ListObjects(1)
         Set rList = .Range
         .Unlist
       End With
-      'Reverts the color of the range back to standard.
+      ' Reverts the color of the range back to standard.
       With rList
         .Interior.ColorIndex = xlColorIndexNone
         .Font.ColorIndex = xlColorIndexAutomatic
@@ -241,21 +240,21 @@ Private Sub Nomenclature_Row_Finder()
       End With
     End If
 
-    Set sht = Worksheets(WkNames(i))    'Sets value
-    Set StartCell = Range("A1")    'Start cell used to determine where to begin creating the table range
+    Set sht = Worksheets(WkNames(i))
+    Set StartCell = Range("A1")
 
-    'Find Last Row and Column
+    ' Find Last Row and Column
     LastRow = StartCell.SpecialCells(xlCellTypeLastCell).Row
     LastColumn = StartCell.SpecialCells(xlCellTypeLastCell).Column
-    Sheet_Name = WkNames(i)    'Assigns sheet name to a variable as a string
+    Sheet_Name = WkNames(i)
 
-    'Select Range
+    ' Select Range
     sht.Range(StartCell, sht.Cells(LastRow, LastColumn)).Select
 
-    'Creates the table
+    ' Creates the table
     Set tbl = Sheets(WkNames(i)).ListObjects.Add(xlSrcRange, Selection, , xlYes)
-    tbl.Name = TblNames(i)    'Names the table
-    tbl.TableStyle = "TableStyleLight12"    'Sets table color theme
+    tbl.Name = TblNames(i)
+    tbl.TableStyle = "TableStyleLight12"
 
     Rows("1:1").Select
     With Selection.Font
@@ -264,52 +263,52 @@ Private Sub Nomenclature_Row_Finder()
     End With
 
 
-    'Results Sheet - Adds formulas
+    ' Results Sheet - Adds formulas
     '''''''''''''''''''''''''''''''
 
     If WkNames(i) = "Results" Then
 
-      'Remove Duplicates from the Results Sheet
+      ' Remove Duplicates from the Results Sheet
       Sheets(WkNames(1)).Range("Results_Tbl[#All]").RemoveDuplicates Columns:=Array(ResultsNumHeaders(0), ResultsNumHeaders(1), ResultsNumHeaders(2)), _
       Header:=xlYes
 
-      'Adds new Mapping note column
+      ' Adds new Mapping note column
       Range("M1").Select
       Selection = "Mapping Note"
 
-      'Eventcode formula
+      ' Eventcode formula
       EventMapped = "=IFERROR(INDEX('Validated Mappings'!" & ValMappingsHeaders(1) & ":" & ValMappingsHeaders(1) & _
       ",MATCH(" & ResultsHeaders(0) & "2,'Validated Mappings'!" & ValMappingsHeaders(0) & ":" & ValMappingsHeaders(0) & ",0)),0)"
 
-      'Nomenclature formula
+      ' Nomenclature formula
       NomenclatureMapped = "=IFERROR(INDEX('Validated Mappings'!" & ValMappingsHeaders(1) & ":" & ValMappingsHeaders(1) & _
       ",MATCH(" & ResultsHeaders(2) & "2,'Validated Mappings'!" & ValMappingsHeaders(0) & ":" & ValMappingsHeaders(0) & ",0)),0)"
 
-      'Event Code mapped?
+      ' Event Code mapped?
       Range("A2").Select
       Selection.Formula = EventMapped
 
-      'Noemcnature mapped?
+      ' Noemcnature mapped?
       Range("B2").Select
       Selection.Formula = NomenclatureMapped
 
-      'Both mapped?
+      ' Both mapped?
       Range("C2").Select
       Selection.Formula = "=IF(AND(A2 =""Validated"", B2 = ""Validated""),""Both Validated"", 0)"
 
-      'Hides rows which are validated in both columns
+      ' Hides rows which are validated in both columns
       Sheets(WkNames(1)).ListObjects("Results_Tbl").Range.AutoFilter Field:=3, Criteria1:= _
       "0"
 
     End If
 
 
-    'If the sheet is the validation sheet, then remove duplicates and create range
+    ' If the sheet is the validation sheet, then remove duplicates and create range
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     If WkNames(i) = "Validation Sheet" Then
 
-      'Removes Duplicates by Event Code from the Validation Sheet
+      ' Removes Duplicates by Event Code from the Validation Sheet
       Sheets(WkNames(2)).Range("Val_Tbl[#All]").RemoveDuplicates Columns:=ValidationSheetNumHeaders(8), Header:= _
       xlYes
 
@@ -327,44 +326,44 @@ Private Sub Nomenclature_Row_Finder()
 
   For Each EventCode In Range("Event_Codes")
 
-    'Filters sheet by event code
+    ' Filters sheet by event code
     Sheets(WkNames(1)).Select
     Sheets(WkNames(1)).ListObjects("Results_Tbl").Range.AutoFilter Field:=ResultsNumHeaders(0), Criteria1:= _
     EventCode, Operator:=xlAnd
 
     Set Results_Range = Range("Results_Tbl")
 
-    'Error handling. If no codes are found, then skip the code.
+    ' Error handling. If no codes are found, then skip the code.
     On Error GoTo NoBlanks
 
-    'Count number of visible rows on the Results sheet
+    ' Count number of visible rows on the Results sheet
     Visible_Rows_Count = Results_Range.SpecialCells(xlCellTypeVisible).Rows.Count
 
-    'Filters sheet by the current event code
+    ' Filters sheet by the current event code
     Sheets(WkNames(2)).Select
     Sheets(WkNames(2)).ListObjects("Val_Tbl").Range.AutoFilter Field:=ValidationSheetNumHeaders(8), Criteria1:= _
     EventCode, Operator:=xlAnd
 
     Set StartCell = Range("A1")
 
-    'finds the first visible row
+    ' finds the first visible row
     Validation_Visible_Row = StartCell.SpecialCells(xlCellTypeLastCell).Row
 
-    'Selects the row
+    ' Selects the row
     Rows(Validation_Visible_Row).Select
     Selection.Copy
 
     Sheets("New Lines").Select
 
-    'Used to determine sheet location when replacing nomenclature values after new lines have been created.
+    ' Used to determine sheet location when replacing nomenclature values after new lines have been created.
     Code_Blank_Line = Range("A" & Rows.Count).End(xlUp).Row + 1
 
 
-    '      SUB -    Creates a new line for each "hit" for a specific code.
+    '      SUB - Creates a new line for each "hit" for a specific code.
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     For i = 1 To Visible_Rows_Count
-      'Used to determine next blank line for copying the new validation line.
+      ' Used to determine next blank line for copying the new validation line.
       Next_Blank_Row = Range("A" & Rows.Count).End(xlUp).Row + 1
 
       Range("A" & Next_Blank_Row).Select
@@ -383,10 +382,10 @@ Private Sub Nomenclature_Row_Finder()
 
     Sheets(WkNames(1)).Select
 
-    'Confirms active cell is within the table
+    ' Confirms active cell is within the table
     Range("A2").Select
 
-    'Selects the first visible cell in column the Alpha_Mon_ID column to the Nomenclature ID column on new lines
+    ' Selects the first visible cell in column the Alpha_Mon_ID column to the Nomenclature ID column on new lines
     Sheets(WkNames(1)).AutoFilter.Range.Offset(1).SpecialCells(xlCellTypeVisible).Cells(1, ResultsNumHeaders(2)).Select
 
     Range(Selection, Selection.End(xlDown)).Select
@@ -399,7 +398,7 @@ Private Sub Nomenclature_Row_Finder()
     :=False, Transpose:=False
 
 
-    '       SUB -    Copies the Nomen_Source Column to the Nomenclature Notes column on the New Lines Sheet
+    '       SUB - Copies the Nomen_Source Column to the Nomenclature Notes column on the New Lines Sheet
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     ' Switches back to Results Sheet to Copy next column
@@ -421,7 +420,7 @@ Private Sub Nomenclature_Row_Finder()
     :=False, Transpose:=False
 
 
-    '       SUB -    Copies the Event Code Mapped? Column to the New Lines Sheet
+    '       SUB - Copies the Event Code Mapped? Column to the New Lines Sheet
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     ' Switches back to Results Sheet to Copy next column
@@ -430,7 +429,7 @@ Private Sub Nomenclature_Row_Finder()
     ' Confirms active cell is within the table
     Range("A2").Select
 
-    'Selects the first visible cell in column Event Code Mapped? Column
+    ' Selects the first visible cell in column Event Code Mapped? Column
     Sheets(WkNames(1)).AutoFilter.Range.Offset(1).SpecialCells(xlCellTypeVisible).Cells(1, 1).Select
 
     Range(Selection, Selection.End(xlDown)).Select
@@ -443,16 +442,16 @@ Private Sub Nomenclature_Row_Finder()
     :=False, Transpose:=False
 
 
-    '           Copies the Nomenclature Mapped? Column to the New Lines Sheet
+    '        SUB - Copies the Nomenclature Mapped? Column to the New Lines Sheet
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    'Switches back to Results Sheet to Copy next column
+    ' Switches back to Results Sheet to Copy next column
     Sheets(WkNames(1)).Select
 
-    'Confirms active cell is within the table
+    ' Confirms active cell is within the table
     Range("A2").Select
 
-    'Selects the first visible cell in the Nomenclature mapped? column
+    ' Selects the first visible cell in the Nomenclature mapped? column
     Sheets(WkNames(1)).AutoFilter.Range.Offset(1).SpecialCells(xlCellTypeVisible).Cells(1, 2).Select
 
     Range(Selection, Selection.End(xlDown)).Select
@@ -465,18 +464,18 @@ Private Sub Nomenclature_Row_Finder()
     :=False, Transpose:=False
 
 
-    'Error handling. No codes found, so skipping
+    ' Error handling. No codes found, so skipping
 NoBlanks:
-    'MsgBox("No Code for " & EventCode)
+    ' MsgBox("No Code for " & EventCode)
     Resume ClearError
 
 ClearError:
-    'Clears variables for next loop
+    ' Clears variables for next loop
     Visible_Rows_Count = 0
 
   Next EventCode
 
-  'Re-enables previously disabled settings after all code has run.
+  ' Re-enables previously disabled settings after all code has run.
   Application.ScreenUpdating = True
   Application.Calculation = xlCalculationAutomatic
   Application.EnableEvents = True
@@ -487,7 +486,7 @@ ClearError:
 
 User_Exit:
 
-  'Re-enables previously disabled settings after all code has run.
+  ' Re-enables previously disabled settings after all code has run.
   Application.ScreenUpdating = True
   Application.Calculation = xlCalculationAutomatic
   Application.EnableEvents = True
