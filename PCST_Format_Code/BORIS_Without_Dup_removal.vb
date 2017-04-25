@@ -46,6 +46,7 @@ Sub BORIS_PCST()
   Dim Table_Obj As Variant
   Dim Rng As Variant
   Dim cPlace As Variant
+  Dim UserNameErr As Variant
   Dim Code_Short As Variant
   Dim New_Value As Variant
   Dim code As Variant
@@ -67,6 +68,7 @@ Sub BORIS_PCST()
   Dim Sources_Check As Integer
   Dim Off_Count As Integer
   Dim col_Count As Integer
+  Dim i As Integer
   Dim LastRow As Long
   Dim LastColumn As Long
   Dim Next_Blank_Row As Long

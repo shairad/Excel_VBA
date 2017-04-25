@@ -33,8 +33,8 @@ Range("A2", Selection.End(xlToRight)).Name = "Header_row"
 
 ' Finds the Code System ID header column
 
-Header_Check = False
   For each header in Range("Header_row")
+  Header_Check = False
     If LCase(header) = LCase("Coding System ID") Or LCase(header) = LCase("BlacklistedCodeSystem") Then
       HeaderLocations(i) = Mid(header.Address, 2, 1)
       Header_Check = True

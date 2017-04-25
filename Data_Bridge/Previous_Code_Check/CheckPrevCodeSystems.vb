@@ -89,9 +89,11 @@ Dim sResult_Value As Variant
     ' SUB - Creates Concat Column
     Sheets(SheetArray(0)).Select
     LR = Range(HeaderLocations(0) & Rows.Count).End(xlUp).Row
-    Range(UnmappedHeaders(1) & "2:" & UnmappedHeaders(1) & LR).Formula = "=CONCATENATE(" & Client_Mnemonic & "," & "|" & "," & HeaderLocations(0) & "2," & "|" & "," & HeaderLocations(1) & "3)"
+    Range(UnmappedHeaders(1) & "2:" & UnmappedHeaders(1) & LR).Formula = "=CONCATENATE(" & Client_Mnemonic & "," & "|" & "," & HeaderLocations(0) & "2" & "," & "|" & "," & HeaderLocations(1) & "2)"
+    ' "=CONCATENATE(" & Client_Mnemonic & "," & "|" & "," & HeaderLocations(0) & "2," & "|" & "," & HeaderLocations(1) & "3)"
+    ' "=CONCATENATE(" & Client_Mnemonic & "," & "|" & "," & HeaderLocations(0) & "2" & "," & "|" & "," & HeaderLocations(1) & "2)"
 
-
+=CONCATENATE("CERN_PH","|",F2, "|",E2)
 
     ' SUB - Assigns CodeLookup Column to an array in memory
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
