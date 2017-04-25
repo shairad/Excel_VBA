@@ -346,10 +346,8 @@ Private Sub Nomenclature_Row_Finder()
 
     Set StartCell = Range("A1")
 
-    ' finds the first visible row
     Validation_Visible_Row = StartCell.SpecialCells(xlCellTypeLastCell).Row
 
-    ' Selects the row
     Rows(Validation_Visible_Row).Select
     Selection.Copy
 
@@ -420,7 +418,7 @@ Private Sub Nomenclature_Row_Finder()
     :=False, Transpose:=False
 
 
-    '       SUB - Copies the Event Code Mapped? Column to the New Lines Sheet
+    '       SUB - Copies the Event Code Mapped? Column to the New Lines Sheet - Used when populating cmments
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     ' Switches back to Results Sheet to Copy next column
@@ -442,7 +440,7 @@ Private Sub Nomenclature_Row_Finder()
     :=False, Transpose:=False
 
 
-    '        SUB - Copies the Nomenclature Mapped? Column to the New Lines Sheet
+    '        SUB - Copies the Nomenclature Mapped? Column to the New Lines Sheet - Used when populating comments
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
     ' Switches back to Results Sheet to Copy next column
