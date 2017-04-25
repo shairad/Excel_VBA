@@ -1,5 +1,3 @@
-Option Explicit
-
 Sub BORIS_PCST()
 
   '
