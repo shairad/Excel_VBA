@@ -12,13 +12,12 @@ Dim BlacklistAnswerArray As Variant
 Dim UnmappedCodeSystemArray As Variant
 Dim BlackListHeader As String
 Dim LR As Long
-
 Dim Lookup As Variant
 Dim cell_Lookup As Variant
 Dim sResult_Value As Variant
 
-SheetArray = Array("Unmapped Codes", "BlackList_Table")
-HeaderLocations = Array("Unmapped Location", "Blacklist Location")
+SheetArray = Array("Unmapped Raw", "BlackList_Table")
+HeaderLocations = Array("Coding System ID", "Blacklist Location")
 HeaderNames = Array("Coding System ID", "BlacklistedCodeSystem")
 
 

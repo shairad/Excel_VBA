@@ -657,13 +657,7 @@ UserNameErr:
 
 
         ' PRIMARY - Remove Duplicates Clinical Documentation, Filter For duplicates, Then Combines the sheets into one
-        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-        ' SUB - Removes duplicates on the clinical Documentation sheet
-        ' Removes dups on the MAIN Clinical Documentation sheet by source, nomenclature ID, Nomenclature Display
-        ' Sheets(Val_Wk_Array(0)).Range("Clinical_Table[#All]").RemoveDuplicates Columns:=Array(Clin_Doc_Col_Num_Array(3), _
-                ' Clin_Doc_Col_Num_Array(12), Clin_Doc_Col_Num_Array(13)), Header:=xlYes
-
+        '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
         ' filters by concept -> registry for easy reviewing in final product
@@ -751,7 +745,7 @@ UserNameErr:
             Code_Sheet = code
 
             ' Special instructions for code set 72
-            If code = "72" Or code = "Nomenclature - Patient Care" Then
+            If code = "72" Then
 
                 ' Populates the headers on the CS72 sheet
                 Off_Count = 0
@@ -777,8 +771,9 @@ UserNameErr:
                     Next Header
                 Next i
 
+
                 ' SUB - Copies Clinical Documentation to 72
-                '''''''''''''''''''''''''''''''''''''
+                ''''''''''''''''''''''''''''''''''''''''''''
 
                 ' Filters The Source column for current source
                 Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(3), _
@@ -795,8 +790,7 @@ UserNameErr:
                     Table_ObjIsVisible = tbl.Range.SpecialCells(xlCellTypeVisible).Rows.Count > 1
                 End If
 
-
-                'If data is visible, then copy visible data
+                'If data is visible, and this is CS 72 then copy visible data
                 If Table_ObjIsVisible = True Then
 
                     ' Finds the last row of the Clinical Documentation Sheet for copy Range
@@ -806,7 +800,6 @@ UserNameErr:
                     ' Copies Registry Column
                     Sheets(Val_Wk_Array(0)).Select
                     Range(Clin_Doc_Col_Ltr_Array(0) & "2:" & Clin_Doc_Col_Ltr_Array(0) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(0) & "2")
-
 
                     ' Copies Measure Column
                     Sheets(Val_Wk_Array(0)).Select
@@ -884,6 +877,7 @@ UserNameErr:
                     ' Copies the Team Column
                     Sheets(Val_Wk_Array(0)).Select
                     Range(Clin_Doc_Col_Ltr_Array(19) & "2:" & Clin_Doc_Col_Ltr_Array(19) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(19) & "2")
+
 
                 End If
 
@@ -1015,6 +1009,14 @@ UserNameErr:
 
                 End If
 
+                ' SUB - Removes duplicates from the CS 72 sheet
+                ''''''''''''''''''''''''''''''''''''''''''''''''
+
+                ' Removes duplicates by source, EVcode, EventDisplay
+                Sheets(Code_Sheet).Range("$A$1:" & CS_72_Header_Ltr_Array(22) & LR).RemoveDuplicates Columns:=Array(CS_72_Header_Num_Array(3), _
+                    CS_72_Header_Num_Array(8), CS_72_Header_Num_Array(9)), _
+                    Header:=xlYes
+
 
                 '       SUB - Populates headers for all other sheets
                 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -1121,6 +1123,169 @@ UserNameErr:
 
         Next code
 
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        ' PRIMARY - Populates Nomenclature ID data onto the Nomenclature - PTCARE sheet
+        ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+        Sheets("Clinical Documentation").Select
+
+        'Filters the clinical doc table by source and makes sure nomenclature ID
+        Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(3), _
+                Criteria1:=Source_Name, Operator:=xlAnd
+
+        ' Filters to make sure nomenclature ID is not blank
+        Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(12), _
+                Criteria1:="<>"
+
+        Sheets(Val_Wk_Array(0)).ListObjects("Clinical_Table").Range.AutoFilter Field:=Clin_Doc_Col_Num_Array(15), _
+               Criteria1:= _
+               "<>*This nomenclature is mapped but the event code will need to be mapped if this will be used to complete the measure.*" _
+               , Operator:=xlAnd, Criteria2:= _
+               "<>*This event code is mapped but the nomenclature is not mapped and should be if this will be used to complete the measure.*"
+
+
+        Set Table_Obj = ActiveSheet.ListObjects(1)
+
+        'Checks filtered table for visible data.
+        If Table_Obj.Range.SpecialCells(xlCellTypeVisible).Areas.Count > 1 Then
+            Table_ObjIsVisible = True
+        Else
+            Table_ObjIsVisible = False
+        End If
+
+        'If data is visible then copy data.
+        If Table_ObjIsVisible = True Then
+            'Check to see if Nomenclature - Patient Care sheet already exists
+            For Each Sheet In Worksheets
+            exists = False
+                If Sheet.Name = "Nomenclature - Patient Care" Then
+                    exists = True
+                    Exit For
+                End If
+            Next Sheet
+
+            'If sheet does NOT exist, then create the sheet
+            If exists = False Then
+                ActiveWorkbook.Sheets.Add(After:=Worksheets(1)).Name = "Nomenclature - Patient Care"
+            End If
+
+            ' Finds the last row of the Clinical Documentation Sheet for copy Range
+            Sheets(Val_Wk_Array(0)).Select
+            LR = Range("A" & Rows.Count).End(xlUp).Row
+
+            Code_Sheet = "Nomenclature - Patient Care"
+
+            ' Populates the headers on the PTCare sheet
+            Off_Count = 0
+            For i = 0 To UBound(CS_72_Header_Name_Array)
+                Sheets(Code_Sheet).Range("A1").Offset(0, Off_Count).Value = CS_72_Header_Name_Array(i)
+                Off_Count = Off_Count + 1
+            Next i
+
+            ' Records the Addresses of the PTCare headers
+            Sheets(Code_Sheet).Select
+            Range("A1").Select
+            Range("A1", Selection.End(xlToRight)).Name = "Header_row"
+
+            For i = 0 To UBound(CS_72_Header_Num_Array)
+                col_Count = 0
+                For Each Header In Range("Header_row")
+                    col_Count = col_Count + 1
+                    If LCase(CS_72_Header_Num_Array(i)) = LCase(Header) Then
+                        CS_72_Header_Ltr_Array(i) = Mid(Header.Address, 2, 1)
+                        CS_72_Header_Num_Array(i) = col_Count
+                        Exit For
+                    End If
+                Next Header
+            Next i
+
+            ' Copies Registry Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(0) & "2:" & Clin_Doc_Col_Ltr_Array(0) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(0) & "2")
+
+            ' Copies Measure Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(1) & "2:" & Clin_Doc_Col_Ltr_Array(1) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(1) & "2")
+
+            ' Copies Concept Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(2) & "2:" & Clin_Doc_Col_Ltr_Array(2) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(2) & "2")
+
+            ' Copies Source Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(3) & "2:" & Clin_Doc_Col_Ltr_Array(3) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(3) & "2")
+
+            ' Copies DocumentType Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(4) & "2:" & Clin_Doc_Col_Ltr_Array(4) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(4) & "2")
+
+            ' Copies Name Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(5) & "2:" & Clin_Doc_Col_Ltr_Array(5) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(5) & "2")
+
+            ' Copies Section Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(6) & "2:" & Clin_Doc_Col_Ltr_Array(6) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(6) & "2")
+
+            ' Copies DTA Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(7) & "2:" & Clin_Doc_Col_Ltr_Array(7) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(7) & "2")
+
+            ' Copies EventCode Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(8) & "2:" & Clin_Doc_Col_Ltr_Array(8) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(8) & "2")
+
+            ' Copies EventDisplay Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(9) & "2:" & Clin_Doc_Col_Ltr_Array(9) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(9) & "2")
+
+            ' Copies ESH Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(10) & "2:" & Clin_Doc_Col_Ltr_Array(10) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(10) & "2")
+
+            ' Copies ControlType Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(11) & "2:" & Clin_Doc_Col_Ltr_Array(11) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(11) & "2")
+
+            ' Copies NomenclatureID Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(12) & "2:" & Clin_Doc_Col_Ltr_Array(12) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(12) & "2")
+
+            ' Copies Nomenclature Display Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(13) & "2:" & Clin_Doc_Col_Ltr_Array(13) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(13) & "2")
+
+            ' Copies TaskAssay Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(14) & "2:" & Clin_Doc_Col_Ltr_Array(14) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(14) & "2")
+
+            ' Copies the Nomenclature Notes Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(15) & "2:" & Clin_Doc_Col_Ltr_Array(15) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(15) & "2")
+
+            ' Copies the Social History Notes Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(16) & "2:" & Clin_Doc_Col_Ltr_Array(16) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(16) & "2")
+
+            ' Copies the Grid Notes Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(17) & "2:" & Clin_Doc_Col_Ltr_Array(17) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(17) & "2")
+
+            ' Copies the Freetext Notes Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(18) & "2:" & Clin_Doc_Col_Ltr_Array(18) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(18) & "2")
+
+            ' Copies the Team Column
+            Sheets(Val_Wk_Array(0)).Select
+            Range(Clin_Doc_Col_Ltr_Array(19) & "2:" & Clin_Doc_Col_Ltr_Array(19) & LR).SpecialCells(xlCellTypeVisible).Copy Sheets(Code_Sheet).Range(CS_72_Header_Ltr_Array(19) & "2")
+
+
+            '  Removes dups on the PTCare sheet by source, nomenclature ID, Nomenclature Display
+            Sheets(Code_Sheet).Range("$A$1:$W$500").RemoveDuplicates Columns:=Array(CS_72_Header_Num_Array(3), _
+                CS_72_Header_Num_Array(12), CS_72_Header_Num_Array(13)), _
+                Header:=xlYes
+
+        End If
+
 
         ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
         '   PRIMARY - Workbook Cleanup
@@ -1223,6 +1388,9 @@ End_Program:
     Dir "C:\"
     ChDir "C:\"
 
+    ' Activates primary excel file
+    Windows(Validation_File_Name).Activate
+
     'Notifies user that the program has completed.
     MsgBox ("Your PCST Files have been created. Folder is loctated within your My Documents.")
 
@@ -1230,6 +1398,14 @@ End_Program:
 
 User_Exit:
 
+    ' If the active workbook is not the validation form then close it without saving
+    If ActiveWorkbook.Name = (Source_Name & ".xlsx") Then
+        Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
+    End If
+
+    ' Activates primary excel file
+    Windows(Validation_File_Name).Activate
+
     'Re-enables previously disabled settings after all code has run.
     Application.ScreenUpdating = True
     Application.Calculation = xlCalculationAutomatic
@@ -1238,11 +1414,6 @@ User_Exit:
     ' Clears the filesystem descriptor allowing you to delete the folder
     Dir "C:\"
     ChDir "C:\"
-
-    ' If the active workbook is not the validation form then close it without saving
-    If ActiveWorkbook.Name = (Source_Name & ".xlsx") Then
-        Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
-    End If
 
     MsgBox ("Program quitting per user action.")
 
@@ -1250,17 +1421,22 @@ User_Exit:
 
 
 ErrHandler:
-    'Re-enables previously disabled settings after all code has run.
-    Application.ScreenUpdating = True
-    Application.Calculation = xlCalculationAutomatic
-    Application.EnableEvents = True
+
+    If Source_Name <> vbNullString then
+      Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
+    End If
+
+    ' Activates primary excel file
+    Windows(Validation_File_Name).Activate
 
     ' Clears the filesystem descriptor allowing you to delete the folder
     Dir "C:\"
     ChDir "C:\"
-    If Source_Name <> vbNullString then
-      Workbooks(Source_Name & ".xlsx").Close SaveChanges:=False
-    End If
+
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
+
     MsgBox ("Exiting program because of an issue." & vbNewLine & vbNewLine & "Sad Panda :(" & vbNewLine & vbNewLine & vbNewLine & Err.Number & vbNewLine & Err.Description)
 
 End Sub

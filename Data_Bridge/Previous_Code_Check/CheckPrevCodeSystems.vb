@@ -16,7 +16,7 @@ Dim Lookup As Variant
 Dim cell_Lookup As Variant
 Dim sResult_Value As Variant
 
-    SheetArray = Array("Unmapped Codes", "CodeSystemCheck")
+    SheetArray = Array("Unmapped Raw", "CodeSystemCheck")
     HeaderLocations = Array("Code System ID", "Raw Code", "EventCodeCheck")
     HeaderNames = Array("Coding System ID", "Raw Code", "EventCodeCheck")
     UnmappedHeaders = Array("EvCodeCheck", "CodeLookup")
@@ -65,7 +65,7 @@ Dim sResult_Value As Variant
     ' SUB - Checks if there already is a column titled EVCodeCheck, if not then create a new one.
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Sheets(SheetArray(0)).Select
-    Range("B2").Select
+    Range("B1").Select
     Range(Selection, Selection.End(xlToRight)).Name = "Header_row"
 
     For i = 0 To UBound(UnmappedHeaders)
@@ -80,7 +80,7 @@ Dim sResult_Value As Variant
         ' If the column does not exist, then create it.
         If Header_Check = False Then
             NextBlank = Mid(Cells(2, Columns.Count).End(xlToLeft).Offset(0, 1).Address, 2, 1)
-            Range(NextBlank & "2") = UnmappedHeaders(i)
+            Range(NextBlank & "1") = UnmappedHeaders(i)
             UnmappedHeaders(i) = NextBlank
         End If
     Next i
@@ -89,21 +89,21 @@ Dim sResult_Value As Variant
     ' SUB - Creates Concat Column
     Sheets(SheetArray(0)).Select
     LR = Range(HeaderLocations(0) & Rows.Count).End(xlUp).Row
-    Range(UnmappedHeaders(1) & "3:" & UnmappedHeaders(1) & LR).Formula = "=CONCATENATE(F3,""|"",G3)"
+    Range(UnmappedHeaders(1) & "2:" & UnmappedHeaders(1) & LR).Formula = "=CONCATENATE(" & Client_Mnemonic & "," & "|" & "," & HeaderLocations(0) & "2," & "|" & "," & HeaderLocations(1) & "3)"
 
-    "=CONCATENATE(" & Client_Mnemonic & "",|"" & HeaderLocations(0) & ""3,|"" & HeaderLocations(1) & "3)"
+
 
     ' SUB - Assigns CodeLookup Column to an array in memory
     ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     Sheets(SheetArray(0)).Select
     LR = Range(HeaderLocations(0) & Rows.Count).End(xlUp).Row
-    Range(UnmappedHeaders(1) & "3:" & UnmappedHeaders(1) & LR).SpecialCells(xlCellTypeVisible).Name = "CodeLookup"
+    Range(UnmappedHeaders(1) & "2:" & UnmappedHeaders(1) & LR).SpecialCells(xlCellTypeVisible).Name = "CodeLookup"
 
     EVCodeCheckArray = Range("CodeLookup").Value
 
     ' SUB - Set EvCodeCheck answer range to array in memory
     Sheets(SheetArray(0)).Select
-    Range(UnmappedHeaders(0) & "3:" & UnmappedHeaders(0) & LR).SpecialCells(xlCellTypeVisible).Name = "EvCodeCheck"
+    Range(UnmappedHeaders(0) & "2:" & UnmappedHeaders(0) & LR).SpecialCells(xlCellTypeVisible).Name = "EvCodeCheck"
 
     EvCodeCheckAnswerArray = Range("EvCodeCheck")
 
