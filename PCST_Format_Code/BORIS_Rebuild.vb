@@ -1173,9 +1173,9 @@ UserNameErr:
     Table_ObjIsVisible = False
   End If
 
-  'If data is visible then copy data.
+  ' If data is visible then copy data.
   If Table_ObjIsVisible = True Then
-    'Check to see if Nomenclature - Patient Care sheet already exists
+    ' Check to see if Nomenclature - Patient Care sheet already exists
     For Each Sheet In Worksheets
       exists = False
       If Sheet.Name = "Nomenclature - Patient Care" Then
@@ -1184,23 +1184,23 @@ UserNameErr:
       End If
     Next Sheet
 
-    'If sheet does NOT exist, then create the sheet
+    ' If sheet does NOT exist, then create the sheet and populate headers
     If exists = False Then
       ActiveWorkbook.Sheets.Add(After:=Worksheets(1)).Name = "Nomenclature - Patient Care"
+
+      ' Finds the last row of the Clinical Documentation Sheet for copy Range
+      Sheets(Val_Wk_Array(0)).Select
+      LR = Range("A" & Rows.Count).End(xlUp).Row
+
+      Code_Sheet = "Nomenclature - Patient Care"
+
+      ' Populates the headers on the PTCare sheet
+      Off_Count = 0
+      For i = 0 To UBound(CS_72_Header_Name_Array)
+        Sheets(Code_Sheet).Range("A1").Offset(0, Off_Count).Value = CS_72_Header_Name_Array(i)
+        Off_Count = Off_Count + 1
+      Next i
     End If
-
-    ' Finds the last row of the Clinical Documentation Sheet for copy Range
-    Sheets(Val_Wk_Array(0)).Select
-    LR = Range("A" & Rows.Count).End(xlUp).Row
-
-    Code_Sheet = "Nomenclature - Patient Care"
-
-    ' Populates the headers on the PTCare sheet
-    Off_Count = 0
-    For i = 0 To UBound(CS_72_Header_Name_Array)
-      Sheets(Code_Sheet).Range("A1").Offset(0, Off_Count).Value = CS_72_Header_Name_Array(i)
-      Off_Count = Off_Count + 1
-    Next i
 
     ' Records the Addresses of the PTCare headers
     Sheets(Code_Sheet).Select
@@ -1301,7 +1301,7 @@ UserNameErr:
 
 
     '  Removes dups on the PTCare sheet by source, nomenclature ID, Nomenclature Display
-    Sheets(Code_Sheet).Range("$A$1:$W$500").RemoveDuplicates Columns:=Array(CS_72_Header_Num_Array(3), _
+    Sheets(Code_Sheet).Range("$A$1:$W$700").RemoveDuplicates Columns:=Array(CS_72_Header_Num_Array(3), _
     CS_72_Header_Num_Array(12), CS_72_Header_Num_Array(13)), _
     Header:=xlYes
 
@@ -1321,7 +1321,6 @@ UserNameErr:
     Or Sheet.Name = "Clinical Documentation" _
     Or Sheet.Name = "Source_Code_Systems" _
     Or Sheet.Name = "Sheet1" _
-    Or Sheet.Name = "Clin Doc Nom" _
     Then
       Sheet.Delete
     End If
